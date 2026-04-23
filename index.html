@@ -5,79 +5,64 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Apex Strategies</title>
 
-<!-- Google Font -->
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- Font -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-    scroll-behavior: smooth;
-}
-
 body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
     background: #0f172a;
     color: white;
 }
 
-/* NAVBAR */
-nav {
-    position: fixed;
-    width: 100%;
-    top: 0;
-    padding: 15px 40px;
-    background: rgba(15,23,42,0.7);
-    backdrop-filter: blur(10px);
-    display: flex;
-    justify-content: space-between;
-    z-index: 1000;
-}
-
-nav a {
-    color: white;
-    text-decoration: none;
-    margin-left: 20px;
-}
-
 /* HERO */
 .hero {
-    height: 100vh;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    padding: 100px 10%;
+    align-items: center;
+    padding: 80px 10%;
+    background: linear-gradient(120deg, #0f172a, #1e293b);
 }
 
-.hero h1 {
-    font-size: 48px;
+.hero-text h1 {
+    font-size: 45px;
 }
 
-.hero p {
-    margin: 20px 0;
+.hero-text p {
     color: #cbd5e1;
+    margin: 20px 0;
 }
 
 .btn {
-    padding: 12px 24px;
+    padding: 12px 20px;
+    margin-right: 10px;
     border-radius: 8px;
     text-decoration: none;
-    margin-right: 10px;
-    display: inline-block;
 }
 
 .btn-primary {
-    background: linear-gradient(45deg, #3b82f6, #06b6d4);
+    background: #3b82f6;
+    color: white;
 }
 
 .btn-outline {
     border: 1px solid white;
+    color: white;
+}
+
+/* HERO IMAGE */
+.hero img {
+    width: 400px;
+    border-radius: 10px;
 }
 
 /* SECTION */
 section {
-    padding: 80px 10%;
+    padding: 60px 10%;
 }
 
 h2 {
@@ -85,42 +70,63 @@ h2 {
     margin-bottom: 40px;
 }
 
-/* CARDS */
-.grid {
+/* ABOUT */
+.about {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.about-text {
+    max-width: 600px;
+}
+
+/* SERVICES */
+.services {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
     gap: 20px;
 }
 
 .card {
-    background: rgba(255,255,255,0.05);
+    background: #1e293b;
     padding: 20px;
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    text-align: center;
     transition: 0.3s;
 }
 
 .card:hover {
-    transform: translateY(-10px);
+    transform: translateY(-8px);
+}
+
+.card i {
+    font-size: 40px;
+    margin-bottom: 15px;
+    color: #38bdf8;
 }
 
 /* PORTFOLIO */
-.card img {
+.portfolio {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+    gap: 20px;
+}
+
+.portfolio img {
     width: 100%;
     border-radius: 10px;
-    margin-bottom: 15px;
 }
 
-/* ANIMATION */
-.fade {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s ease;
+/* WHY */
+.why {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
 }
 
-.fade.show {
-    opacity: 1;
-    transform: translateY(0);
+.why div {
+    max-width: 200px;
 }
 
 /* CONTACT */
@@ -133,7 +139,7 @@ h2 {
 /* FOOTER */
 footer {
     text-align: center;
-    padding: 30px;
+    padding: 20px;
     background: #020617;
 }
 </style>
@@ -141,63 +147,75 @@ footer {
 
 <body>
 
-<!-- NAV -->
-<nav>
-    <h3>Apex</h3>
-    <div>
-        <a href="#services">Services</a>
-        <a href="#portfolio">Portfolio</a>
-        <a href="#contact">Contact</a>
-    </div>
-</nav>
-
 <!-- HERO -->
 <div class="hero">
-    <div>
-        <h1>Data-Driven Planning & Dashboards</h1>
-        <p>Helping businesses, clinics, and individuals make smarter decisions.</p>
+    <div class="hero-text">
+        <h1>Data-Driven Planning & Dashboard Solutions</h1>
+        <p>Helping businesses, clinics, and individuals make smarter decisions using data.</p>
         <a href="#portfolio" class="btn btn-primary">View Work</a>
         <a href="#contact" class="btn btn-outline">Contact</a>
     </div>
+
+    <!-- Replace this image -->
+    <img src="dashboard-main.jpg" alt="Dashboard">
 </div>
 
+<!-- ABOUT -->
+<section class="about">
+    <div class="about-text">
+        <h2>About Me</h2>
+        <p>
+            I am Ali, a specialist in production planning, quality control, and data analysis.
+            I help transform data into clear, actionable insights using Power BI and Excel.
+        </p>
+    </div>
+</section>
+
 <!-- SERVICES -->
-<section id="services" class="fade">
-    <h2>Services</h2>
-    <div class="grid">
+<section>
+    <h2>Solutions for Every Need</h2>
+    <div class="services">
+
         <div class="card">
-            <h3>Businesses</h3>
-            <p>Production planning, KPI dashboards, performance optimization.</p>
+            <i class="fas fa-industry"></i>
+            <h3>For Businesses</h3>
+            <p>Production planning, KPI tracking, performance optimization.</p>
         </div>
+
         <div class="card">
-            <h3>Clinics</h3>
-            <p>Tracking operations, patient flow, and performance insights.</p>
+            <i class="fas fa-user-md"></i>
+            <h3>For Clinics</h3>
+            <p>Operational tracking and performance monitoring.</p>
         </div>
+
         <div class="card">
-            <h3>Individuals</h3>
-            <p>Study tracking, productivity dashboards, personal analytics.</p>
+            <i class="fas fa-graduation-cap"></i>
+            <h3>For Individuals</h3>
+            <p>Study tracking and productivity dashboards.</p>
         </div>
+
     </div>
 </section>
 
 <!-- PORTFOLIO -->
-<section id="portfolio" class="fade">
-    <h2>Portfolio</h2>
-    <div class="grid">
+<section id="portfolio">
+    <h2>Selected Dashboard Examples</h2>
 
-        <div class="card">
+    <div class="portfolio">
+
+        <div>
             <img src="dashboard1.jpg">
             <h3>Production Dashboard</h3>
-            <p>Improve efficiency and track production.</p>
+            <p>Track production and efficiency.</p>
         </div>
 
-        <div class="card">
+        <div>
             <img src="dashboard2.jpg">
             <h3>KPI Dashboard</h3>
-            <p>Monitor performance and KPIs.</p>
+            <p>Monitor performance indicators.</p>
         </div>
 
-        <div class="card">
+        <div>
             <img src="dashboard3.jpg">
             <h3>Inventory Dashboard</h3>
             <p>Control stock and reduce waste.</p>
@@ -206,9 +224,28 @@ footer {
     </div>
 </section>
 
+<!-- WHY -->
+<section>
+    <h2>Why Work With Me?</h2>
+    <div class="why">
+        <div>
+            <i class="fas fa-chart-line"></i>
+            <p>Data-driven solutions</p>
+        </div>
+        <div>
+            <i class="fas fa-cogs"></i>
+            <p>Practical approach</p>
+        </div>
+        <div>
+            <i class="fas fa-user"></i>
+            <p>Custom dashboards</p>
+        </div>
+    </div>
+</section>
+
 <!-- CONTACT -->
-<section id="contact" class="fade contact">
-    <h2>Contact</h2>
+<section id="contact" class="contact">
+    <h2>Contact Me</h2>
     <a href="#">LinkedIn</a>
     <a href="https://wa.me/XXXXXXXXXXX">WhatsApp</a>
     <a href="mailto:your@email.com">Email</a>
@@ -217,20 +254,6 @@ footer {
 <footer>
     <p>© 2026 Apex Strategies</p>
 </footer>
-
-<script>
-// Scroll animation
-const fades = document.querySelectorAll('.fade');
-
-window.addEventListener('scroll', () => {
-    fades.forEach(el => {
-        const top = el.getBoundingClientRect().top;
-        if(top < window.innerHeight - 100){
-            el.classList.add('show');
-        }
-    });
-});
-</script>
 
 </body>
 </html>
