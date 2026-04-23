@@ -1,108 +1,236 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Apex Strategies</title>
-  <style>
-    body {
-      font-family: Arial;
-      margin: 0;
-      background: #f5f6fa;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apex Strategies</title>
 
-    header {
-      background: #1e3c72;
-      color: white;
-      text-align: center;
-      padding: 50px 20px;
-    }
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-    header h1 {
-      margin: 0;
-      font-size: 40px;
-    }
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    scroll-behavior: smooth;
+}
 
-    header p {
-      margin-top: 10px;
-      font-size: 18px;
-    }
+body {
+    background: #0f172a;
+    color: white;
+}
 
-    .container {
-      padding: 30px;
-      text-align: center;
-    }
+/* NAVBAR */
+nav {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    padding: 15px 40px;
+    background: rgba(15,23,42,0.7);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    z-index: 1000;
+}
 
-    .card {
-      background: white;
-      padding: 20px;
-      margin: 15px;
-      border-radius: 12px;
-      display: inline-block;
-      width: 280px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      transition: 0.3s;
-    }
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+}
 
-    .card:hover {
-      transform: translateY(-5px);
-    }
+/* HERO */
+.hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 100px 10%;
+}
 
-    button {
-      background: #27ae60;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
+.hero h1 {
+    font-size: 48px;
+}
 
-    footer {
-      margin-top: 40px;
-      padding: 20px;
-      text-align: center;
-      background: #ddd;
-    }
-  </style>
+.hero p {
+    margin: 20px 0;
+    color: #cbd5e1;
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    margin-right: 10px;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #3b82f6, #06b6d4);
+}
+
+.btn-outline {
+    border: 1px solid white;
+}
+
+/* SECTION */
+section {
+    padding: 80px 10%;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+/* CARDS */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+    gap: 20px;
+}
+
+.card {
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+}
+
+/* PORTFOLIO */
+.card img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+/* ANIMATION */
+.fade {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease;
+}
+
+.fade.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* CONTACT */
+.contact a {
+    display: block;
+    margin: 10px 0;
+    color: #38bdf8;
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 30px;
+    background: #020617;
+}
+</style>
 </head>
 
 <body>
 
-<header>
-  <h1>Apex Strategies</h1>
-  <p>Data Dashboards That Drive Decisions</p>
-</header>
+<!-- NAV -->
+<nav>
+    <h3>Apex</h3>
+    <div>
+        <a href="#services">Services</a>
+        <a href="#portfolio">Portfolio</a>
+        <a href="#contact">Contact</a>
+    </div>
+</nav>
 
-<div class="container">
-
- <div class="card">
-  <img src="sales11.png" style="width:100%; border-radius:10px;">
-  <h3>Production Dashboard</h3>
-  <p>Optimize output and reduce downtime.</p>
-  <button>View Details</button>
+<!-- HERO -->
+<div class="hero">
+    <div>
+        <h1>Data-Driven Planning & Dashboards</h1>
+        <p>Helping businesses, clinics, and individuals make smarter decisions.</p>
+        <a href="#portfolio" class="btn btn-primary">View Work</a>
+        <a href="#contact" class="btn btn-outline">Contact</a>
+    </div>
 </div>
 
-  <div class="card">
-    <h3>Sales Dashboard</h3>
-    <p>Track performance and increase revenue.</p>
-    <button>View</button>
-  </div>
+<!-- SERVICES -->
+<section id="services" class="fade">
+    <h2>Services</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>Businesses</h3>
+            <p>Production planning, KPI dashboards, performance optimization.</p>
+        </div>
+        <div class="card">
+            <h3>Clinics</h3>
+            <p>Tracking operations, patient flow, and performance insights.</p>
+        </div>
+        <div class="card">
+            <h3>Individuals</h3>
+            <p>Study tracking, productivity dashboards, personal analytics.</p>
+        </div>
+    </div>
+</section>
 
-  <div class="card">
-    <h3>KPI Dashboard</h3>
-    <p>Monitor key metrics in real time.</p>
-    <button>View</button>
-  </div>
+<!-- PORTFOLIO -->
+<section id="portfolio" class="fade">
+    <h2>Portfolio</h2>
+    <div class="grid">
 
-</div>
+        <div class="card">
+            <img src="dashboard1.jpg">
+            <h3>Production Dashboard</h3>
+            <p>Improve efficiency and track production.</p>
+        </div>
+
+        <div class="card">
+            <img src="dashboard2.jpg">
+            <h3>KPI Dashboard</h3>
+            <p>Monitor performance and KPIs.</p>
+        </div>
+
+        <div class="card">
+            <img src="dashboard3.jpg">
+            <h3>Inventory Dashboard</h3>
+            <p>Control stock and reduce waste.</p>
+        </div>
+
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="fade contact">
+    <h2>Contact</h2>
+    <a href="#">LinkedIn</a>
+    <a href="https://wa.me/XXXXXXXXXXX">WhatsApp</a>
+    <a href="mailto:your@email.com">Email</a>
+</section>
 
 <footer>
-  <p>Contact: your-email@email.com</p>
-
-  <a href="https://www.linkedin.com/company/109245589/admin/dashboard/"_blank">
-    <img src="linkedin.png" width="40" style="margin-top:10px;">
-  </a>
-
+    <p>© 2026 Apex Strategies</p>
 </footer>
+
+<script>
+// Scroll animation
+const fades = document.querySelectorAll('.fade');
+
+window.addEventListener('scroll', () => {
+    fades.forEach(el => {
+        const top = el.getBoundingClientRect().top;
+        if(top < window.innerHeight - 100){
+            el.classList.add('show');
+        }
+    });
+});
+</script>
+
 </body>
 </html>
