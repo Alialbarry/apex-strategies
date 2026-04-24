@@ -65,9 +65,47 @@ body {
     transition: 0.5s;
 }
 
+.hero-image {
+    width: 520px;
+    padding: 20px;
+    border-radius: 25px;
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+    transform: perspective(1200px) rotateY(-12deg) rotateX(5deg);
+    transition: all 0.5s ease;
+}
+
+/* inner screen */
+.hero-image .screen {
+    background: #020617;
+    padding: 10px;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+/* image */
 .hero-image img {
     width: 100%;
-    border-radius: 12px;
+    border-radius: 10px;
+    display: block;
+}
+
+/* hover animation */
+.hero-image:hover {
+    transform: perspective(1200px) rotateY(0deg) rotateX(0deg) scale(1.03);
+}
+
+/* bottom shadow (like real device) */
+.hero-image::after {
+    content: "";
+    position: absolute;
+    bottom: -25px;
+    left: 10%;
+    width: 80%;
+    height: 25px;
+    background: rgba(0,0,0,0.5);
+    filter: blur(25px);
+    border-radius: 50%;
 }
 
 .hero-image:hover {
@@ -161,13 +199,11 @@ footer {
 <body>
 
 <!-- HERO -->
-<div class="hero">
-    <div class="hero-text">
-        <h1>Data-Driven Planning & Dashboard Solutions</h1>
-        <p>Helping businesses, clinics, and individuals make smarter decisions using data.</p>
-        <a href="#portfolio" class="btn btn-primary">View Work</a>
-        <a href="#contact" class="btn btn-outline">Contact</a>
+<div class="hero ">
+    <div class="screen">
+        <img src="hero img.jpg" alt="Dashboard">
     </div>
+</div>
 
     <!-- Replace this image -->
     <img src="dashboard-main.jpg" alt="Dashboard">
