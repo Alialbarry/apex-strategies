@@ -206,28 +206,65 @@ h2{
 
 .portfolio{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-    gap:25px;
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+    gap:30px;
 }
 
-.portfolio div{
+.portfolio-card{
     background:#1e293b;
-    padding:15px;
-    border-radius:18px;
-    transition:0.3s ease;
+    border-radius:22px;
+    overflow:hidden;
+    transition:0.4s ease;
+    box-shadow:0 20px 40px rgba(0,0,0,0.4);
 }
 
-.portfolio div:hover{
-    transform:translateY(-8px);
+.portfolio-card:hover{
+    transform:translateY(-10px);
 }
 
-.portfolio img{
+.portfolio-card img{
     width:100%;
-    border-radius:12px;
+    height:220px;
+    object-fit:cover;
+}
+
+.portfolio-info{
+    padding:25px;
+}
+
+.tag{
+    display:inline-block;
+    background:#3b82f6;
+    color:white;
+    padding:6px 14px;
+    border-radius:30px;
+    font-size:13px;
     margin-bottom:15px;
 }
 
-.portfolio p{
+.portfolio-info h3{
+    font-size:24px;
+    margin-bottom:15px;
+}
+
+.portfolio-info p{
+    color:#cbd5e1;
+    margin-bottom:20px;
+    font-size:15px;
+}
+
+.tools{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:25px;
+}
+
+.tools span{
+    background:#0f172a;
+    padding:8px 14px;
+    border-radius:30px;
+    font-size:13px;
     color:#cbd5e1;
 }
 
@@ -276,6 +313,7 @@ h2{
 .contact img:hover{
     transform:scale(1.15);
 }
+
 /* FOOTER */
 
 footer{
@@ -333,7 +371,7 @@ footer{
             for businesses, clinics, and individuals.
         </p>
 
-        <a href="#portfolio" class="btn btn-primary">View Work</a>
+        <a href="#portfolio" class="btn btn-primary">View Solutions</a>
 
         <a href="#contact" class="btn btn-outline">Contact</a>
 
@@ -428,43 +466,109 @@ footer{
 
 <section id="portfolio">
 
-    <h2>Selected Dashboard Examples</h2>
+    <h2>Business Intelligence Solutions</h2>
 
     <div class="portfolio">
 
-        <div>
+        <!-- CLINIC DASHBOARDS -->
 
-            <img src="dashboard1.png" alt="Production Dashboard">
+        <div class="portfolio-card">
 
-            <h3>Production Dashboard</h3>
+            <img src="dashboard1.png" alt="Clinic Dashboard">
 
-            <p>
-                Track production efficiency and operational performance.
-            </p>
+            <div class="portfolio-info">
+
+                <span class="tag">Healthcare Sector</span>
+
+                <h3>Clinic Operations Dashboard</h3>
+
+                <p>
+                    Monitor appointments, revenue,
+                    patient flow, and doctor performance
+                    through one centralized dashboard.
+                </p>
+
+                <div class="tools">
+
+                    <span>Power BI</span>
+                    <span>KPI</span>
+                    <span>Analytics</span>
+
+                </div>
+
+                <a href="clinic.html" class="btn btn-primary">
+                    View Solutions
+                </a>
+
+            </div>
 
         </div>
 
-        <div>
+        <!-- BUSINESS DASHBOARDS -->
 
-            <img src="dashboard2.png" alt="KPI Dashboard">
+        <div class="portfolio-card">
 
-            <h3>KPI Dashboard</h3>
+            <img src="dashboard2.png" alt="Business Dashboard">
 
-            <p>
-                Monitor business KPIs and strategic metrics.
-            </p>
+            <div class="portfolio-info">
+
+                <span class="tag">Business Sector</span>
+
+                <h3>Business Intelligence Dashboard</h3>
+
+                <p>
+                    Analyze performance, monitor KPIs,
+                    and improve strategic decision-making
+                    using interactive dashboards.
+                </p>
+
+                <div class="tools">
+
+                    <span>Power BI</span>
+                    <span>Excel</span>
+                    <span>KPI Tracking</span>
+
+                </div>
+
+                <a href="business.html" class="btn btn-primary">
+                    View Solutions
+                </a>
+
+            </div>
 
         </div>
 
-        <div>
+        <!-- INDIVIDUAL DASHBOARDS -->
 
-            <img src="dasboard41.png" alt="Inventory Dashboard">
+        <div class="portfolio-card">
 
-            <h3>Inventory Dashboard</h3>
+            <img src="dasboard41.png" alt="Individual Dashboard">
 
-            <p>
-                Control inventory levels and reduce waste effectively.
-            </p>
+            <div class="portfolio-info">
+
+                <span class="tag">Personal Productivity</span>
+
+                <h3>Individual Productivity Dashboard</h3>
+
+                <p>
+                    Personal dashboards designed to improve
+                    productivity, habit tracking,
+                    and personal performance management.
+                </p>
+
+                <div class="tools">
+
+                    <span>Planning</span>
+                    <span>Tracking</span>
+                    <span>Productivity</span>
+
+                </div>
+
+                <a href="individual.html" class="btn btn-primary">
+                    View Solutions
+                </a>
+
+            </div>
 
         </div>
 
@@ -519,11 +623,11 @@ footer{
         <a href="https://www.linkedin.com/company/109245589/admin/dashboard/" target="_blank">
             <img src="linkedin.png" alt="LinkedIn">
         </a>
-        
+
         <a href="https://www.facebook.com/profile.php?id=61586230434467" target="_blank">
             <img src="facebook.png" alt="Facebook">
         </a>
-        
+
         <a href="https://wa.me/963985212728" target="_blank">
             <img src="whatsapp.png" alt="WhatsApp">
         </a>
@@ -535,6 +639,7 @@ footer{
     </div>
 
 </section>
+
 <!-- FOOTER -->
 
 <footer>
