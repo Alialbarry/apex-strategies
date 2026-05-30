@@ -25,7 +25,7 @@ body{
     line-height:1.6;
 }
 
-/* NAVBAR */
+/* NAVBAR & LANGUAGE SWITCHER */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -41,6 +41,12 @@ body{
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
 .navbar .back-btn {
     display: flex;
     align-items: center;
@@ -53,6 +59,27 @@ body{
 
 .navbar .back-btn:hover {
     color: #3b82f6;
+}
+
+.lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #1e293b;
+    color: white;
+    border: 1px solid #334155;
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.3s ease;
+}
+
+.lang-btn:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    background: #0f172a;
 }
 
 .logo {
@@ -277,6 +304,9 @@ footer{
     .hero-text h1 {
         font-size: 36px;
     }
+    .nav-links {
+        gap: 10px;
+    }
 }
 
 </style>
@@ -285,9 +315,14 @@ footer{
 <body>
 
 <nav class="navbar">
-    <a href="index.html" class="back-btn">
-        <i class="fas fa-arrow-left"></i> Back to Home
-    </a>
+    <div class="nav-links">
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+        <a href="clinic-ar.html" class="lang-btn">
+            <i class="fas fa-globe"></i> العربية
+        </a>
+    </div>
     <a href="#" class="logo">Apex <span>Strategies</span></a>
 </nav>
 
