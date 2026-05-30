@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Apex Strategies</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Cairo', 'Poppins', sans-serif;
+    background:#0f172a;
+    color:white;
+    line-height:1.6;
+}
+
+/* NAVBAR & LANGUAGE SWITCHER */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 10%;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+    letter-spacing: 1px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.logo span {
+    color: #3b82f6;
+}
+
+.lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #1e293b;
+    color: white;
+    border: 1px solid #334155;
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.3s ease;
+}
+
+.lang-btn:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    background: #0f172a;
+}
+
+/* HERO SECTION */
+
+.hero{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:60px;
+    padding:140px 10% 80px 10%; /* Increased top padding to accommodate fixed navbar */
+    background:linear-gradient(120deg,#0f172a,#1e293b);
+    min-height:100vh;
+}
+
+.hero-text{
+    flex:1;
+}
+
+.hero-text h1{
+    font-size:50px;
+    line-height:1.3;
+    margin-bottom:20px;
+}
+
+.hero-text p{
+    color:#cbd5e1;
+    margin-bottom:30px;
+    font-size:18px;
+}
+
+.btn{
+    display:inline-block;
+    padding:14px 24px;
+    border-radius:10px;
+    text-decoration:none;
+    margin-left:12px; /* Adjusted for RTL spacing */
+    transition:0.3s ease;
+    font-weight:600;
+}
+
+.btn-primary{
+    background:#3b82f6;
+    color:white;
+}
+
+.btn-primary:hover{
+    background:#2563eb;
+}
+
+.btn-outline{
+    border:1px solid white;
+    color:white;
+}
+
+.btn-outline:hover{
+    background:white;
+    color:#0f172a;
+}
+
+/* HERO IMAGE */
+
+.hero-image{
+    position:relative;
+    width:520px;
+    padding:20px;
+    border-radius:25px;
+    background:linear-gradient(145deg,#1e293b,#0f172a);
+    box-shadow:0 30px 80px rgba(0,0,0,0.7);
+    transform:perspective(1200px) rotateY(12deg) rotateX(5deg); /* Flipped rotateY for RTL balance */
+    transition:0.5s ease;
+}
+
+.hero-image:hover{
+    transform:perspective(1200px) rotateY(0deg) rotateX(0deg) scale(1.03);
+}
+
+.hero-image .screen{
+    background:#020617;
+    padding:10px;
+    border-radius:15px;
+    overflow:hidden;
+}
+
+.hero-image img{
+    width:100%;
+    border-radius:10px;
+}
+
+.hero-image::after{
+    content:"";
+    position:absolute;
+    bottom:-25px;
+    right:10%; /* Adjusted for RTL */
+    width:80%;
+    height:25px;
+    background:rgba(0,0,0,0.5);
+    filter:blur(25px);
+    border-radius:50%;
+}
+
+/* GENERAL SECTION */
+
+section{
+    padding:80px 10%;
+}
+
+h2{
+    text-align:center;
+    margin-bottom:50px;
+    font-size:38px;
+}
+
+/* ABOUT */
+
+.about{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:60px;
+}
+
+.about-text{
+    flex:1;
+}
+
+.about-text p{
+    color:#cbd5e1;
+    font-size:18px;
+}
+
+.about-image img{
+    width:280px;
+    height:280px;
+    object-fit:cover;
+    border-radius:20px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.5);
+}
+
+/* SERVICES */
+
+.services{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:25px;
+}
+
+.card{
+    background:#1e293b;
+    padding:35px 25px;
+    border-radius:18px;
+    text-align:center;
+    transition:0.3s ease;
+}
+
+.card:hover{
+    transform:translateY(-10px);
+}
+
+.card i{
+    font-size:50px;
+    color:#38bdf8;
+    margin-bottom:20px;
+    transition:0.3s ease;
+}
+
+.card:hover i{
+    transform:scale(1.15);
+}
+
+.card h3{
+    margin-bottom:15px;
+}
+
+.card p{
+    color:#cbd5e1;
+}
+
+/* PORTFOLIO */
+
+.portfolio{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+    gap:30px;
+}
+
+.portfolio-card{
+    background:#1e293b;
+    border-radius:22px;
+    overflow:hidden;
+    transition:0.4s ease;
+    box-shadow:0 20px 40px rgba(0,0,0,0.4);
+}
+
+.portfolio-card:hover{
+    transform:translateY(-10px);
+}
+
+.portfolio-card img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+}
+
+.portfolio-info{
+    padding:25px;
+}
+
+.tag{
+    display:inline-block;
+    background:#3b82f6;
+    color:white;
+    padding:6px 14px;
+    border-radius:30px;
+    font-size:13px;
+    margin-bottom:15px;
+}
+
+.portfolio-info h3{
+    font-size:24px;
+    margin-bottom:15px;
+}
+
+.portfolio-info p{
+    color:#cbd5e1;
+    margin-bottom:20px;
+    font-size:15px;
+}
+
+.tools{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:25px;
+}
+
+.tools span{
+    background:#0f172a;
+    padding:8px 14px;
+    border-radius:30px;
+    font-size:13px;
+    color:#cbd5e1;
+}
+
+/* WHY WORK WITH ME */
+
+.why{
+    display:flex;
+    justify-content:space-around;
+    text-align:center;
+    gap:30px;
+    flex-wrap:wrap;
+}
+
+.why div{
+    max-width:250px;
+}
+
+.why i{
+    font-size:50px;
+    color:#38bdf8;
+    margin-bottom:15px;
+    transition:0.3s ease;
+}
+
+.why div:hover i{
+    transform:scale(1.2);
+}
+
+/* CONTACT */
+
+.contact{
+    text-align:center;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:30px;
+}
+
+.contact img{
+    width:35px;
+    height:35px;
+    transition:0.3s ease;
+    cursor:pointer;
+}
+
+.contact img:hover{
+    transform:scale(1.15);
+}
+
+/* FOOTER */
+
+footer{
+    text-align:center;
+    padding:25px;
+    background:#020617;
+    color:#94a3b8;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:950px){
+
+.hero{
+    flex-direction:column;
+    text-align:center;
+    padding-top: 120px;
+}
+
+.about{
+    flex-direction:column;
+    text-align:center;
+}
+
+.hero-image{
+    width:100%;
+    max-width:500px;
+}
+
+.about-image img{
+    width:100%;
+    max-width:350px;
+}
+
+.hero-text h1{
+    font-size:38px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <a href="#" class="logo">Apex <span>Strategies</span></a>
+    <a href="index.html" class="lang-btn">
+        <i class="fas fa-globe"></i> English
+    </a>
+</nav>
+
+<section class="hero">
+
+    <div class="hero-text">
+
+        <h1>حوّل بياناتك إلى قرارات عمل ذكية</h1>
+
+        <p>
+            لوحات تحكم احترافية، أنظمة قياس الأداء (KPIs)، وحلول التخطيط
+            للشركات، العيادات، والأفراد.
+        </p>
+
+        <a href="#portfolio" class="btn btn-primary">عرض الحلول</a>
+
+        <a href="#contact" class="btn btn-outline">تواصل معي</a>
+
+    </div>
+
+    <div class="hero-image">
+
+        <div class="screen">
+            <img src="hero img.jpg" alt="Dashboard">
+        </div>
+
+    </div>
+
+</section>
+
+<section class="about">
+
+    <div class="about-text">
+
+        <h2>من أنا</h2>
+
+        <p>
+            أنا علي، متخصص في تخطيط الإنتاج وتحليل البيانات.
+            أساعد في تحويل البيانات المعقدة إلى رؤى واضحة وقابلة للتنفيذ
+            باستخدام لوحات تحكم فائقة الدقة عبر Power BI و Excel.
+        </p>
+
+    </div>
+
+    <div class="about-image">
+
+        <img src="about me.png" alt="Ali">
+
+    </div>
+
+</section>
+
+<section>
+
+    <h2>حلول متكاملة لكل الاحتياجات</h2>
+
+    <div class="services">
+
+        <div class="card">
+
+            <i class="fas fa-chart-line"></i>
+
+            <h3>للشركات</h3>
+
+            <p>
+                تخطيط الإنتاج، تتبع مؤشرات الأداء الرئيسية (KPIs)،
+                وتحسين الكفاءة التشغيلية.
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <i class="fas fa-hospital"></i>
+
+            <h3>للعيادات</h3>
+
+            <p>
+                مراقبة الأداء والتتبع التشغيلي والمالي
+                لبيئات الرعاية الصحية والعيادات الطبية.
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <i class="fas fa-user-graduate"></i>
+
+            <h3>للأفراد</h3>
+
+            <p>
+                لوحات تحكم مخصصة لزيادة الإنتاجية الشخصية،
+                ومتابعة العادات وأنظمة التتبع اليومية.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section id="portfolio">
+
+    <h2>حلول ذكاء الأعمال (BI)</h2>
+
+    <div class="portfolio">
+
+        <div class="portfolio-card">
+
+            <img src="dashboard1.png" alt="Clinic Dashboard">
+
+            <div class="portfolio-info">
+
+                <span class="tag">القطاع الطبي</span>
+
+                <h3>لوحة تحكم العمليات للعيادات</h3>
+
+                <p>
+                    مراقبة المواعيد، الإيرادات، تدفق المرضى،
+                    وأداء الأطباء من خلال لوحة تحكم مركزية واحدة.
+                </p>
+
+                <div class="tools">
+
+                    <span>Power BI</span>
+                    <span>KPI</span>
+                    <span>Analytics</span>
+
+                </div>
+
+                <a href="clinic.html" class="btn btn-primary">
+                    عرض الحلول
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="portfolio-card">
+
+            <img src="dashboard2.png" alt="Business Dashboard">
+
+            <div class="portfolio-info">
+
+                <span class="tag">قطاع الأعمال</span>
+
+                <h3>لوحة تحكم ذكاء الأعمال الاستراتيجية</h3>
+
+                <p>
+                    تحليل الأداء، مراقبة مؤشرات القياس،
+                    وتطوير عملية اتخاذ القرار الاستراتيجي باستخدام لوحات تفاعلية.
+                </p>
+
+                <div class="tools">
+
+                    <span>Power BI</span>
+                    <span>Excel</span>
+                    <span>KPI Tracking</span>
+
+                </div>
+
+                <a href="business.html" class="btn btn-primary">
+                    عرض الحلول
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="portfolio-card">
+
+            <img src="dasboard41.png" alt="Individual Dashboard">
+
+            <div class="portfolio-info">
+
+                <span class="tag">الإنتاجية الشخصية</span>
+
+                <h3>لوحة تحكم الإنتاجية الفردية</h3>
+
+                <p>
+                    لوحات تحكم شخصية مصممة لتحسين مستويات الإنتاجية،
+                    تتبع العادات، وإدارة الأداء اليومي.
+                </p>
+
+                <div class="tools">
+
+                    <span>Planning</span>
+                    <span>Tracking</span>
+                    <span>Productivity</span>
+
+                </div>
+
+                <a href="individual.html" class="btn btn-primary">
+                    عرض الحلول
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section>
+
+    <h2>لماذا تختار العمل معي؟</h2>
+
+    <div class="why">
+
+        <div>
+
+            <i class="fas fa-chart-pie"></i>
+
+            <p>حلول قائمة على تحليل البيانات</p>
+
+        </div>
+
+        <div>
+
+            <i class="fas fa-gears"></i>
+
+            <p>نهج عملي وتطبيقي للشركات</p>
+
+        </div>
+
+        <div>
+
+            <i class="fas fa-display"></i>
+
+            <p>لوحات تحكم احترافية ومخصصة</p>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section id="contact">
+
+    <h2>تواصل معي</h2>
+
+    <div class="contact">
+
+        <a href="https://www.linkedin.com/company/109245589/admin/dashboard/" target="_blank">
+            <img src="linkedin.png" alt="LinkedIn">
+        </a>
+
+        <a href="https://www.facebook.com/profile.php?id=61586230434467" target="_blank">
+            <img src="facebook.png" alt="Facebook">
+        </a>
+
+        <a href="https://wa.me/963985212728" target="_blank">
+            <img src="whatsapp.png" alt="WhatsApp">
+        </a>
+
+        <a href="mailto:your@email.com">
+            <img src="email.png" alt="Email">
+        </a>
+
+    </div>
+
+</section>
+
+<footer>
+
+    <p>© 2026 Apex Strategies. جميع الحقوق محفوظة.</p>
+
+</footer>
+
+</body>
+</html>
