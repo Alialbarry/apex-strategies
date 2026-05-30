@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>حلول تحليل البيانات للعيادات - Apex Strategies</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Cairo', 'Poppins', sans-serif;
+    background:#0f172a;
+    color:white;
+    line-height:1.6;
+}
+
+/* NAVBAR & LANGUAGE SWITCHER */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 10%;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.navbar .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.navbar .back-btn:hover {
+    color: #3b82f6;
+}
+
+.lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #1e293b;
+    color: white;
+    border: 1px solid #334155;
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.3s ease;
+}
+
+.lang-btn:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    background: #0f172a;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+    letter-spacing: 1px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.logo span {
+    color: #3b82f6;
+}
+
+/* HERO SECTION */
+.hero{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:60px;
+    padding:140px 10% 80px 10%;
+    background:linear-gradient(120deg,#0f172a,#1e293b);
+    min-height:80vh;
+}
+
+.hero-text{
+    flex:1;
+}
+
+.hero-text h1{
+    font-size:48px;
+    line-height:1.3;
+    margin-bottom:20px;
+}
+
+.hero-text p{
+    color:#cbd5e1;
+    margin-bottom:30px;
+    font-size:18px;
+}
+
+.btn{
+    display:inline-block;
+    padding:14px 24px;
+    border-radius:10px;
+    text-decoration:none;
+    margin-left:12px; /* Adjusted for RTL */
+    transition:0.3s ease;
+    font-weight:600;
+}
+
+.btn-primary{
+    background:#3b82f6;
+    color:white;
+}
+
+.btn-primary:hover{
+    background:#2563eb;
+}
+
+/* SECTION GENERAL */
+section{
+    padding:80px 10%;
+}
+
+h2{
+    text-align:center;
+    margin-bottom:15px;
+    font-size:38px;
+}
+
+.section-subtitle {
+    text-align: center;
+    color: #94a3b8;
+    margin-bottom: 50px;
+    font-size: 18px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* CLINIC FEATURES / KPI GRID */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.kpi-card {
+    background: #1e293b;
+    padding: 30px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    transition: 0.3s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    border-color: #38bdf8;
+}
+
+.kpi-card i {
+    font-size: 35px;
+    color: #38bdf8;
+    margin-bottom: 15px;
+}
+
+.kpi-card h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.kpi-card p {
+    color: #cbd5e1;
+    font-size: 15px;
+}
+
+/* DETAILED SHOWCASE (DASHBOARDS) */
+.showcase-item {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    margin-bottom: 80px;
+}
+
+.showcase-item:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+.showcase-img {
+    flex: 1;
+    background: #1e293b;
+    padding: 15px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.showcase-img img {
+    width: 100%;
+    border-radius: 12px;
+    display: block;
+}
+
+.showcase-text {
+    flex: 1;
+}
+
+.showcase-text .badge {
+    display: inline-block;
+    background: rgba(56, 189, 248, 0.1);
+    color: #38bdf8;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.showcase-text h3 {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.showcase-text p {
+    color: #cbd5e1;
+    margin-bottom: 20px;
+}
+
+.showcase-text ul {
+    list-style: none;
+}
+
+.showcase-text ul li {
+    margin-bottom: 10px;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.showcase-text ul li i {
+    color: #3b82f6;
+}
+
+/* PRIVACY NOTICE */
+.privacy-notice {
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    padding: 40px;
+    border-radius: 22px;
+    text-align: center;
+    border: 1px dashed rgba(56, 189, 248, 0.3);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.privacy-notice i {
+    font-size: 45px;
+    color: #38bdf8;
+    margin-bottom: 15px;
+}
+
+/* FOOTER */
+footer{
+    text-align:center;
+    padding:25px;
+    background:#020617;
+    color:#94a3b8;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* RESPONSIVE */
+@media(max-width:950px){
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        padding-top: 120px;
+    }
+    .showcase-item, .showcase-item:nth-child(even) {
+        flex-direction: column;
+        gap: 30px;
+    }
+    .hero-text h1 {
+        font-size: 34px;
+    }
+    .nav-links {
+        gap: 10px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="nav-links">
+        <a href="index-ar.html" class="back-btn">
+            <i class="fas fa-arrow-right"></i> العودة للرئيسية
+        </a>
+        <a href="clinic.html" class="lang-btn">
+            <i class="fas fa-globe"></i> English
+        </a>
+    </div>
+    <a href="#" class="logo">Apex <span>Strategies</span></a>
+</nav>
+
+<section class="hero">
+    <div class="hero-text">
+        <h1>ضاعف عوائد عيادتك وحسّن الكفاءة التشغيلية للمرضى</h1>
+        <p>
+            حوّل بيانات عيادتك الأولية إلى رؤى صحية قابلة للتنفيذ الفوري. 
+            قلل نسب غياب المرضى (No-Show)، وتتبع عائد استثمار حملاتك التسويقية، وراقب أداء الأطباء عبر لوحات تحكم تفاعلية مخصصة.
+        </p>
+        <a href="index-ar.html#contact" class="btn btn-primary">طلب نسخة تجريبية مخصصة</a>
+    </div>
+</section>
+
+<section style="background: #0b1120;">
+    <h2>مؤشرات الأداء الطبية الرئيسية التي نتتبعها</h2>
+    <p class="section-subtitle">نحن نربط أنظمتنا مباشرة مع برامج إدارة العيادات الخاصة بك لمركزة المؤشرات التشغيلية الأكثر أهمية.</p>
+    
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <i class="fas fa-user-slash"></i>
+            <h3>نسبة غياب المرضى</h3>
+            <p>تحديد الأنماط والأوقات المتكررة لإلغاء المواعيد لاستعادة الساعات الطبية المهدورة وتقليل خسائر العيادة التشغيلية.</p>
+        </div>
+        <div class="kpi-card">
+            <i class="fas fa-hand-holding-dollar"></i>
+            <h3>متوسط الإيراد لكل زيارة</h3>
+            <p>تتبع القيمة المالية الفعلية الناتجة عن زيارة المريض الواحدة وتوزيعها بحسب التخصصات الطبية المختلفة.</p>
+        </div>
+        <div class="kpi-card">
+            <i class="fas fa-user-md"></i>
+            <h3>معدل إشغال وقت الأطباء</h3>
+            <p>قياس ساعات الاستشارات والعمليات الفعلية مقارنة بجدول التوافر الكلي لتحسين توزيع جداول الكادر الطبي.</p>
+        </div>
+    </div>
+</section>
+
+<section id="solutions-showcase">
+    <h2>حلولنا المثبتة عملياً</h2>
+    <p class="section-subtitle">استكشف لوحات التحكم المتخصصة والمصممة لحل أعقد التحديات الإدارية والمالية في المنشآت الطبية.</p>
+
+    <div class="showcase-item">
+        <div class="showcase-img">
+            <img src="dashboard1.png" alt="Clinic Operations Dashboard">
+        </div>
+        <div class="showcase-text">
+            <span class="badge">الكفاءة التشغيلية</span>
+            <h3>لوحة تحكم عمليات العيادة</h3>
+            <p>
+                مركز تحكم بصري شامل ومصمم لمديري المنشآت الطبية. يتيح لك مراقبة اتجاهات تدفق المرضى، واستقرار حجم المواعيد، وتقييم الأداء اليومي للعيادات فوراً.
+            </p>
+            <ul>
+                <li><i class="fas fa-check-circle"></i> تتبع فترات انتظار المرضى ومعدلات الدخول الفعلية.</li>
+                <li><i class="fas fa-check-circle"></i> تحليل مقارن لنسب إشغال الغرف والأقسام بشكل أسبوعي وشهري.</li>
+                <li><i class="fas fa-check-circle"></i> تم بناؤها باستخدام Power BI لضمان التصفية الديناميكية فائقة السرعة.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="showcase-item">
+        <div class="showcase-img">
+            <img src="dashboard2.png" alt="Marketing Channels Radar">
+        </div>
+        <div class="showcase-text">
+            <span class="badge">الذكاء المالي والتسويقي</span>
+            <h3>رادار تسويق العيادات وقيمة المريض</h3>
+            <p>
+                توقف تماماً عن هدر الميزانيات الإعلانية في حملات ضعيفة التحويل. يقوم هذا النظام بربط وتحديد القيمة المالية الدائمة للمرضى بناءً على قنوات الجذب الإعلانية التي أتوا من خلالها.
+            </p>
+            <ul>
+                <li><i class="fas fa-check-circle"></i> فصل وتحديد المنصات الأعلى عائداً (مثل Google Maps مقابل منصات التواصل).</li>
+                <li><i class="fas fa-check-circle"></i> تحليل تفصيلي للإيرادات بناءً على نوع الخدمة (استشارات، إجراءات، جراحات).</li>
+                <li><i class="fas fa-check-circle"></i> تتبع مدمج لمعدلات ولاء ودورات عودة المرضى مجدداً للعيادة.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section style="background: #0b1120; padding: 60px 10%;">
+    <div class="privacy-notice">
+        <i class="fas fa-shield-halved"></i>
+        <h3>سرية وأمان البيانات أولاً</h3>
+        <p style="color: #cbd5e1; margin-top: 10px;">
+            تتطلب البيانات الطبية أعلى درجات الحماية والسرية. نحن نكتفي بقراءة البيانات التشغيلية والمالية المشفرة والمجمعة لبناء لوحات التحكم الخاصة بك. تظل جميع ملفات وسجلات المرضى آمنة تماماً وسرية بالكامل داخل نطاق أنظمة عيادتك المحلية.
+        </p>
+    </div>
+</section>
+
+<footer>
+    <p>© 2026 Apex Strategies. جميع الحقوق محفوظة.</p>
+</footer>
+
+</body>
+</html>
