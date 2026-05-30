@@ -6,10 +6,8 @@
 
 <title>Apex Strategies</title>
 
-<!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -27,6 +25,55 @@ body{
     line-height:1.6;
 }
 
+/* NAVBAR & LANGUAGE SWITCHER */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 10%;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    color: #3b82f6;
+}
+
+.lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #1e293b;
+    color: white;
+    border: 1px solid #334155;
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.3s ease;
+}
+
+.lang-btn:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    background: #0f172a;
+}
+
 /* HERO SECTION */
 
 .hero{
@@ -34,7 +81,7 @@ body{
     justify-content:space-between;
     align-items:center;
     gap:60px;
-    padding:80px 10%;
+    padding:140px 10% 80px 10%; /* Increased top padding to accommodate fixed navbar */
     background:linear-gradient(120deg,#0f172a,#1e293b);
     min-height:100vh;
 }
@@ -330,6 +377,7 @@ footer{
 .hero{
     flex-direction:column;
     text-align:center;
+    padding-top: 120px;
 }
 
 .about{
@@ -358,7 +406,12 @@ footer{
 
 <body>
 
-<!-- HERO -->
+<nav class="navbar">
+    <a href="#" class="logo">Apex <span>Strategies</span></a>
+    <a href="index-ar.html" class="lang-btn">
+        <i class="fas fa-globe"></i> العربية
+    </a>
+</nav>
 
 <section class="hero">
 
@@ -387,8 +440,6 @@ footer{
 
 </section>
 
-<!-- ABOUT -->
-
 <section class="about">
 
     <div class="about-text">
@@ -410,8 +461,6 @@ footer{
     </div>
 
 </section>
-
-<!-- SERVICES -->
 
 <section>
 
@@ -462,15 +511,11 @@ footer{
 
 </section>
 
-<!-- PORTFOLIO -->
-
 <section id="portfolio">
 
     <h2>Business Intelligence Solutions</h2>
 
     <div class="portfolio">
-
-        <!-- CLINIC DASHBOARDS -->
 
         <div class="portfolio-card">
 
@@ -504,8 +549,6 @@ footer{
 
         </div>
 
-        <!-- BUSINESS DASHBOARDS -->
-
         <div class="portfolio-card">
 
             <img src="dashboard2.png" alt="Business Dashboard">
@@ -537,8 +580,6 @@ footer{
             </div>
 
         </div>
-
-        <!-- INDIVIDUAL DASHBOARDS -->
 
         <div class="portfolio-card">
 
@@ -576,8 +617,6 @@ footer{
 
 </section>
 
-<!-- WHY WORK WITH ME -->
-
 <section>
 
     <h2>Why Work With Me?</h2>
@@ -612,8 +651,6 @@ footer{
 
 </section>
 
-<!-- CONTACT -->
-
 <section id="contact">
 
     <h2>Contact Me</h2>
@@ -639,8 +676,6 @@ footer{
     </div>
 
 </section>
-
-<!-- FOOTER -->
 
 <footer>
 
