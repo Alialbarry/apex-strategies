@@ -1,60 +1,384 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Clinic Solutions | Apex Strategies</title>
+<title>Clinic Analytics Solutions - Apex Strategies</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
 
-body{
-    font-family:Arial;
-    background:#0f172a;
-    color:white;
-    padding:60px;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-h1{
-    font-size:50px;
+body{
+    font-family:'Poppins',sans-serif;
+    background:#0f172a;
+    color:white;
+    line-height:1.6;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 10%;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.navbar .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.navbar .back-btn:hover {
+    color: #3b82f6;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    color: #3b82f6;
+}
+
+/* HERO SECTION */
+.hero{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:60px;
+    padding:140px 10% 80px 10%;
+    background:linear-gradient(120deg,#0f172a,#1e293b);
+    min-height:80vh;
+}
+
+.hero-text{
+    flex:1;
+}
+
+.hero-text h1{
+    font-size:48px;
+    line-height:1.2;
     margin-bottom:20px;
 }
 
-p{
+.hero-text p{
     color:#cbd5e1;
-    font-size:20px;
-    max-width:700px;
+    margin-bottom:30px;
+    font-size:18px;
 }
 
 .btn{
     display:inline-block;
-    margin-top:30px;
     padding:14px 24px;
+    border-radius:10px;
+    text-decoration:none;
+    margin-right:12px;
+    transition:0.3s ease;
+    font-weight:600;
+}
+
+.btn-primary{
     background:#3b82f6;
     color:white;
-    text-decoration:none;
-    border-radius:10px;
+}
+
+.btn-primary:hover{
+    background:#2563eb;
+}
+
+/* SECTION GENERAL */
+section{
+    padding:80px 10%;
+}
+
+h2{
+    text-align:center;
+    margin-bottom:15px;
+    font-size:38px;
+}
+
+.section-subtitle {
+    text-align: center;
+    color: #94a3b8;
+    margin-bottom: 50px;
+    font-size: 18px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* CLINIC FEATURES / KPI GRID */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.kpi-card {
+    background: #1e293b;
+    padding: 30px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    transition: 0.3s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    border-color: #38bdf8;
+}
+
+.kpi-card i {
+    font-size: 35px;
+    color: #38bdf8;
+    margin-bottom: 15px;
+}
+
+.kpi-card h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.kpi-card p {
+    color: #cbd5e1;
+    font-size: 15px;
+}
+
+/* DETAILED SHOWCASE (DASHBOARDS) */
+.showcase-item {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    margin-bottom: 80px;
+}
+
+.showcase-item:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+.showcase-img {
+    flex: 1;
+    background: #1e293b;
+    padding: 15px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.showcase-img img {
+    width: 100%;
+    border-radius: 12px;
+    display: block;
+}
+
+.showcase-text {
+    flex: 1;
+}
+
+.showcase-text .badge {
+    display: inline-block;
+    background: rgba(56, 189, 248, 0.1);
+    color: #38bdf8;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.showcase-text h3 {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.showcase-text p {
+    color: #cbd5e1;
+    margin-bottom: 20px;
+}
+
+.showcase-text ul {
+    list-style: none;
+}
+
+.showcase-text ul li {
+    margin-bottom: 10px;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.showcase-text ul li i {
+    color: #3b82f6;
+}
+
+/* PRIVACY NOTICE */
+.privacy-notice {
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    padding: 40px;
+    border-radius: 22px;
+    text-align: center;
+    border: 1px dashed rgba(56, 189, 248, 0.3);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.privacy-notice i {
+    font-size: 45px;
+    color: #38bdf8;
+    margin-bottom: 15px;
+}
+
+/* FOOTER */
+footer{
+    text-align:center;
+    padding:25px;
+    background:#020617;
+    color:#94a3b8;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* RESPONSIVE */
+@media(max-width:950px){
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        padding-top: 120px;
+    }
+    .showcase-item, .showcase-item:nth-child(even) {
+        flex-direction: column;
+        gap: 30px;
+    }
+    .hero-text h1 {
+        font-size: 36px;
+    }
 }
 
 </style>
-
 </head>
 
 <body>
 
-<h1>Clinic Dashboard Solutions</h1>
+<nav class="navbar">
+    <a href="index.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+    <a href="#" class="logo">Apex <span>Strategies</span></a>
+</nav>
 
-<p>
-We help clinics monitor appointments,
-doctor performance, revenue,
-and operational KPIs using
-interactive dashboards.
-</p>
+<section class="hero">
+    <div class="hero-text">
+        <h1>Maximize Clinic Revenue & Optimize Patient Operations</h1>
+        <p>
+            Transform your clinic's raw data into actionable healthcare insights. 
+            Reduce no-show rates, track marketing ROI, and monitor doctor performance via specialized custom dashboards.
+        </p>
+        <a href="index.html#contact" class="btn btn-primary">Request a Custom Demo</a>
+    </div>
+</section>
 
-<a href="index.html" class="btn">
-Back Home
-</a>
+<section style="background: #0b1120;">
+    <h2>Key Healthcare Metrics We Track</h2>
+    <p class="section-subtitle">We integrate directly with your clinic management tools to centralize your most vital operational indicators.</p>
+    
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <i class="fas fa-user-slash"></i>
+            <h3>No-Show Rate</h3>
+            <p>Identify patterns in missed appointments to recover lost clinic hours and reduce operational waste.</p>
+        </div>
+        <div class="kpi-card">
+            <i class="fas fa-hand-holding-dollar"></i>
+            <h3>Revenue Per Visit</h3>
+            <p>Track the average financial value generated per patient visit across different specialties.</p>
+        </div>
+        <div class="kpi-card">
+            <i class="fas fa-user-md"></i>
+            <h3>Doctor Utilization</h3>
+            <p>Measure actual consulting and surgery hours against total availability to optimize staff schedules.</p>
+        </div>
+    </div>
+</section>
+
+<section id="solutions-showcase">
+    <h2>Our Proven Solutions</h2>
+    <p class="section-subtitle">Explore the exact specialized dashboards designed to solve critical management challenges.</p>
+
+    <div class="showcase-item">
+        <div class="showcase-img">
+            <img src="dashboard1.png" alt="Clinic Operations Dashboard">
+        </div>
+        <div class="showcase-text">
+            <span class="badge">Operational Efficiency</span>
+            <h3>Clinic Operations Dashboard</h3>
+            <p>
+                A comprehensive visual control center built for medical clinic managers. Monitor patient flow trends, appointment volume stability, and operational performance instantly.
+            </p>
+            <ul>
+                <li><i class="fas fa-check-circle"></i> Real-time tracking of patient arrival intervals.</li>
+                <li><i class="fas fa-check-circle"></i> Comparative analysis of monthly vs weekly room occupancy.</li>
+                <li><i class="fas fa-check-circle"></i> Built using Power BI for high-speed dynamic filtering.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="showcase-item">
+        <div class="showcase-img">
+            <img src="dashboard2.png" alt="Marketing Channels Radar">
+        </div>
+        <div class="showcase-text">
+            <span class="badge">Financial Intelligence</span>
+            <h3>Patient Value & Marketing Radar</h3>
+            <p>
+                Stop wasting advertising budget on low-conversion channels. This system maps out the lifetime value of patients relative to the marketing acquisition channels they originated from.
+            </p>
+            <ul>
+                <li><i class="fas fa-check-circle"></i> Isolate high-ROI platforms (e.g., Google Maps vs social media campaigns).</li>
+                <li><i class="fas fa-check-circle"></i> Breakdown of service revenue by treatment type (Consultations, Procedures).</li>
+                <li><i class="fas fa-check-circle"></i> Integrated tracking of patient retention and return cycles.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section style="background: #0b1120; padding: 60px 10%;">
+    <div class="privacy-notice">
+        <i class="fas fa-shield-halved"></i>
+        <h3>Data Privacy & Security First</h3>
+        <p style="color: #cbd5e1; margin-top: 10px;">
+            Medical data requires maximum protection. We only ingest encrypted, aggregated operational data to build your reporting frameworks. Your patient records remain completely secure, confidential, and compliant within your local management systems.
+        </p>
+    </div>
+</section>
+
+<footer>
+    <p>© 2026 Apex Strategies. All Rights Reserved.</p>
+</footer>
 
 </body>
 </html>
