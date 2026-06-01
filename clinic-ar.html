@@ -332,13 +332,12 @@ body{
 </div>
 
 <script>
-const chartTheme = { mode: 'dark', background: 'transparent' };
 let trendChart, statusChart, leadChart;
-
-let globalUploadedRows = [];
+let globalUploadedRows = []; 
 
 const allMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
+// بناء الرسوم البيانية
 trendChart = new ApexCharts(document.querySelector("#revenueTrendChart"), {
     chart: { height: 260, type: 'area', toolbar: { show: false } },
     colors: ['#3b82f6'],
@@ -366,6 +365,7 @@ leadChart = new ApexCharts(document.querySelector("#leadSourceChart"), {
 });
 leadChart.render();
 
+// قراءة الإكسل وضمان قراءة الـ 1000 سطر كاملة بدون تجاهل
 document.getElementById('upload-excel').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -375,29 +375,28 @@ document.getElementById('upload-excel').addEventListener('change', function(e) {
         try {
             const data = new Uint8Array(e.target.result);
             const workbook = XLSX.read(data, { type: 'array' });
-            
-            let targetSheetRows = null;
+            let rawRows = null;
 
             for (let i = 0; i < workbook.SheetNames.length; i++) {
-                const sheetName = workbook.SheetNames[i];
-                const sheet = workbook.Sheets[sheetName];
+                const sheet = workbook.Sheets[workbook.SheetNames[i]];
                 const rows = XLSX.utils.sheet_to_json(sheet);
-                
-                if (rows.length > 0 && (rows[0]['Revenue'] !== undefined || rows[0]['Patient_ID'] !== undefined)) {
-                    targetSheetRows = rows;
+                if (rows.length > 0 && (rows[0]['Patient_ID'] !== undefined)) {
+                    rawRows = rows;
                     break; 
                 }
             }
 
-            if (targetSheetRows && targetSheetRows.length > 0) {
-                globalUploadedRows = targetSheetRows; 
+            if (rawRows && rawRows.length > 0) {
+                // فلترة مبدئية لاستبعاد أي أسطر فارغة حقيقية في نهاية الملف ليس لها معرّف مريض
+                globalUploadedRows = rawRows.filter(row => row['Patient_ID'] !== undefined && row['Patient_ID'] !== '');
+                
                 applyFiltersAndProcess(); 
-                alert('تم رفع وتحليل الـ 1000 سطر بنجاح كامل!');
+                alert('تم رفع وقراءة الملف بنجاح! إجمالي الحالات المقروءة: ' + globalUploadedRows.length);
             } else {
-                alert('لم يتم العثور على ورقة البيانات الحقيقية.');
+                alert('لم يتم العثور على ورقة البيانات المطلوبة.');
             }
         } catch(err) {
-            alert('حدث خطأ غير متوقع أثناء معالجة الملف.');
+            alert('حدث خطأ أثناء قراءة البيانات.');
         }
     };
     reader.readAsArrayBuffer(file);
@@ -426,17 +425,19 @@ function applyFiltersAndProcess() {
         const service = row['Service_Type'] ? row['Service_Type'].toString().trim().toLowerCase() : '';
         if (checkedServices.length > 0 && !checkedServices.includes(service)) return false;
 
-        // معالجة مرنة وحامية جداً للتاريخ لضمان عدم سقوط أي سطر
+        // معالجة مرنة وشاملة جداً للتاريخ لضمان عدم سقوط الـ 10 أسطر الأخيرة
         if (row['Appointment_Date']) {
             let rowDate;
-            if (!isNaN(row['Appointment_Date'])) {
+            if (!isNaN(row['Appointment_Date']) && Number.isInteger(parseFloat(row['Appointment_Date']))) {
                 const parsedDate = XLSX.SSF.parse_date_code(row['Appointment_Date']);
                 rowDate = new Date(parsedDate.y, parsedDate.m - 1, parsedDate.d);
             } else {
-                rowDate = new Date(row['Appointment_Date']);
+                // تنظيف التاريخ من المسافات المخفية
+                let dateStr = row['Appointment_Date'].toString().trim();
+                rowDate = new Date(dateStr);
             }
             
-            // إذا نجح المتصفح في قراءة التاريخ، نقوم بفلترته بشكل طبيعي، وإلا نعتبره مقبولاً لكي لا يضيع السطر
+            // إذا كان التاريخ صالحاً، نطبق فلتر النطاق الزمني
             if (!isNaN(rowDate.getTime())) {
                 if (startDate && rowDate < startDate) return false;
                 if (endDate && rowDate > endDate) return false;
@@ -493,32 +494,27 @@ function processClinicData(rows) {
 
         if (row['Appointment_Date']) {
             let dateObj;
-            if (!isNaN(row['Appointment_Date'])) {
+            if (!isNaN(row['Appointment_Date']) && Number.isInteger(parseFloat(row['Appointment_Date']))) {
                 const parsedDate = XLSX.SSF.parse_date_code(row['Appointment_Date']);
                 dateObj = new Date(parsedDate.y, parsedDate.m - 1, parsedDate.d);
             } else {
-                dateObj = new Date(row['Appointment_Date']);
+                dateObj = new Date(row['Appointment_Date'].toString().trim());
             }
             if (!isNaN(dateObj.getTime())) {
-                const mIdx = dateObj.getMonth();
-                if (mIdx >= 0 && mIdx <= 11) {
-                    monthlyRevenue[allMonths[mIdx]] += rev;
-                }
-            } else {
-                // إذا واجه المتصفح مشكلة في قراءة الشهر، نضع الإيراد في شهر يناير كـ افتراضي لكي لا يضيع المبلغ الإجمالي من اللوحة
-                monthlyRevenue['January'] += rev;
+                monthlyRevenue[allMonths[dateObj.getMonth()]] += rev;
             }
         }
     });
 
     const noShowRate = totalAppointments > 0 ? ((noShowCount / totalAppointments) * 100).toFixed(1) : 0;
 
+    // تحديث الأرقام الكبيرة في اللوحة
     document.getElementById('total-revenue').innerText = "$" + totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2});
     document.getElementById('total-appointments').innerText = totalAppointments.toLocaleString();
     document.getElementById('noshow-rate').innerText = noShowRate + "%";
 
-    const trendData = allMonths.map(m => Math.round(monthlyRevenue[m]));
-    trendChart.updateSeries([{ name: 'Revenue', data: trendData }]);
+    // تحديث الرسوم البيانية
+    trendChart.updateSeries([{ name: 'Revenue', data: allMonths.map(m => Math.round(monthlyRevenue[m])) }]);
 
     statusChart.updateSeries([
         parseFloat(((completedCount / totalAppointments) * 100).toFixed(1)) || 0,
@@ -536,6 +532,7 @@ function processClinicData(rows) {
         ]
     }]);
 
+    // تحديث جدول المصفوفة
     const tbody = document.getElementById('matrix-body');
     tbody.innerHTML = '';
     Object.keys(matrix).forEach(key => {
