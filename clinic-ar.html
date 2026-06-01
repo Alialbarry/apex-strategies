@@ -89,6 +89,7 @@ body{
     display: flex;
     align-items: center;
     gap: 8px;
+    cursor: pointer;
 }
 
 .filter-group input[type="date"] {
@@ -240,27 +241,27 @@ body{
         <div>
             <h2>Data Range</h2>
             <div class="filter-group">
-                <input type="date" value="2026-01-01">
-                <input type="date" value="2026-12-31">
+                <input type="date" id="start-date" value="2026-01-01">
+                <input type="date" id="end-date" value="2026-12-31">
             </div>
         </div>
 
         <div>
             <h2>Doctor Name</h2>
-            <div class="filter-group">
-                <label><input type="checkbox" checked> Dr. Ahmad</label>
-                <label><input type="checkbox" checked> Dr. Layla</label>
-                <label><input type="checkbox" checked> Dr. Sarah</label>
+            <div class="filter-group" id="doctor-filters">
+                <label><input type="checkbox" value="Dr. Ahmad" checked> Dr. Ahmad</label>
+                <label><input type="checkbox" value="Dr. Layla" checked> Dr. Layla</label>
+                <label><input type="checkbox" value="Dr. Sarah" checked> Dr. Sarah</label>
             </div>
         </div>
 
         <div>
             <h2>Service Type</h2>
-            <div class="filter-group">
-                <label><input type="checkbox" checked> Cleaning</label>
-                <label><input type="checkbox" checked> Filling</label>
-                <label><input type="checkbox" checked> Implant</label>
-                <label><input type="checkbox" checked> Orthodontics</label>
+            <div class="filter-group" id="service-filters">
+                <label><input type="checkbox" value="Cleaning" checked> Cleaning</label>
+                <label><input type="checkbox" value="Filling" checked> Filling</label>
+                <label><input type="checkbox" value="Implant" checked> Implant</label>
+                <label><input type="checkbox" value="Orthodontics" checked> Orthodontics</label>
             </div>
         </div>
     </div>
@@ -334,6 +335,9 @@ body{
 const chartTheme = { mode: 'dark', background: 'transparent' };
 let trendChart, statusChart, leadChart;
 
+// ذاكرة تخزين مؤقتة للاحتفاظ ببيانات السطور المرفوعة لإعادة فلترتها
+let globalUploadedRows = [];
+
 const allMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 trendChart = new ApexCharts(document.querySelector("#revenueTrendChart"), {
@@ -363,6 +367,7 @@ leadChart = new ApexCharts(document.querySelector("#leadSourceChart"), {
 });
 leadChart.render();
 
+// مراقبة حدث رفع الملف وحفظ البيانات في الذاكرة
 document.getElementById('upload-excel').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -375,7 +380,6 @@ document.getElementById('upload-excel').addEventListener('change', function(e) {
             
             let targetSheetRows = null;
 
-            // الفحص الذكي لجميع أوراق العمل لاكتشاف ورقة البيانات الحقيقية تلقائياً
             for (let i = 0; i < workbook.SheetNames.length; i++) {
                 const sheetName = workbook.SheetNames[i];
                 const sheet = workbook.Sheets[sheetName];
@@ -388,9 +392,11 @@ document.getElementById('upload-excel').addEventListener('change', function(e) {
             }
 
             if (targetSheetRows && targetSheetRows.length > 0) {
-                processClinicData(targetSheetRows);
+                globalUploadedRows = targetSheetRows; // تخزين البيانات عالمياً
+                applyFiltersAndProcess(); // تشغيل المعالجة والفلترة
+                alert('تم رفع وتحليل ملف الإكسل بنجاح! يمكنك الآن استخدام الفلاتر الجانبية.');
             } else {
-                alert('لم يتم العثور على ورقة تحتوي على أعمدة البيانات المطلوبة (Patient_ID, Revenue...) في الملف المرفوع.');
+                alert('لم يتم العثور على ورقة تحتوي على أعمدة البيانات المطلوبة.');
             }
         } catch(err) {
             alert('حدث خطأ غير متوقع أثناء معالجة الملف.');
@@ -399,6 +405,62 @@ document.getElementById('upload-excel').addEventListener('change', function(e) {
     reader.readAsArrayBuffer(file);
 });
 
+// --- نظام الاستماع للفلاتر الجانبية وإعادة المعالجة فوراً عند أي تغيير ---
+document.getElementById('start-date').addEventListener('change', applyFiltersAndProcess);
+document.getElementById('end-date').addEventListener('change', applyFiltersAndProcess);
+
+document.getElementById('doctor-filters').addEventListener('change', applyFiltersAndProcess);
+document.getElementById('service-filters').addEventListener('change', applyFiltersAndProcess);
+
+// دالة تصفية البيانات (Filtering) بناءً على اختيارات المستخدم
+function applyFiltersAndProcess() {
+    if (globalUploadedRows.length === 0) return; // إذا لم يتم رفع ملف بعد، لا تفعل شيئاً
+
+    // 1. جلب قيم التواريخ المحددة
+    const startDateVal = document.getElementById('start-date').value;
+    const endDateVal = document.getElementById('end-date').value;
+    const startDate = startDateVal ? new Date(startDateVal) : null;
+    const endDate = endDateVal ? new Date(endDateVal) : null;
+
+    // 2. جلب الأطباء المحددين (عبر الـ Checkboxes) تحويلهم لنصوص صغيرة للمطابقة المرنة
+    const checkedDoctors = Array.from(document.querySelectorAll('#doctor-filters input:checked')).map(el => el.value.toLowerCase());
+    
+    // 3. جلب الخدمات المحددة
+    const checkedServices = Array.from(document.querySelectorAll('#service-filters input:checked')).map(el => el.value.toLowerCase());
+
+    // 4. تطبيق الفلترة على مصفوفة البيانات الأصلية
+    const filteredRows = globalUploadedRows.filter(row => {
+        // فحص الطبيب
+        const doc = row['Doctor_Name'] ? row['Doctor_Name'].toString().trim().toLowerCase() : '';
+        if (checkedDoctors.length > 0 && !checkedDoctors.includes(doc)) return false;
+
+        // فحص الخدمة
+        const service = row['Service_Type'] ? row['Service_Type'].toString().trim().toLowerCase() : '';
+        if (checkedServices.length > 0 && !checkedServices.includes(service)) return false;
+
+        // فحص نطاق التاريخ
+        if (row['Appointment_Date']) {
+            let rowDate;
+            if (!isNaN(row['Appointment_Date'])) {
+                const parsedDate = XLSX.SSF.parse_date_code(row['Appointment_Date']);
+                rowDate = new Date(parsedDate.y, parsedDate.m - 1, parsedDate.d);
+            } else {
+                rowDate = new Date(row['Appointment_Date']);
+            }
+            
+            if (!isNaN(rowDate.getTime())) {
+                if (startDate && rowDate < startDate) return false;
+                if (endDate && rowDate > endDate) return false;
+            }
+        }
+        return true;
+    });
+
+    // تمرير البيانات المفلترة فقط ليتم رسمها وتحديث لوحة التحكم
+    processClinicData(filteredRows);
+}
+
+// دالة المعالجة الحسابية وضخ الأرقام للرسوم البيانية والجدول
 function processClinicData(rows) {
     let totalRevenue = 0;
     let totalAppointments = rows.length;
@@ -470,7 +532,7 @@ function processClinicData(rows) {
     const trendData = allMonths.map(m => Math.round(monthlyRevenue[m]));
     trendChart.updateSeries([{ name: 'Revenue', data: trendData }]);
 
-    // تحديث الدائرة المقسمة للحالات بالداتا كاملة
+    // تحديث الدائرة المقسمة لحالات المواعيد
     statusChart.updateSeries([
         parseFloat(((completedCount / totalAppointments) * 100).toFixed(1)) || 0,
         parseFloat(noShowRate) || 0,
@@ -488,7 +550,7 @@ function processClinicData(rows) {
         ]
     }]);
 
-    // إعادة بناء وتعبئة جدول الأطباء
+    // تحديث جدول المصفوفة للأطباء بشكل ديناميكي
     const tbody = document.getElementById('matrix-body');
     tbody.innerHTML = '';
     Object.keys(matrix).forEach(key => {
@@ -502,8 +564,6 @@ function processClinicData(rows) {
                 <td class="${doctor.Orthodontics < 50000 ? 'highlight-red' : ''}">$${doctor.Orthodontics.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
             </tr>`;
     });
-
-    alert('تم اكتشاف ورقة البيانات الحقيقية وتحديث لوحة التحكم بالكامل وبكافة أسطر الملف بنجاح باهر!');
 }
 </script>
 </body>
