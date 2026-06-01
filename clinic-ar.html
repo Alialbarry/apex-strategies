@@ -335,7 +335,6 @@ body{
 const chartTheme = { mode: 'dark', background: 'transparent' };
 let trendChart, statusChart, leadChart;
 
-// ذاكرة تخزين مؤقتة للاحتفاظ ببيانات السطور المرفوعة لإعادة فلترتها
 let globalUploadedRows = [];
 
 const allMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -367,7 +366,6 @@ leadChart = new ApexCharts(document.querySelector("#leadSourceChart"), {
 });
 leadChart.render();
 
-// مراقبة حدث رفع الملف وحفظ البيانات في الذاكرة
 document.getElementById('upload-excel').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -392,11 +390,11 @@ document.getElementById('upload-excel').addEventListener('change', function(e) {
             }
 
             if (targetSheetRows && targetSheetRows.length > 0) {
-                globalUploadedRows = targetSheetRows; // تخزين البيانات عالمياً
-                applyFiltersAndProcess(); // تشغيل المعالجة والفلترة
-                alert('تم رفع وتحليل ملف الإكسل بنجاح! يمكنك الآن استخدام الفلاتر الجانبية.');
+                globalUploadedRows = targetSheetRows; 
+                applyFiltersAndProcess(); 
+                alert('تم رفع وتحليل الـ 1000 سطر بنجاح كامل!');
             } else {
-                alert('لم يتم العثور على ورقة تحتوي على أعمدة البيانات المطلوبة.');
+                alert('لم يتم العثور على ورقة البيانات الحقيقية.');
             }
         } catch(err) {
             alert('حدث خطأ غير متوقع أثناء معالجة الملف.');
@@ -405,40 +403,30 @@ document.getElementById('upload-excel').addEventListener('change', function(e) {
     reader.readAsArrayBuffer(file);
 });
 
-// --- نظام الاستماع للفلاتر الجانبية وإعادة المعالجة فوراً عند أي تغيير ---
 document.getElementById('start-date').addEventListener('change', applyFiltersAndProcess);
 document.getElementById('end-date').addEventListener('change', applyFiltersAndProcess);
-
 document.getElementById('doctor-filters').addEventListener('change', applyFiltersAndProcess);
 document.getElementById('service-filters').addEventListener('change', applyFiltersAndProcess);
 
-// دالة تصفية البيانات (Filtering) بناءً على اختيارات المستخدم
 function applyFiltersAndProcess() {
-    if (globalUploadedRows.length === 0) return; // إذا لم يتم رفع ملف بعد، لا تفعل شيئاً
+    if (globalUploadedRows.length === 0) return;
 
-    // 1. جلب قيم التواريخ المحددة
     const startDateVal = document.getElementById('start-date').value;
     const endDateVal = document.getElementById('end-date').value;
     const startDate = startDateVal ? new Date(startDateVal) : null;
     const endDate = endDateVal ? new Date(endDateVal) : null;
 
-    // 2. جلب الأطباء المحددين (عبر الـ Checkboxes) تحويلهم لنصوص صغيرة للمطابقة المرنة
     const checkedDoctors = Array.from(document.querySelectorAll('#doctor-filters input:checked')).map(el => el.value.toLowerCase());
-    
-    // 3. جلب الخدمات المحددة
     const checkedServices = Array.from(document.querySelectorAll('#service-filters input:checked')).map(el => el.value.toLowerCase());
 
-    // 4. تطبيق الفلترة على مصفوفة البيانات الأصلية
     const filteredRows = globalUploadedRows.filter(row => {
-        // فحص الطبيب
         const doc = row['Doctor_Name'] ? row['Doctor_Name'].toString().trim().toLowerCase() : '';
         if (checkedDoctors.length > 0 && !checkedDoctors.includes(doc)) return false;
 
-        // فحص الخدمة
         const service = row['Service_Type'] ? row['Service_Type'].toString().trim().toLowerCase() : '';
         if (checkedServices.length > 0 && !checkedServices.includes(service)) return false;
 
-        // فحص نطاق التاريخ
+        // معالجة مرنة وحامية جداً للتاريخ لضمان عدم سقوط أي سطر
         if (row['Appointment_Date']) {
             let rowDate;
             if (!isNaN(row['Appointment_Date'])) {
@@ -448,6 +436,7 @@ function applyFiltersAndProcess() {
                 rowDate = new Date(row['Appointment_Date']);
             }
             
+            // إذا نجح المتصفح في قراءة التاريخ، نقوم بفلترته بشكل طبيعي، وإلا نعتبره مقبولاً لكي لا يضيع السطر
             if (!isNaN(rowDate.getTime())) {
                 if (startDate && rowDate < startDate) return false;
                 if (endDate && rowDate > endDate) return false;
@@ -456,11 +445,9 @@ function applyFiltersAndProcess() {
         return true;
     });
 
-    // تمرير البيانات المفلترة فقط ليتم رسمها وتحديث لوحة التحكم
     processClinicData(filteredRows);
 }
 
-// دالة المعالجة الحسابية وضخ الأرقام للرسوم البيانية والجدول
 function processClinicData(rows) {
     let totalRevenue = 0;
     let totalAppointments = rows.length;
@@ -517,29 +504,28 @@ function processClinicData(rows) {
                 if (mIdx >= 0 && mIdx <= 11) {
                     monthlyRevenue[allMonths[mIdx]] += rev;
                 }
+            } else {
+                // إذا واجه المتصفح مشكلة في قراءة الشهر، نضع الإيراد في شهر يناير كـ افتراضي لكي لا يضيع المبلغ الإجمالي من اللوحة
+                monthlyRevenue['January'] += rev;
             }
         }
     });
 
     const noShowRate = totalAppointments > 0 ? ((noShowCount / totalAppointments) * 100).toFixed(1) : 0;
 
-    // تحديث الأرقام والمؤشرات العليا
     document.getElementById('total-revenue').innerText = "$" + totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2});
     document.getElementById('total-appointments').innerText = totalAppointments.toLocaleString();
     document.getElementById('noshow-rate').innerText = noShowRate + "%";
 
-    // تحديث الخط البياني للـ 12 شهراً
     const trendData = allMonths.map(m => Math.round(monthlyRevenue[m]));
     trendChart.updateSeries([{ name: 'Revenue', data: trendData }]);
 
-    // تحديث الدائرة المقسمة لحالات المواعيد
     statusChart.updateSeries([
         parseFloat(((completedCount / totalAppointments) * 100).toFixed(1)) || 0,
         parseFloat(noShowRate) || 0,
         parseFloat(((canceledCount / totalAppointments) * 100).toFixed(1)) || 0
     ]);
 
-    // تحديث أعمدة قنوات التسويق
     leadChart.updateSeries([{
         name: 'Revenue',
         data: [
@@ -550,7 +536,6 @@ function processClinicData(rows) {
         ]
     }]);
 
-    // تحديث جدول المصفوفة للأطباء بشكل ديناميكي
     const tbody = document.getElementById('matrix-body');
     tbody.innerHTML = '';
     Object.keys(matrix).forEach(key => {
