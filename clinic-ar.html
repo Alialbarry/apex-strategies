@@ -6,9 +6,7 @@
 
 <title>Apex Strategies - Clinic Data Analysis</title>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<link href="https://fonts.googleapis.com/css2 family=Poppins:wght@400;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
@@ -44,19 +42,12 @@ body{
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.navbar .back-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #cbd5e1;
-    text-decoration: none;
-    font-weight: 600;
-}
-
 .logo {
     font-size: 20px;
     font-weight: 700;
     font-family: 'Poppins', sans-serif;
+    color: white;
+    text-decoration: none;
 }
 
 .logo span { color: #3b82f6; }
@@ -131,17 +122,17 @@ body{
     letter-spacing: 1px;
 }
 
-/* EXCEL UPLOAD */
+/* EXCEL UPLOAD BOX */
 .upload-box {
     margin-bottom: 25px;
     text-align: left;
 }
 
 .btn-upload {
-    border: 1px dashed #3b82f6;
+    border: 2px dashed #3b82f6;
     color: #3b82f6;
     background: rgba(59, 130, 246, 0.05);
-    padding: 10px 20px;
+    padding: 12px 24px;
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
@@ -153,7 +144,6 @@ body{
 
 .btn-upload:hover {
     background: rgba(59, 130, 246, 0.15);
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
 }
 
 /* KPI CARDS */
@@ -188,13 +178,7 @@ body{
 .kpi-card .value.appointments { color: #a855f7; }
 .kpi-card .value.noshow { color: #f43f5e; }
 
-.kpi-card .subtitle {
-    font-size: 12px;
-    color: #64748b;
-    margin-top: 5px;
-}
-
-/* MAIN CHARTS GRID */
+/* CHARTS GRID */
 .grid-2x2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -215,7 +199,7 @@ body{
     margin-bottom: 15px;
 }
 
-/* MATRIX TABLE STYLING */
+/* MATRIX TABLE */
 .matrix-table {
     width: 100%;
     border-collapse: collapse;
@@ -237,10 +221,6 @@ body{
     background: rgba(15, 23, 42, 0.4);
 }
 
-.matrix-table tr:hover td {
-    background: rgba(255,255,255,0.05);
-}
-
 .highlight-red {
     background: rgba(244, 63, 94, 0.15) !important;
     color: #f43f5e;
@@ -252,9 +232,6 @@ body{
 <body>
 
 <nav class="navbar">
-    <div class="nav-links">
-        <a href="index-ar.html" class="back-btn"><i class="fas fa-arrow-right"></i> العودة للرئيسية</a>
-    </div>
     <a href="#" class="logo">APEX <span>STRATEGIES</span></a>
 </nav>
 
@@ -264,27 +241,27 @@ body{
         <div>
             <h2>Data Range</h2>
             <div class="filter-group">
-                <input type="date" id="start-date" value="2026-01-01">
-                <input type="date" id="end-date" value="2026-04-11">
+                <input type="date" value="2026-01-01">
+                <input type="date" value="2026-04-11">
             </div>
         </div>
 
         <div>
             <h2>Doctor Name</h2>
-            <div class="filter-group" id="doctor-filters">
-                <label><input type="checkbox" value="Dr. Ahmad" checked> Dr. Ahmad</label>
-                <label><input type="checkbox" value="Dr. Layla" checked> Dr. Layla</label>
-                <label><input type="checkbox" value="Dr. Sarah" checked> Dr. Sarah</label>
+            <div class="filter-group">
+                <label><input type="checkbox" checked> Dr. Ahmad</label>
+                <label><input type="checkbox" checked> Dr. Layla</label>
+                <label><input type="checkbox" checked> Dr. Sarah</label>
             </div>
         </div>
 
         <div>
             <h2>Service Type</h2>
-            <div class="filter-group" id="service-filters">
-                <label><input type="checkbox" value="Cleaning" checked> Cleaning</label>
-                <label><input type="checkbox" value="Filling" checked> Filling</label>
-                <label><input type="checkbox" value="Implant" checked> Implant</label>
-                <label><input type="checkbox" value="Orthodontics" checked> Orthodontics</label>
+            <div class="filter-group">
+                <label><input type="checkbox" checked> Cleaning</label>
+                <label><input type="checkbox" checked> Filling</label>
+                <label><input type="checkbox" checked> Implant</label>
+                <label><input type="checkbox" checked> Orthodontics</label>
             </div>
         </div>
     </div>
@@ -297,7 +274,7 @@ body{
 
         <div class="upload-box">
             <label class="btn-upload">
-                <i class="fas fa-file-excel"></i> رفع ملف Excel وتحديث اللوحة فوراً
+                اضغط هنا لرفع ملف الإكسل واختبار التفاعل فوراً
                 <input type="file" id="upload-excel" accept=".xlsx, .xls" style="display:none;">
             </label>
         </div>
@@ -305,18 +282,15 @@ body{
         <div class="kpi-row">
             <div class="kpi-card">
                 <h3>Total Revenue</h3>
-                <div class="value revenue" id="total-revenue">$0</div>
-                <div class="subtitle">إجمالي الإيرادات المحققة</div>
+                <div class="value revenue" id="total-revenue">$0.00</div>
             </div>
             <div class="kpi-card">
                 <h3>Total Appointment</h3>
                 <div class="value appointments" id="total-appointments">0</div>
-                <div class="subtitle">إجمالي المواعيد المسجلة</div>
             </div>
             <div class="kpi-card">
                 <h3>No_Show Rate</h3>
                 <div class="value noshow" id="noshow-rate">0%</div>
-                <div class="subtitle">معدل غياب المرضى</div>
             </div>
         </div>
 
@@ -359,22 +333,18 @@ body{
 
 <script>
 const chartTheme = { mode: 'dark', background: 'transparent' };
-
-// تعريف الرسوم البيانية كمتغيرات عالمية ليتم تحديث بياناتها بسلاسة
 let trendChart, statusChart, leadChart;
 
-// 1. هيكل الرسم البياني الأول: خط اتجاه الأرباح
+// تهيئة الرسوم البيانية كقيم تصفيرية مبدئية
 trendChart = new ApexCharts(document.querySelector("#revenueTrendChart"), {
     chart: { height: 260, type: 'area', toolbar: { show: false } },
     colors: ['#3b82f6'],
     stroke: { curve: 'smooth', width: 3 },
     series: [{ name: 'Revenue', data: [0, 0, 0, 0] }],
-    xaxis: { categories: ['January', 'February', 'March', 'April'] },
-    grid: { borderColor: 'rgba(255,255,255,0.05)' }
+    xaxis: { categories: ['January', 'February', 'March', 'April'] }
 });
 trendChart.render();
 
-// 2. هيكل الرسم البياني الثاني: الدائري المجوف لحالات المواعيد
 statusChart = new ApexCharts(document.querySelector("#appointmentStatusChart"), {
     chart: { height: 280, type: 'donut' },
     colors: ['#0052cc', '#7cd6f9', '#cc0000'],
@@ -384,47 +354,44 @@ statusChart = new ApexCharts(document.querySelector("#appointmentStatusChart"), 
 });
 statusChart.render();
 
-// 3. هيكل الرسم البياني الثالث: الأعمدة الأفقية لقنوات التسويق
 leadChart = new ApexCharts(document.querySelector("#leadSourceChart"), {
     chart: { height: 260, type: 'bar', toolbar: { show: false } },
     plotOptions: { bar: { horizontal: true, barHeight: '60%', distributed: true } },
     colors: ['#0084ff', '#3b66f5', '#704ce6', '#e6399b'],
     series: [{ name: 'Revenue', data: [0, 0, 0, 0] }],
-    xaxis: { categories: ['Friend Referral', 'TikTok', 'Google Maps', 'Instagram'] },
-    legend: { show: false }
+    xaxis: { categories: ['Friend Referral', 'TikTok', 'Google Maps', 'Instagram'] }
 });
 leadChart.render();
 
-// --- نظام مراقبة ومعالجة حدث رفع ملف الإكسل السحري ---
+// دالة تتبع حدث الرفع المباشر والآمن تماماً
 document.getElementById('upload-excel').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = function(e) {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        
-        // جلب المصفوفة بالكامل من الإكسل
-        const rows = XLSX.utils.sheet_to_json(sheet);
-        
-        if (rows && rows.length > 0) {
-            processClinicData(rows);
-        } else {
-            alert('الملف المرفوع فارغ أو يحتوي على بيانات غير صالحة.');
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(sheet);
+            
+            if (rows && rows.length > 0) {
+                processClinicData(rows);
+            } else {
+                alert('الملف فارغ، يرجى التأكد من ملء جدول الإكسل.');
+            }
+        } catch(err) {
+            alert('حدث خطأ أثناء معالجة الملف، تأكد من مطابقة أسماء الأعمدة.');
         }
     };
     reader.readAsArrayBuffer(file);
 });
 
-// الدالة البرمجية الذكية المحدثة والآمنة لتحديث لوحة التحكم بالكامل
 function processClinicData(rows) {
     let totalRevenue = 0;
     let totalAppointments = rows.length;
-    let noShowCount = 0;
-    let canceledCount = 0;
-    let completedCount = 0;
+    let noShowCount = 0, canceledCount = 0, completedCount = 0;
 
     const monthlyRevenue = { 'January': 0, 'February': 0, 'March': 0, 'April': 0 };
     const leadSourceRevenue = { 'Friend Referral': 0, 'TikTok': 0, 'Google Maps': 0, 'Instagram': 0 };
@@ -436,106 +403,83 @@ function processClinicData(rows) {
     };
 
     rows.forEach(row => {
-        // تنظيف وحساب قيمة العمود المالي والإجمالي
+        // فحص وقراءة اسم العمود المالي الحقيقي
         const rev = parseFloat(row['Revenue']) || 0;
         totalRevenue += rev;
 
-        // تنظيف النصوص وحذف المسافات العشوائية لحماية شروط المطابقة
+        // فحص حالات المواعيد وتطهير النصوص من أي فراغات خفية
         const status = row['Status'] ? row['Status'].toString().trim() : '';
         if (status === 'No-Show') noShowCount++;
         else if (status === 'Canceled') canceledCount++;
         else if (status === 'Completed') completedCount++;
 
-        // المعالجة الذكية والمحدثة للتواريخ القادمة من الإكسل
-        if (row['Appointment_Date']) {
-            let dateObj;
-            if (!isNaN(row['Appointment_Date'])) {
-                // معالجة إذا أرسل الإكسل التاريخ ككود رقمي داخلي من ميكروسوفت
-                const parsedDate = XLSX.SSF.parse_date_code(row['Appointment_Date']);
-                dateObj = new Date(parsedDate.y, parsedDate.m - 1, parsedDate.d);
-            } else {
-                // معالجة إذا كان التاريخ قادماً كنص واضح
-                dateObj = new Date(row['Appointment_Date']);
-            }
-
-            if (!isNaN(dateObj.getTime())) {
-                const monthNum = dateObj.getMonth(); // 0 = January, 1 = February...
-                const months = ['January', 'February', 'March', 'April'];
-                if (monthNum >= 0 && monthNum <= 3) {
-                    monthlyRevenue[months[monthNum]] += rev;
-                }
-            }
-        }
-
+        // معالجة قنوات التسويق والأطباء
         const lead = row['Lead_Source'] ? row['Lead_Source'].toString().trim() : '';
-        if (leadSourceRevenue.hasOwnProperty(lead)) {
-            leadSourceRevenue[lead] += rev;
-        }
+        if (leadSourceRevenue.hasOwnProperty(lead)) leadSourceRevenue[lead] += rev;
 
         const doc = row['Doctor_Name'] ? row['Doctor_Name'].toString().trim() : '';
         const service = row['Service_Type'] ? row['Service_Type'].toString().trim() : '';
-        if (matrix[doc] && matrix[doc].hasOwnProperty(service)) {
-            matrix[doc][service] += rev;
+        if (matrix[doc] && matrix[doc].hasOwnProperty(service)) matrix[doc][service] += rev;
+
+        // قراءة التاريخ المرنة
+        if (row['Appointment_Date']) {
+            let dateObj;
+            if (!isNaN(row['Appointment_Date'])) {
+                const parsedDate = XLSX.SSF.parse_date_code(row['Appointment_Date']);
+                dateObj = new Date(parsedDate.y, parsedDate.m - 1, parsedDate.d);
+            } else {
+                dateObj = new Date(row['Appointment_Date']);
+            }
+            if (!isNaN(dateObj.getTime())) {
+                const months = ['January', 'February', 'March', 'April'];
+                const mIdx = dateObj.getMonth();
+                if (mIdx >= 0 && mIdx <= 3) monthlyRevenue[months[mIdx]] += rev;
+            }
         }
     });
 
-    // احتساب النسب المئوية الدقيقة للـ KPIs
     const noShowRate = totalAppointments > 0 ? ((noShowCount / totalAppointments) * 100).toFixed(1) : 0;
 
-    // ضخ وتحديث الأرقام في الواجهة والـ KPIs العلوية
-    document.getElementById('total-revenue').innerText = "$" + totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    // حقن الأرقام والمؤشرات الحية بالـ HTML
+    document.getElementById('total-revenue').innerText = "$" + totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2});
     document.getElementById('total-appointments').innerText = totalAppointments.toLocaleString();
     document.getElementById('noshow-rate').innerText = noShowRate + "%";
 
-    // تحديث الرسم البياني الأول: Trend Chart
+    // تحديث الخط البياني للأشهر
     trendChart.updateSeries([{
         name: 'Revenue',
-        data: [
-            Math.round(monthlyRevenue['January']), 
-            Math.round(monthlyRevenue['February']), 
-            Math.round(monthlyRevenue['March']), 
-            Math.round(monthlyRevenue['April'])
-        ]
+        data: [monthlyRevenue['January'], monthlyRevenue['February'], monthlyRevenue['March'], monthlyRevenue['April']]
     }]);
 
-    // تحديث الرسم البياني الثاني: Donut Chart
+    // تحديث الدائرة المقسمة للحالات
     statusChart.updateSeries([
         parseFloat(((completedCount / totalAppointments) * 100).toFixed(1)) || 0,
         parseFloat(noShowRate) || 0,
         parseFloat(((canceledCount / totalAppointments) * 100).toFixed(1)) || 0
     ]);
 
-    // تحديث الرسم البياني الثالث: Lead Source Chart
+    // تحديث أعمدة قنوات التسويق
     leadChart.updateSeries([{
         name: 'Revenue',
-        data: [
-            Math.round(leadSourceRevenue['Friend Referral']),
-            Math.round(leadSourceRevenue['TikTok']),
-            Math.round(leadSourceRevenue['Google Maps']),
-            Math.round(leadSourceRevenue['Instagram'])
-        ]
+        data: [leadSourceRevenue['Friend Referral'], leadSourceRevenue['TikTok'], leadSourceRevenue['Google Maps'], leadSourceRevenue['Instagram']]
     }]);
 
-    // مسح وبناء جدول المصفوفة (Matrix Table) بالبيانات المالية الجديدة
+    // بناء وتعبئة صفوف جدول الأطباء حياً
     const tbody = document.getElementById('matrix-body');
-    tbody.innerHTML = ''; 
-
+    tbody.innerHTML = '';
     Object.keys(matrix).forEach(doctor => {
-        const rowHtml = `
+        tbody.innerHTML += `
             <tr>
                 <td>${doctor}</td>
                 <td>$${matrix[doctor].Cleaning.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
                 <td class="${matrix[doctor].Filling < 40000 ? 'highlight-red' : ''}">$${matrix[doctor].Filling.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
                 <td>$${matrix[doctor].Implant.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
                 <td class="${matrix[doctor].Orthodontics < 50000 ? 'highlight-red' : ''}">$${matrix[doctor].Orthodontics.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
-            </tr>
-        `;
-        tbody.innerHTML += rowHtml;
+            </tr>`;
     });
 
-    alert('رائع! تم رفع ملف Excel بنجاح وتحديث الداشبورد التفاعلية بالكامل حية أمامك!');
+    alert('مبروك! تم تحليل ملف الإكسل وتحديث الرسوم التفاعلية بنجاح وبشكل فوري!');
 }
 </script>
-
 </body>
 </html>
