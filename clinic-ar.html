@@ -4,14 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>حلول تحليل البيانات للعيادات - Apex Strategies</title>
+<title>لوحة تحكم تحليلات العيادات - Apex Strategies</title>
 
+<!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
-<style>
+<!-- ApexCharts Library -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
+<style>
 *{
     margin:0;
     padding:0;
@@ -25,7 +29,7 @@ body{
     line-height:1.6;
 }
 
-/* NAVBAR & LANGUAGE SWITCHER */
+/* NAVBAR */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -61,27 +65,6 @@ body{
     color: #3b82f6;
 }
 
-.lang-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #1e293b;
-    color: white;
-    border: 1px solid #334155;
-    padding: 8px 16px;
-    border-radius: 20px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 14px;
-    transition: 0.3s ease;
-}
-
-.lang-btn:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
-    background: #0f172a;
-}
-
 .logo {
     font-size: 22px;
     font-weight: 700;
@@ -95,326 +78,247 @@ body{
     color: #3b82f6;
 }
 
-/* HERO SECTION */
-.hero{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:60px;
-    padding:140px 10% 80px 10%;
-    background:linear-gradient(120deg,#0f172a,#1e293b);
-    min-height:80vh;
+/* DASHBOARD CONTAINER */
+.dashboard-container {
+    padding: 120px 10% 60px 10%;
 }
 
-.hero-text{
-    flex:1;
+.dashboard-header {
+    margin-bottom: 40px;
+    text-align: right;
 }
 
-.hero-text h1{
-    font-size:48px;
-    line-height:1.3;
-    margin-bottom:20px;
+.dashboard-header h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
 }
 
-.hero-text p{
-    color:#cbd5e1;
-    margin-bottom:30px;
-    font-size:18px;
-}
-
-.btn{
-    display:inline-block;
-    padding:14px 24px;
-    border-radius:10px;
-    text-decoration:none;
-    margin-left:12px; /* Adjusted for RTL */
-    transition:0.3s ease;
-    font-weight:600;
-}
-
-.btn-primary{
-    background:#3b82f6;
-    color:white;
-}
-
-.btn-primary:hover{
-    background:#2563eb;
-}
-
-/* SECTION GENERAL */
-section{
-    padding:80px 10%;
-}
-
-h2{
-    text-align:center;
-    margin-bottom:15px;
-    font-size:38px;
-}
-
-.section-subtitle {
-    text-align: center;
+.dashboard-header p {
     color: #94a3b8;
-    margin-bottom: 50px;
-    font-size: 18px;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
-/* CLINIC FEATURES / KPI GRID */
-.kpi-grid {
+/* KPI CARDS */
+.kpi-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
 }
 
 .kpi-card {
     background: #1e293b;
-    padding: 30px;
-    border-radius: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.02);
-    transition: 0.3s ease;
-}
-
-.kpi-card:hover {
-    transform: translateY(-5px);
-    border-color: #38bdf8;
-}
-
-.kpi-card i {
-    font-size: 35px;
-    color: #38bdf8;
-    margin-bottom: 15px;
-}
-
-.kpi-card h3 {
-    font-size: 20px;
-    margin-bottom: 10px;
-}
-
-.kpi-card p {
-    color: #cbd5e1;
-    font-size: 15px;
-}
-
-/* DETAILED SHOWCASE (DASHBOARDS) */
-.showcase-item {
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     align-items: center;
-    gap: 60px;
-    margin-bottom: 80px;
+    justify-content: space-between;
 }
 
-.showcase-item:nth-child(even) {
-    flex-direction: row-reverse;
-}
-
-.showcase-img {
-    flex: 1;
-    background: #1e293b;
-    padding: 15px;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-}
-
-.showcase-img img {
-    width: 100%;
-    border-radius: 12px;
-    display: block;
-}
-
-.showcase-text {
-    flex: 1;
-}
-
-.showcase-text .badge {
-    display: inline-block;
-    background: rgba(56, 189, 248, 0.1);
-    color: #38bdf8;
-    padding: 6px 14px;
-    border-radius: 30px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 15px;
-}
-
-.showcase-text h3 {
-    font-size: 28px;
-    margin-bottom: 15px;
-}
-
-.showcase-text p {
-    color: #cbd5e1;
-    margin-bottom: 20px;
-}
-
-.showcase-text ul {
-    list-style: none;
-}
-
-.showcase-text ul li {
-    margin-bottom: 10px;
+.kpi-info h3 {
+    font-size: 14px;
     color: #94a3b8;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    margin-bottom: 5px;
 }
 
-.showcase-text ul li i {
+.kpi-info .value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.kpi-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: rgba(59, 130, 246, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
     color: #3b82f6;
 }
 
-/* PRIVACY NOTICE */
-.privacy-notice {
-    background: linear-gradient(145deg, #1e293b, #0f172a);
-    padding: 40px;
-    border-radius: 22px;
-    text-align: center;
-    border: 1px dashed rgba(56, 189, 248, 0.3);
-    max-width: 800px;
-    margin: 0 auto;
+.kpi-card:nth-child(2) .kpi-icon {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
 }
 
-.privacy-notice i {
-    font-size: 45px;
-    color: #38bdf8;
-    margin-bottom: 15px;
+.kpi-card:nth-child(3) .kpi-icon {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+/* CHARTS GRID */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    margin-bottom: 25px;
+}
+
+.chart-card-full {
+    grid-column: span 2;
+}
+
+.chart-card {
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.chart-card h2 {
+    font-size: 18px;
+    text-align: right;
+    margin-bottom: 20px;
+    color: #cbd5e1;
 }
 
 /* FOOTER */
-footer{
-    text-align:center;
-    padding:25px;
-    background:#020617;
-    color:#94a3b8;
+footer {
+    text-align: center;
+    padding: 25px;
+    background: #020617;
+    color: #94a3b8;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* RESPONSIVE */
-@media(max-width:950px){
-    .hero {
-        flex-direction: column;
-        text-align: center;
-        padding-top: 120px;
+@media(max-width: 950px){
+    .charts-grid {
+        grid-template-columns: 1fr;
     }
-    .showcase-item, .showcase-item:nth-child(even) {
-        flex-direction: column;
-        gap: 30px;
+    .chart-card-full {
+        grid-column: span 1;
     }
-    .hero-text h1 {
-        font-size: 34px;
-    }
-    .nav-links {
-        gap: 10px;
+    .dashboard-container {
+        padding-left: 5%;
+        padding-right: 5%;
     }
 }
-
 </style>
 </head>
 
 <body>
 
+<!-- NAVBAR -->
 <nav class="navbar">
     <div class="nav-links">
         <a href="index-ar.html" class="back-btn">
             <i class="fas fa-arrow-right"></i> العودة للرئيسية
         </a>
-        <a href="clinic.html" class="lang-btn">
-            <i class="fas fa-globe"></i> English
-        </a>
     </div>
     <a href="#" class="logo">Apex <span>Strategies</span></a>
 </nav>
 
-<section class="hero">
-    <div class="hero-text">
-        <h1>ضاعف عوائد عيادتك وحسّن الكفاءة التشغيلية للمرضى</h1>
-        <p>
-            حوّل بيانات عيادتك الأولية إلى رؤى صحية قابلة للتنفيذ الفوري. 
-            قلل نسب غياب المرضى (No-Show)، وتتبع عائد استثمار حملاتك التسويقية، وراقب أداء الأطباء عبر لوحات تحكم تفاعلية مخصصة.
-        </p>
-        <a href="index-ar.html#contact" class="btn btn-primary">طلب نسخة تجريبية مخصصة</a>
-    </div>
-</section>
-
-<section style="background: #0b1120;">
-    <h2>مؤشرات الأداء الطبية الرئيسية التي نتتبعها</h2>
-    <p class="section-subtitle">نحن نربط أنظمتنا مباشرة مع برامج إدارة العيادات الخاصة بك لمركزة المؤشرات التشغيلية الأكثر أهمية.</p>
+<!-- MAIN DASHBOARD CONTENT -->
+<div class="dashboard-container">
     
-    <div class="kpi-grid">
+    <div class="dashboard-header">
+        <h1>لوحة تحكم الأداء الطبي الذكية</h1>
+        <p>مراقبة حية وتحليل تشغيلي فوري لبيانات العيادة</p>
+    </div>
+
+    <!-- KPI SUMMARY CARDS -->
+    <div class="kpi-row">
         <div class="kpi-card">
-            <i class="fas fa-user-slash"></i>
-            <h3>نسبة غياب المرضى</h3>
-            <p>تحديد الأنماط والأوقات المتكررة لإلغاء المواعيد لاستعادة الساعات الطبية المهدورة وتقليل خسائر العيادة التشغيلية.</p>
+            <div class="kpi-info">
+                <h3>معدل وقت الانتظار</h3>
+                <div class="value" id="kpi-wait-time">--</div>
+            </div>
+            <div class="kpi-icon"><i class="fas fa-clock"></i></div>
         </div>
         <div class="kpi-card">
-            <i class="fas fa-hand-holding-dollar"></i>
-            <h3>متوسط الإيراد لكل زيارة</h3>
-            <p>تتبع القيمة المالية الفعلية الناتجة عن زيارة المريض الواحدة وتوزيعها بحسب التخصصات الطبية المختلفة.</p>
+            <div class="kpi-info">
+                <h3>نسبة إشغال العيادات</h3>
+                <div class="value" id="kpi-utilization">--</div>
+            </div>
+            <div class="kpi-icon"><i class="fas fa-percentage"></i></div>
         </div>
         <div class="kpi-card">
-            <i class="fas fa-user-md"></i>
-            <h3>معدل إشغال وقت الأطباء</h3>
-            <p>قياس ساعات الاستشارات والعمليات الفعلية مقارنة بجدول التوافر الكلي لتحسين توزيع جداول الكادر الطبي.</p>
-        </div>
-    </div>
-</section>
-
-<section id="solutions-showcase">
-    <h2>حلولنا المثبتة عملياً</h2>
-    <p class="section-subtitle">استكشف لوحات التحكم المتخصصة والمصممة لحل أعقد التحديات الإدارية والمالية في المنشآت الطبية.</p>
-
-    <div class="showcase-item">
-        <div class="showcase-img">
-            <img src="dashboard1.png" alt="Clinic Operations Dashboard">
-        </div>
-        <div class="showcase-text">
-            <span class="badge">الكفاءة التشغيلية</span>
-            <h3>لوحة تحكم عمليات العيادة</h3>
-            <p>
-                مركز تحكم بصري شامل ومصمم لمديري المنشآت الطبية. يتيح لك مراقبة اتجاهات تدفق المرضى، واستقرار حجم المواعيد، وتقييم الأداء اليومي للعيادات فوراً.
-            </p>
-            <ul>
-                <li><i class="fas fa-check-circle"></i> تتبع فترات انتظار المرضى ومعدلات الدخول الفعلية.</li>
-                <li><i class="fas fa-check-circle"></i> تحليل مقارن لنسب إشغال الغرف والأقسام بشكل أسبوعي وشهري.</li>
-                <li><i class="fas fa-check-circle"></i> تم بناؤها باستخدام Power BI لضمان التصفية الديناميكية فائقة السرعة.</li>
-            </ul>
+            <div class="kpi-info">
+                <h3>إجمالي مواعيد اليوم</h3>
+                <div class="value" id="kpi-appointments">--</div>
+            </div>
+            <div class="kpi-icon"><i class="fas fa-calendar-check"></i></div>
         </div>
     </div>
 
-    <div class="showcase-item">
-        <div class="showcase-img">
-            <img src="dashboard2.png" alt="Marketing Channels Radar">
+    <!-- CHARTS SECTION -->
+    <div class="charts-grid">
+        <div class="chart-card chart-card-full">
+            <h2>اتجاهات المواعيد الأسبوعية وحالة اكتمالها</h2>
+            <div id="appointmentTrendsChart"></div>
         </div>
-        <div class="showcase-text">
-            <span class="badge">الذكاء المالي والتسويقي</span>
-            <h3>رادار تسويق العيادات وقيمة المريض</h3>
-            <p>
-                توقف تماماً عن هدر الميزانيات الإعلانية في حملات ضعيفة التحويل. يقوم هذا النظام بربط وتحديد القيمة المالية الدائمة للمرضى بناءً على قنوات الجذب الإعلانية التي أتوا من خلالها.
-            </p>
-            <ul>
-                <li><i class="fas fa-check-circle"></i> فصل وتحديد المنصات الأعلى عائداً (مثل Google Maps مقابل منصات التواصل).</li>
-                <li><i class="fas fa-check-circle"></i> تحليل تفصيلي للإيرادات بناءً على نوع الخدمة (استشارات، إجراءات، جراحات).</li>
-                <li><i class="fas fa-check-circle"></i> تتبع مدمج لمعدلات ولاء ودورات عودة المرضى مجدداً للعيادة.</li>
-            </ul>
+        <div class="chart-card">
+            <h2>معدل أوقات انتظار المرضى حسب الساعات (بالدقائق)</h2>
+            <div id="waitTimeChart"></div>
+        </div>
+        <div class="chart-card">
+            <h2>نسبة استغلال وإشغال غرف العيادات (%)</h2>
+            <div id="utilizationChart"></div>
         </div>
     </div>
-</section>
 
-<section style="background: #0b1120; padding: 60px 10%;">
-    <div class="privacy-notice">
-        <i class="fas fa-shield-halved"></i>
-        <h3>سرية وأمان البيانات أولاً</h3>
-        <p style="color: #cbd5e1; margin-top: 10px;">
-            تتطلب البيانات الطبية أعلى درجات الحماية والسرية. نحن نكتفي بقراءة البيانات التشغيلية والمالية المشفرة والمجمعة لبناء لوحات التحكم الخاصة بك. تظل جميع ملفات وسجلات المرضى آمنة تماماً وسرية بالكامل داخل نطاق أنظمة عيادتك المحلية.
-        </p>
-    </div>
-</section>
+</div>
 
 <footer>
     <p>© 2026 Apex Strategies. جميع الحقوق محفوظة.</p>
 </footer>
+
+<!-- DYNAMIC DATA LOADING SCRIPT -->
+<script>
+const chartTheme = { mode: 'dark', background: 'transparent' };
+
+// جلب البيانات ديناميكياً من ملف JSON الخارجي
+fetch('clinic-data.json')
+    .then(response => response.json())
+    .then(data => {
+        
+        // 1. تحديث بطاقات الـ KPIs العلوية بالأرقام الجديدة
+        document.getElementById('kpi-wait-time').innerText = data.kpis.waitTime;
+        document.getElementById('kpi-utilization').innerText = data.kpis.utilization;
+        document.getElementById('kpi-appointments').innerText = data.kpis.todayAppointments;
+
+        // 2. بناء الرسم البياني الأول: اتجاهات المواعيد
+        new ApexCharts(document.querySelector("#appointmentTrendsChart"), {
+            chart: { height: 350, type: 'line', theme: chartTheme, toolbar: { show: false } },
+            stroke: { width: [0, 4], curve: 'smooth' },
+            colors: ['#38bdf8', '#10b981'],
+            series: [
+                { name: 'المواعيد المحجوزة', type: 'column', data: data.appointmentsChart.booked },
+                { name: 'المواعيد المكتملة', type: 'line', data: data.appointmentsChart.completed }
+            ],
+            labels: data.appointmentsChart.categories,
+            grid: { borderColor: 'rgba(255,255,255,0.05)' }
+        }).render();
+
+        // 3. بناء الرسم البياني الثاني: وقت الانتظار
+        new ApexCharts(document.querySelector("#waitTimeChart"), {
+            chart: { height: 280, type: 'area', theme: chartTheme, toolbar: { show: false } },
+            dataLabels: { enabled: false },
+            stroke: { curve: 'smooth', width: 3 },
+            colors: ['#f59e0b'],
+            series: [{ name: 'وقت الانتظار', data: data.waitTimeChart.values }],
+            xaxis: { categories: data.waitTimeChart.hours },
+            grid: { borderColor: 'rgba(255,255,255,0.05)' }
+        }).render();
+
+        // 4. بناء الرسم البياني الثالث: نسب إشغال العيادات
+        new ApexCharts(document.querySelector("#utilizationChart"), {
+            chart: { height: 280, type: 'bar', theme: chartTheme, toolbar: { show: false } },
+            plotOptions: { bar: { horizontal: true, barHeight: '50%', borderRadius: 5 } },
+            colors: ['#3b82f6'],
+            dataLabels: { enabled: true, formatter: function (val) { return val + "%" } },
+            series: [{ name: 'نسبة الإشغال', data: data.utilizationChart.percentages }],
+            xaxis: { categories: data.utilizationChart.clinics },
+            grid: { borderColor: 'rgba(255,255,255,0.05)' }
+        }).render();
+
+    })
+    .catch(error => console.error('حدث خطأ أثناء تحميل بيانات العيادة:', error));
+</script>
 
 </body>
 </html>
