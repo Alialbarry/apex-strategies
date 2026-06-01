@@ -9,7 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
@@ -242,7 +241,7 @@ body{
             <h2>Data Range</h2>
             <div class="filter-group">
                 <input type="date" value="2026-01-01">
-                <input type="date" value="2026-04-11">
+                <input type="date" value="2026-12-31">
             </div>
         </div>
 
@@ -274,7 +273,7 @@ body{
 
         <div class="upload-box">
             <label class="btn-upload">
-                اضغط هنا لرفع ملف الإكسل واختبار التفاعل فوراً
+                اضغط هنا لرفع ملف الإكسل واختبار كامل البيانات فوراً
                 <input type="file" id="upload-excel" accept=".xlsx, .xls" style="display:none;">
             </label>
         </div>
@@ -335,13 +334,14 @@ body{
 const chartTheme = { mode: 'dark', background: 'transparent' };
 let trendChart, statusChart, leadChart;
 
-// تهيئة الرسوم البيانية كقيم تصفيرية مبدئية
+const allMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
 trendChart = new ApexCharts(document.querySelector("#revenueTrendChart"), {
     chart: { height: 260, type: 'area', toolbar: { show: false } },
     colors: ['#3b82f6'],
     stroke: { curve: 'smooth', width: 3 },
-    series: [{ name: 'Revenue', data: [0, 0, 0, 0] }],
-    xaxis: { categories: ['January', 'February', 'March', 'April'] }
+    series: [{ name: 'Revenue', data: Array(12).fill(0) }],
+    xaxis: { categories: allMonths }
 });
 trendChart.render();
 
@@ -363,7 +363,6 @@ leadChart = new ApexCharts(document.querySelector("#leadSourceChart"), {
 });
 leadChart.render();
 
-// دالة تتبع حدث الرفع المباشر والآمن تماماً
 document.getElementById('upload-excel').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -373,16 +372,28 @@ document.getElementById('upload-excel').addEventListener('change', function(e) {
         try {
             const data = new Uint8Array(e.target.result);
             const workbook = XLSX.read(data, { type: 'array' });
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            const rows = XLSX.utils.sheet_to_json(sheet);
             
-            if (rows && rows.length > 0) {
-                processClinicData(rows);
+            let targetSheetRows = null;
+
+            // الفحص الذكي لجميع أوراق العمل لاكتشاف ورقة البيانات الحقيقية تلقائياً
+            for (let i = 0; i < workbook.SheetNames.length; i++) {
+                const sheetName = workbook.SheetNames[i];
+                const sheet = workbook.Sheets[sheetName];
+                const rows = XLSX.utils.sheet_to_json(sheet);
+                
+                if (rows.length > 0 && (rows[0]['Revenue'] !== undefined || rows[0]['Patient_ID'] !== undefined)) {
+                    targetSheetRows = rows;
+                    break; 
+                }
+            }
+
+            if (targetSheetRows && targetSheetRows.length > 0) {
+                processClinicData(targetSheetRows);
             } else {
-                alert('الملف فارغ، يرجى التأكد من ملء جدول الإكسل.');
+                alert('لم يتم العثور على ورقة تحتوي على أعمدة البيانات المطلوبة (Patient_ID, Revenue...) في الملف المرفوع.');
             }
         } catch(err) {
-            alert('حدث خطأ أثناء معالجة الملف، تأكد من مطابقة أسماء الأعمدة.');
+            alert('حدث خطأ غير متوقع أثناء معالجة الملف.');
         }
     };
     reader.readAsArrayBuffer(file);
@@ -393,35 +404,44 @@ function processClinicData(rows) {
     let totalAppointments = rows.length;
     let noShowCount = 0, canceledCount = 0, completedCount = 0;
 
-    const monthlyRevenue = { 'January': 0, 'February': 0, 'March': 0, 'April': 0 };
-    const leadSourceRevenue = { 'Friend Referral': 0, 'TikTok': 0, 'Google Maps': 0, 'Instagram': 0 };
+    const monthlyRevenue = {};
+    allMonths.forEach(m => monthlyRevenue[m] = 0);
+
+    const leadSourceRevenue = { 'friend referral': 0, 'tiktok': 0, 'google maps': 0, 'instagram': 0 };
     
     const matrix = {
-        'Dr. Ahmad': { Cleaning: 0, Filling: 0, Implant: 0, Orthodontics: 0 },
-        'Dr. Layla': { Cleaning: 0, Filling: 0, Implant: 0, Orthodontics: 0 },
-        'Dr. Sarah': { Cleaning: 0, Filling: 0, Implant: 0, Orthodontics: 0 }
+        'dr. ahmad': { nameDisplay: 'Dr. Ahmad', Cleaning: 0, Filling: 0, Implant: 0, Orthodontics: 0 },
+        'dr. layla': { nameDisplay: 'Dr. Layla', Cleaning: 0, Filling: 0, Implant: 0, Orthodontics: 0 },
+        'dr. sarah': { nameDisplay: 'Dr. Sarah', Cleaning: 0, Filling: 0, Implant: 0, Orthodontics: 0 }
     };
 
     rows.forEach(row => {
-        // فحص وقراءة اسم العمود المالي الحقيقي
         const rev = parseFloat(row['Revenue']) || 0;
         totalRevenue += rev;
 
-        // فحص حالات المواعيد وتطهير النصوص من أي فراغات خفية
-        const status = row['Status'] ? row['Status'].toString().trim() : '';
-        if (status === 'No-Show') noShowCount++;
-        else if (status === 'Canceled') canceledCount++;
-        else if (status === 'Completed') completedCount++;
+        const status = row['Status'] ? row['Status'].toString().trim().toLowerCase() : '';
+        if (status === 'no-show') noShowCount++;
+        else if (status === 'canceled') canceledCount++;
+        else if (status === 'completed') completedCount++;
 
-        // معالجة قنوات التسويق والأطباء
-        const lead = row['Lead_Source'] ? row['Lead_Source'].toString().trim() : '';
-        if (leadSourceRevenue.hasOwnProperty(lead)) leadSourceRevenue[lead] += rev;
+        const lead = row['Lead_Source'] ? row['Lead_Source'].toString().trim().toLowerCase() : '';
+        if (leadSourceRevenue.hasOwnProperty(lead)) {
+            leadSourceRevenue[lead] += rev;
+        }
 
-        const doc = row['Doctor_Name'] ? row['Doctor_Name'].toString().trim() : '';
-        const service = row['Service_Type'] ? row['Service_Type'].toString().trim() : '';
-        if (matrix[doc] && matrix[doc].hasOwnProperty(service)) matrix[doc][service] += rev;
+        const doc = row['Doctor_Name'] ? row['Doctor_Name'].toString().trim().toLowerCase() : '';
+        const service = row['Service_Type'] ? row['Service_Type'].toString().trim() : ''; 
+        
+        let matchedService = '';
+        if (service.toLowerCase() === 'cleaning') matchedService = 'Cleaning';
+        else if (service.toLowerCase() === 'filling') matchedService = 'Filling';
+        else if (service.toLowerCase() === 'implant') matchedService = 'Implant';
+        else if (service.toLowerCase() === 'orthodontics') matchedService = 'Orthodontics';
 
-        // قراءة التاريخ المرنة
+        if (matrix[doc] && matchedService) {
+            matrix[doc][matchedService] += rev;
+        }
+
         if (row['Appointment_Date']) {
             let dateObj;
             if (!isNaN(row['Appointment_Date'])) {
@@ -431,27 +451,26 @@ function processClinicData(rows) {
                 dateObj = new Date(row['Appointment_Date']);
             }
             if (!isNaN(dateObj.getTime())) {
-                const months = ['January', 'February', 'March', 'April'];
                 const mIdx = dateObj.getMonth();
-                if (mIdx >= 0 && mIdx <= 3) monthlyRevenue[months[mIdx]] += rev;
+                if (mIdx >= 0 && mIdx <= 11) {
+                    monthlyRevenue[allMonths[mIdx]] += rev;
+                }
             }
         }
     });
 
     const noShowRate = totalAppointments > 0 ? ((noShowCount / totalAppointments) * 100).toFixed(1) : 0;
 
-    // حقن الأرقام والمؤشرات الحية بالـ HTML
+    // تحديث الأرقام والمؤشرات العليا
     document.getElementById('total-revenue').innerText = "$" + totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2});
     document.getElementById('total-appointments').innerText = totalAppointments.toLocaleString();
     document.getElementById('noshow-rate').innerText = noShowRate + "%";
 
-    // تحديث الخط البياني للأشهر
-    trendChart.updateSeries([{
-        name: 'Revenue',
-        data: [monthlyRevenue['January'], monthlyRevenue['February'], monthlyRevenue['March'], monthlyRevenue['April']]
-    }]);
+    // تحديث الخط البياني للـ 12 شهراً
+    const trendData = allMonths.map(m => Math.round(monthlyRevenue[m]));
+    trendChart.updateSeries([{ name: 'Revenue', data: trendData }]);
 
-    // تحديث الدائرة المقسمة للحالات
+    // تحديث الدائرة المقسمة للحالات بالداتا كاملة
     statusChart.updateSeries([
         parseFloat(((completedCount / totalAppointments) * 100).toFixed(1)) || 0,
         parseFloat(noShowRate) || 0,
@@ -461,24 +480,30 @@ function processClinicData(rows) {
     // تحديث أعمدة قنوات التسويق
     leadChart.updateSeries([{
         name: 'Revenue',
-        data: [leadSourceRevenue['Friend Referral'], leadSourceRevenue['TikTok'], leadSourceRevenue['Google Maps'], leadSourceRevenue['Instagram']]
+        data: [
+            leadSourceRevenue['friend referral'],
+            leadSourceRevenue['tiktok'],
+            leadSourceRevenue['google maps'],
+            leadSourceRevenue['instagram']
+        ]
     }]);
 
-    // بناء وتعبئة صفوف جدول الأطباء حياً
+    // إعادة بناء وتعبئة جدول الأطباء
     const tbody = document.getElementById('matrix-body');
     tbody.innerHTML = '';
-    Object.keys(matrix).forEach(doctor => {
+    Object.keys(matrix).forEach(key => {
+        const doctor = matrix[key];
         tbody.innerHTML += `
             <tr>
-                <td>${doctor}</td>
-                <td>$${matrix[doctor].Cleaning.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
-                <td class="${matrix[doctor].Filling < 40000 ? 'highlight-red' : ''}">$${matrix[doctor].Filling.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
-                <td>$${matrix[doctor].Implant.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
-                <td class="${matrix[doctor].Orthodontics < 50000 ? 'highlight-red' : ''}">$${matrix[doctor].Orthodontics.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
+                <td>${doctor.nameDisplay}</td>
+                <td>$${doctor.Cleaning.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
+                <td class="${doctor.Filling < 40000 ? 'highlight-red' : ''}">$${doctor.Filling.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
+                <td>$${doctor.Implant.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
+                <td class="${doctor.Orthodontics < 50000 ? 'highlight-red' : ''}">$${doctor.Orthodontics.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
             </tr>`;
     });
 
-    alert('مبروك! تم تحليل ملف الإكسل وتحديث الرسوم التفاعلية بنجاح وبشكل فوري!');
+    alert('تم اكتشاف ورقة البيانات الحقيقية وتحديث لوحة التحكم بالكامل وبكافة أسطر الملف بنجاح باهر!');
 }
 </script>
 </body>
