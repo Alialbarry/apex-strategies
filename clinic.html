@@ -3,28 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Clinic Analytics Solutions - Apex Strategies</title>
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
 <style>
-
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
 }
-
 body{
     font-family:'Poppins',sans-serif;
     background:#0f172a;
     color:white;
     line-height:1.6;
 }
-
 /* NAVBAR & LANGUAGE SWITCHER */
 .navbar {
     display: flex;
@@ -40,13 +33,11 @@ body{
     z-index: 1000;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
-
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
 }
-
 .navbar .back-btn {
     display: flex;
     align-items: center;
@@ -56,11 +47,25 @@ body{
     font-weight: 600;
     transition: 0.3s ease;
 }
-
 .navbar .back-btn:hover {
     color: #3b82f6;
 }
-
+.btn-saas {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.3s ease;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+}
+.btn-saas:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
 .lang-btn {
     display: flex;
     align-items: center;
@@ -75,13 +80,11 @@ body{
     font-size: 14px;
     transition: 0.3s ease;
 }
-
 .lang-btn:hover {
     border-color: #3b82f6;
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
     background: #0f172a;
 }
-
 .logo {
     font-size: 22px;
     font-weight: 700;
@@ -89,11 +92,9 @@ body{
     text-decoration: none;
     letter-spacing: 1px;
 }
-
 .logo span {
     color: #3b82f6;
 }
-
 /* HERO SECTION */
 .hero{
     display:flex;
@@ -104,23 +105,19 @@ body{
     background:linear-gradient(120deg,#0f172a,#1e293b);
     min-height:80vh;
 }
-
 .hero-text{
     flex:1;
 }
-
 .hero-text h1{
     font-size:48px;
     line-height:1.2;
     margin-bottom:20px;
 }
-
 .hero-text p{
     color:#cbd5e1;
     margin-bottom:30px;
     font-size:18px;
 }
-
 .btn{
     display:inline-block;
     padding:14px 24px;
@@ -130,27 +127,22 @@ body{
     transition:0.3s ease;
     font-weight:600;
 }
-
 .btn-primary{
     background:#3b82f6;
     color:white;
 }
-
 .btn-primary:hover{
     background:#2563eb;
 }
-
 /* SECTION GENERAL */
 section{
     padding:80px 10%;
 }
-
 h2{
     text-align:center;
     margin-bottom:15px;
     font-size:38px;
 }
-
 .section-subtitle {
     text-align: center;
     color: #94a3b8;
@@ -160,14 +152,12 @@ h2{
     margin-left: auto;
     margin-right: auto;
 }
-
 /* CLINIC FEATURES / KPI GRID */
 .kpi-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 25px;
 }
-
 .kpi-card {
     background: #1e293b;
     padding: 30px;
@@ -175,28 +165,23 @@ h2{
     border: 1px solid rgba(255, 255, 255, 0.02);
     transition: 0.3s ease;
 }
-
 .kpi-card:hover {
     transform: translateY(-5px);
     border-color: #38bdf8;
 }
-
 .kpi-card i {
     font-size: 35px;
     color: #38bdf8;
     margin-bottom: 15px;
 }
-
 .kpi-card h3 {
     font-size: 20px;
     margin-bottom: 10px;
 }
-
 .kpi-card p {
     color: #cbd5e1;
     font-size: 15px;
 }
-
 /* DETAILED SHOWCASE (DASHBOARDS) */
 .showcase-item {
     display: flex;
@@ -204,11 +189,9 @@ h2{
     gap: 60px;
     margin-bottom: 80px;
 }
-
 .showcase-item:nth-child(even) {
     flex-direction: row-reverse;
 }
-
 .showcase-img {
     flex: 1;
     background: #1e293b;
@@ -216,17 +199,14 @@ h2{
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0,0,0,0.4);
 }
-
 .showcase-img img {
     width: 100%;
     border-radius: 12px;
     display: block;
 }
-
 .showcase-text {
     flex: 1;
 }
-
 .showcase-text .badge {
     display: inline-block;
     background: rgba(56, 189, 248, 0.1);
@@ -237,21 +217,17 @@ h2{
     font-weight: 600;
     margin-bottom: 15px;
 }
-
 .showcase-text h3 {
     font-size: 28px;
     margin-bottom: 15px;
 }
-
 .showcase-text p {
     color: #cbd5e1;
     margin-bottom: 20px;
 }
-
 .showcase-text ul {
     list-style: none;
 }
-
 .showcase-text ul li {
     margin-bottom: 10px;
     color: #94a3b8;
@@ -259,11 +235,9 @@ h2{
     align-items: center;
     gap: 10px;
 }
-
 .showcase-text ul li i {
     color: #3b82f6;
 }
-
 /* PRIVACY NOTICE */
 .privacy-notice {
     background: linear-gradient(145deg, #1e293b, #0f172a);
@@ -274,13 +248,11 @@ h2{
     max-width: 800px;
     margin: 0 auto;
 }
-
 .privacy-notice i {
     font-size: 45px;
     color: #38bdf8;
     margin-bottom: 15px;
 }
-
 /* FOOTER */
 footer{
     text-align:center;
@@ -289,7 +261,6 @@ footer{
     color:#94a3b8;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
-
 /* RESPONSIVE */
 @media(max-width:950px){
     .hero {
@@ -308,24 +279,22 @@ footer{
         gap: 10px;
     }
 }
-
 </style>
 </head>
-
 <body>
-
 <nav class="navbar">
     <div class="nav-links">
         <a href="index.html" class="back-btn">
             <i class="fas fa-arrow-left"></i> Back to Home
         </a>
+        <!-- إضافة ممر مرن لبوابة الحسابات السحابية المخصصة للمشتركين -->
+        <a href="apex-saas.html" class="btn-saas"><i class="fas fa-project-diagram"></i> SaaS Portal</a>
         <a href="clinic-ar.html" class="lang-btn">
             <i class="fas fa-globe"></i> العربية
         </a>
     </div>
     <a href="#" class="logo">Apex <span>Strategies</span></a>
 </nav>
-
 <section class="hero">
     <div class="hero-text">
         <h1>Maximize Clinic Revenue & Optimize Patient Operations</h1>
@@ -336,7 +305,6 @@ footer{
         <a href="index.html#contact" class="btn btn-primary">Request a Custom Demo</a>
     </div>
 </section>
-
 <section style="background: #0b1120;">
     <h2>Key Healthcare Metrics We Track</h2>
     <p class="section-subtitle">We integrate directly with your clinic management tools to centralize your most vital operational indicators.</p>
@@ -359,11 +327,9 @@ footer{
         </div>
     </div>
 </section>
-
 <section id="solutions-showcase">
     <h2>Our Proven Solutions</h2>
     <p class="section-subtitle">Explore the exact specialized dashboards designed to solve critical management challenges.</p>
-
     <div class="showcase-item">
         <div class="showcase-img">
             <img src="dashboard1.png" alt="Clinic Operations Dashboard">
@@ -381,7 +347,6 @@ footer{
             </ul>
         </div>
     </div>
-
     <div class="showcase-item">
         <div class="showcase-img">
             <img src="dashboard2.png" alt="Marketing Channels Radar">
@@ -400,7 +365,6 @@ footer{
         </div>
     </div>
 </section>
-
 <section style="background: #0b1120; padding: 60px 10%;">
     <div class="privacy-notice">
         <i class="fas fa-shield-halved"></i>
@@ -410,10 +374,8 @@ footer{
         </p>
     </div>
 </section>
-
 <footer>
     <p>© 2026 Apex Strategies. All Rights Reserved.</p>
 </footer>
-
 </body>
 </html>
