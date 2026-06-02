@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Apex Strategies - Clinic Data Analysis</title>
+<title>Apex Strategies - SaaS Clinic Manager Portal</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -23,11 +23,106 @@ body{
     background:#0f172a;
     color:white;
     line-height:1.6;
+    min-height: 100vh;
 }
 
-/* NAVBAR */
-.navbar {
+/* SAAS LOGIN SCREEN */
+.login-screen {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background: radial-gradient(circle at top right, #1e293b, #0f172a);
+}
+
+.login-container {
+    background: #1e293b;
+    width: 100%;
+    max-width: 450px;
+    padding: 40px 35px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+.login-logo {
+    font-size: 26px;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    margin-bottom: 5px;
+}
+.login-logo span { color: #3b82f6; }
+
+.login-subtitle {
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.input-group {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 13px;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: white;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.input-group input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
+}
+
+.btn-login {
+    width: 100%;
+    padding: 12px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+.btn-login:hover { background: #2563eb; }
+
+.demo-hint {
+    background: rgba(56, 189, 248, 0.06);
+    border: 1px dashed rgba(56, 189, 248, 0.2);
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 25px;
+    font-size: 12px;
+    color: #38bdf8;
+    text-align: right;
+}
+
+/* SYSTEM NAVBAR */
+.navbar {
+    display: none; /* تظهر بعد الدخول */
     justify-content: space-between;
     align-items: center;
     padding: 15px 5%;
@@ -41,24 +136,43 @@ body{
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.logo {
-    font-size: 20px;
-    font-weight: 700;
-    font-family: 'Poppins', sans-serif;
-    color: white;
-    text-decoration: none;
+.user-profile-nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
-.logo span { color: #3b82f6; }
+.clinic-badge {
+    background: rgba(168, 85, 247, 0.15);
+    color: #c084fc;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
 
-/* LAYOUT STRUCTURE */
+.btn-logout {
+    background: #f43f5e;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    font-family: inherit;
+    transition: 0.3s;
+}
+.btn-logout:hover { background: #e11d48; }
+
+/* APP LAYOUT */
 .main-layout {
-    display: flex;
+    display: none; /* تظهر بعد الدخول */
     padding-top: 80px;
     min-height: 100vh;
 }
 
-/* SIDEBAR FILTERS */
 .sidebar {
     width: 260px;
     background: #1e293b;
@@ -70,7 +184,7 @@ body{
 }
 
 .sidebar h2 {
-    font-size: 16px;
+    font-size: 15px;
     color: #38bdf8;
     border-bottom: 1px solid rgba(255,255,255,0.1);
     padding-bottom: 8px;
@@ -84,7 +198,7 @@ body{
 }
 
 .filter-group label {
-    font-size: 14px;
+    font-size: 13px;
     color: #cbd5e1;
     display: flex;
     align-items: center;
@@ -101,57 +215,52 @@ body{
     font-family: inherit;
 }
 
-/* DASHBOARD CONTENT */
 .dashboard-content {
     flex: 1;
     padding: 30px;
 }
 
-.dashboard-title-bar {
-    text-align: center;
-    background: linear-gradient(90deg, rgba(56, 189, 248, 0.1), rgba(168, 85, 247, 0.1));
-    padding: 15px;
-    border-radius: 10px;
+/* MANAGER HEAD BAR */
+.manager-welcome-bar {
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.08), rgba(168, 85, 247, 0.08));
+    padding: 20px;
+    border-radius: 12px;
     border: 1px solid rgba(255,255,255,0.05);
-    margin-bottom: 30px;
-}
-
-.dashboard-title-bar h1 {
-    font-family: 'Poppins', sans-serif;
-    font-size: 26px;
-    letter-spacing: 1px;
-}
-
-/* EXCEL UPLOAD BOX */
-.upload-box {
     margin-bottom: 25px;
-    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
+.manager-welcome-bar h1 {
+    font-size: 22px;
+    color: white;
+}
+.manager-welcome-bar p {
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+/* EXCEL UPLOAD */
 .btn-upload {
     border: 2px dashed #3b82f6;
     color: #3b82f6;
-    background: rgba(59, 130, 246, 0.05);
-    padding: 12px 24px;
+    background: rgba(59, 130, 246, 0.03);
+    padding: 10px 20px;
     border-radius: 8px;
     font-weight: bold;
+    font-size: 13px;
     cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
     transition: 0.3s ease;
 }
+.btn-upload:hover { background: rgba(59, 130, 246, 0.12); }
 
-.btn-upload:hover {
-    background: rgba(59, 130, 246, 0.15);
-}
-
-/* KPI CARDS */
+/* KPIs */
 .kpi-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 
 .kpi-card {
@@ -163,27 +272,25 @@ body{
 }
 
 .kpi-card h3 {
-    font-size: 15px;
+    font-size: 14px;
     color: #3b82f6;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .kpi-card .value {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 700;
     font-family: 'Poppins', sans-serif;
 }
-
 .kpi-card .value.revenue { color: #10b981; }
 .kpi-card .value.appointments { color: #a855f7; }
 .kpi-card .value.noshow { color: #f43f5e; }
 
-/* CHARTS GRID */
+/* GRID GRAPHICS */
 .grid-2x2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 25px;
-    margin-bottom: 25px;
 }
 
 .chart-card {
@@ -194,7 +301,7 @@ body{
 }
 
 .chart-card h2 {
-    font-size: 16px;
+    font-size: 15px;
     color: #cbd5e1;
     margin-bottom: 15px;
 }
@@ -203,8 +310,7 @@ body{
 .matrix-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
-    font-size: 14px;
+    font-size: 13px;
     text-align: center;
 }
 
@@ -218,11 +324,11 @@ body{
 .matrix-table td {
     padding: 10px;
     border: 1px solid rgba(255,255,255,0.05);
-    background: rgba(15, 23, 42, 0.4);
+    background: rgba(15, 23, 42, 0.3);
 }
 
 .highlight-red {
-    background: rgba(244, 63, 94, 0.15) !important;
+    background: rgba(244, 63, 94, 0.12) !important;
     color: #f43f5e;
     font-weight: bold;
 }
@@ -231,15 +337,45 @@ body{
 
 <body>
 
-<nav class="navbar">
-    <a href="#" class="logo">APEX <span>STRATEGIES</span></a>
+<div id="login-screen-view" class="login-screen">
+    <div class="login-container">
+        <div class="login-logo">APEX <span>BI PORTAL</span></div>
+        <div class="login-subtitle">نظام ذكاء الأعمال الموحد لمدراء العيادات والمنشآت الطبية</div>
+        
+        <div class="input-group">
+            <label>البريد الإلكتروني للمدير</label>
+            <input type="email" id="manager-email" placeholder="username@clinic.com" value="apex@clinic.com">
+        </div>
+        
+        <div class="input-group">
+            <label>كلمة المرور</label>
+            <input type="password" id="manager-password" placeholder="••••••••" value="123456">
+        </div>
+        
+        <button class="btn-login" onclick="handleManagerLogin()">تسجيل الدخول الآمن</button>
+        
+        <div class="demo-hint">
+            <strong>💡 معلومات الحسابات التجريبية للعرض (Demo):</strong><br>
+            • عيادتك الأساسية: apex@clinic.com | باسورّد: 123456<br>
+            • عيادة منافسة/أخرى: elite@clinic.com | باسورّد: 123456
+        </div>
+    </div>
+</div>
+
+<nav class="navbar" id="app-navbar">
+    <a href="#" class="login-logo">APEX <span>STRATEGIES</span></a>
+    <div class="user-profile-nav">
+        <span class="clinic-badge" id="nav-clinic-name">اسم العيادة</span>
+        <span id="nav-manager-name" style="font-size:14px; color:#cbd5e1;">المدير التنفيذي</span>
+        <button class="btn-logout" onclick="handleLogout()">تسجيل الخروج</button>
+    </div>
 </nav>
 
-<div class="main-layout">
+<div class="main-layout" id="app-layout">
     
     <div class="sidebar">
         <div>
-            <h2>Data Range</h2>
+            <h2>النطاق الزمني للتقرير</h2>
             <div class="filter-group">
                 <input type="date" id="start-date" value="2026-01-01">
                 <input type="date" id="end-date" value="2026-12-31">
@@ -247,16 +383,13 @@ body{
         </div>
 
         <div>
-            <h2>Doctor Name</h2>
+            <h2>أطباء العيادة المعينين</h2>
             <div class="filter-group" id="doctor-filters">
-                <label><input type="checkbox" value="Dr. Ahmad" checked> Dr. Ahmad</label>
-                <label><input type="checkbox" value="Dr. Layla" checked> Dr. Layla</label>
-                <label><input type="checkbox" value="Dr. Sarah" checked> Dr. Sarah</label>
-            </div>
+                </div>
         </div>
 
         <div>
-            <h2>Service Type</h2>
+            <h2>الخدمات الطبية المتاحة</h2>
             <div class="filter-group" id="service-filters">
                 <label><input type="checkbox" value="Cleaning" checked> Cleaning</label>
                 <label><input type="checkbox" value="Filling" checked> Filling</label>
@@ -268,62 +401,64 @@ body{
 
     <div class="dashboard-content">
         
-        <div class="dashboard-title-bar">
-            <h1>APEX STRATEGIES : CLINIC DATA ANALYSIS</h1>
-        </div>
-
-        <div class="upload-box">
-            <label class="btn-upload">
-                اضغط هنا لرفع ملف الإكسل واختبار كامل البيانات فوراً
-                <input type="file" id="upload-excel" accept=".xlsx, .xls" style="display:none;">
-            </label>
+        <div class="manager-welcome-bar">
+            <div>
+                <h1 id="welcome-heading">مرحباً بك دكتور أحمد</h1>
+                <p>إليك أداء منشأتك الطبي والمالي الفعلي بناءً على السجلات السحابية المزامنة.</p>
+            </div>
+            
+            <div id="upload-box-wrapper">
+                <label class="btn-upload">
+                    🔄 استيراد/مزامنة ملف الإكسل للعيادة
+                    <input type="file" id="upload-excel" accept=".xlsx, .xls" style="display:none;">
+                </label>
+            </div>
         </div>
 
         <div class="kpi-row">
             <div class="kpi-card">
-                <h3>Total Revenue</h3>
+                <h3>إجمالي إيرادات العيادة (Revenue)</h3>
                 <div class="value revenue" id="total-revenue">$0.00</div>
             </div>
             <div class="kpi-card">
-                <h3>Total Appointment</h3>
+                <h3>إجمالي حجوزات المرضى (Appointments)</h3>
                 <div class="value appointments" id="total-appointments">0</div>
             </div>
             <div class="kpi-card">
-                <h3>No_Show Rate</h3>
+                <h3>معدل عدم الحضور (No_Show Rate)</h3>
                 <div class="value noshow" id="noshow-rate">0%</div>
             </div>
         </div>
 
         <div class="grid-2x2">
             <div class="chart-card">
-                <h2>Monthly Revenue Trend</h2>
+                <h2>الاتجاه المالي الشهري للإيرادات</h2>
                 <div id="revenueTrendChart"></div>
             </div>
 
             <div class="chart-card">
-                <h2>Total Appointments by Status</h2>
+                <h2>حالات الحجوزات والمواعيد</h2>
                 <div id="appointmentStatusChart"></div>
             </div>
 
             <div class="chart-card">
-                <h2>Sum of Revenue by Lead_Source</h2>
+                <h2>مصادر استقطاب المرضى وتحقيق الدخل</h2>
                 <div id="leadSourceChart"></div>
             </div>
 
             <div class="chart-card">
-                <h2>Doctor Revenue Matrix</h2>
+                <h2>مصفوفة كفاءة الأطباء المالية والتشغيلية</h2>
                 <table class="matrix-table">
                     <thead>
                         <tr>
-                            <th>Doctor_Name</th>
+                            <th>الطبيب</th>
                             <th>Cleaning</th>
                             <th>Filling</th>
                             <th>Implant</th>
                             <th>Orthodontics</th>
                         </tr>
                     </thead>
-                    <tbody id="matrix-body">
-                        </tbody>
+                    <tbody id="matrix-body"></tbody>
                 </table>
             </div>
         </div>
@@ -334,38 +469,101 @@ body{
 <script>
 let trendChart, statusChart, leadChart;
 let globalUploadedRows = []; 
+let currentActiveClinic = "";
 
 const allMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-// بناء الرسوم البيانية
+// تهيئة الرسوم البيانية الاستراتيجية للمدير
 trendChart = new ApexCharts(document.querySelector("#revenueTrendChart"), {
-    chart: { height: 260, type: 'area', toolbar: { show: false } },
+    chart: { height: 250, type: 'area', toolbar: { show: false } },
     colors: ['#3b82f6'],
     stroke: { curve: 'smooth', width: 3 },
-    series: [{ name: 'Revenue', data: Array(12).fill(0) }],
+    series: [{ name: 'الإيرادات', data: Array(12).fill(0) }],
     xaxis: { categories: allMonths }
 });
 trendChart.render();
 
 statusChart = new ApexCharts(document.querySelector("#appointmentStatusChart"), {
-    chart: { height: 280, type: 'donut' },
-    colors: ['#0052cc', '#7cd6f9', '#cc0000'],
+    chart: { height: 260, type: 'donut' },
+    colors: ['#10b981', '#f43f5e', '#64748b'],
     labels: ['Completed', 'No-Show', 'Canceled'],
     series: [0, 0, 0],
-    legend: { position: 'bottom' }
+    legend: { position: 'bottom', labels: { colors: '#cbd5e1' } }
 });
 statusChart.render();
 
 leadChart = new ApexCharts(document.querySelector("#leadSourceChart"), {
-    chart: { height: 260, type: 'bar', toolbar: { show: false } },
-    plotOptions: { bar: { horizontal: true, barHeight: '60%', distributed: true } },
-    colors: ['#0084ff', '#3b66f5', '#704ce6', '#e6399b'],
-    series: [{ name: 'Revenue', data: [0, 0, 0, 0] }],
+    chart: { height: 250, type: 'bar', toolbar: { show: false } },
+    plotOptions: { bar: { horizontal: true, barHeight: '55%', distributed: true } },
+    colors: ['#3b82f6', '#a855f7', '#10b981', '#f59e0b'],
+    series: [{ name: 'الإيرادات', data: [0, 0, 0, 0] }],
     xaxis: { categories: ['Friend Referral', 'TikTok', 'Google Maps', 'Instagram'] }
 });
 leadChart.render();
 
-// قراءة الإكسل وضمان قراءة الـ 1000 سطر كاملة بدون تجاهل
+// دالة التحكم في عملية تسجيل دخول مدراء العيادات (SaaS Authentication Simulator)
+function handleManagerLogin() {
+    const email = document.getElementById('manager-email').value.trim().toLowerCase();
+    const password = document.getElementById('manager-password').value.trim();
+
+    if (!email || !password) {
+        alert("الرجاء إدخال بيانات حساب المدير.");
+        return;
+    }
+
+    if (email === "apex@clinic.com" && password === "123456") {
+        currentActiveClinic = "apex";
+        setupClinicDashboard("Apex Dental Clinic", "د. أحمد بن علي", ["Dr. Ahmad", "Dr. Layla", "Dr. Sarah"]);
+    } else if (email === "elite@clinic.com" && password === "123456") {
+        currentActiveClinic = "elite";
+        setupClinicDashboard("Elite Medical Center", "أ. نورة التميمي (المدير العام)", ["Dr. Khaled", "Dr. Yasmin"]);
+        // شحن بيانات وهمية لعيادة إيليت لإثبات الفصل الكامل بين الحسابات
+        loadEliteMockData();
+    } else {
+        alert("خطأ: البريد الإلكتروني للمدير أو كلمة المرور غير صحيحة!");
+    }
+}
+
+function setupClinicDashboard(clinicName, managerName, doctorsList) {
+    // الانتقال من شاشة الدخول للوحة
+    document.getElementById('login-screen-view').style.display = 'none';
+    document.getElementById('app-navbar').style.display = 'flex';
+    document.getElementById('app-layout').style.display = 'flex';
+
+    document.getElementById('nav-clinic-name').innerText = clinicName;
+    document.getElementById('nav-manager-name').innerText = managerName;
+    document.getElementById('welcome-heading').innerText = "مرحباً بك، " + managerName + " 👋";
+
+    // تصفير البيانات السابقة
+    globalUploadedRows = [];
+    resetDashboardCounters();
+
+    // بناء فلاتر الأطباء ديناميكياً حسب العيادة الداخلة
+    const docFilterContainer = document.getElementById('doctor-filters');
+    docFilterContainer.innerHTML = "";
+    doctorsList.forEach(doc => {
+        docFilterContainer.innerHTML += `<label><input type="checkbox" value="${doc}" checked> ${doc}</label>`;
+    });
+
+    // إعادة ربط أحداث التغيير بالفلاتر الجديدة
+    document.getElementById('doctor-filters').addEventListener('change', applyFiltersAndProcess);
+}
+
+function resetDashboardCounters() {
+    document.getElementById('total-revenue').innerText = "$0.00";
+    document.getElementById('total-appointments').innerText = "0";
+    document.getElementById('noshow-rate').innerText = "0%";
+    tbody = document.getElementById('matrix-body').innerHTML = "<tr><td colspan='5' style='color:#94a3b8;'>الرجاء مزامنة أو رفع ملف السجلات لعرض التحليلات الاستراتيجية...</td></tr>";
+}
+
+function handleLogout() {
+    document.getElementById('login-screen-view').style.display = 'flex';
+    document.getElementById('app-navbar').style.display = 'none';
+    document.getElementById('app-layout').style.display = 'none';
+    currentActiveClinic = "";
+}
+
+// قراءة ومزامنة ملف الإكسل الـ 1000 سطر للعيادة النشطة
 document.getElementById('upload-excel').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -380,23 +578,21 @@ document.getElementById('upload-excel').addEventListener('change', function(e) {
             for (let i = 0; i < workbook.SheetNames.length; i++) {
                 const sheet = workbook.Sheets[workbook.SheetNames[i]];
                 const rows = XLSX.utils.sheet_to_json(sheet);
-                if (rows.length > 0 && (rows[0]['Patient_ID'] !== undefined)) {
+                if (rows.length > 0 && rows[0]['Patient_ID'] !== undefined) {
                     rawRows = rows;
                     break; 
                 }
             }
 
             if (rawRows && rawRows.length > 0) {
-                // فلترة مبدئية لاستبعاد أي أسطر فارغة حقيقية في نهاية الملف ليس لها معرّف مريض
                 globalUploadedRows = rawRows.filter(row => row['Patient_ID'] !== undefined && row['Patient_ID'] !== '');
-                
                 applyFiltersAndProcess(); 
-                alert('تم رفع وقراءة الملف بنجاح! إجمالي الحالات المقروءة: ' + globalUploadedRows.length);
+                alert('نجحت المزامنة السحابية السريعة! تم استيراد ' + globalUploadedRows.length + ' سجل طبي لعيادتك بنجاح.');
             } else {
-                alert('لم يتم العثور على ورقة البيانات المطلوبة.');
+                alert('فشل الهيكل القياسي للملف. تأكد من وجود عمود Patient_ID.');
             }
         } catch(err) {
-            alert('حدث خطأ أثناء قراءة البيانات.');
+            alert('حدث خطأ أثناء معالجة ملف المنشأة.');
         }
     };
     reader.readAsArrayBuffer(file);
@@ -404,7 +600,6 @@ document.getElementById('upload-excel').addEventListener('change', function(e) {
 
 document.getElementById('start-date').addEventListener('change', applyFiltersAndProcess);
 document.getElementById('end-date').addEventListener('change', applyFiltersAndProcess);
-document.getElementById('doctor-filters').addEventListener('change', applyFiltersAndProcess);
 document.getElementById('service-filters').addEventListener('change', applyFiltersAndProcess);
 
 function applyFiltersAndProcess() {
@@ -425,19 +620,14 @@ function applyFiltersAndProcess() {
         const service = row['Service_Type'] ? row['Service_Type'].toString().trim().toLowerCase() : '';
         if (checkedServices.length > 0 && !checkedServices.includes(service)) return false;
 
-        // معالجة مرنة وشاملة جداً للتاريخ لضمان عدم سقوط الـ 10 أسطر الأخيرة
         if (row['Appointment_Date']) {
             let rowDate;
             if (!isNaN(row['Appointment_Date']) && Number.isInteger(parseFloat(row['Appointment_Date']))) {
                 const parsedDate = XLSX.SSF.parse_date_code(row['Appointment_Date']);
                 rowDate = new Date(parsedDate.y, parsedDate.m - 1, parsedDate.d);
             } else {
-                // تنظيف التاريخ من المسافات المخفية
-                let dateStr = row['Appointment_Date'].toString().trim();
-                rowDate = new Date(dateStr);
+                rowDate = new Date(row['Appointment_Date'].toString().trim());
             }
-            
-            // إذا كان التاريخ صالحاً، نطبق فلتر النطاق الزمني
             if (!isNaN(rowDate.getTime())) {
                 if (startDate && rowDate < startDate) return false;
                 if (endDate && rowDate > endDate) return false;
@@ -456,14 +646,15 @@ function processClinicData(rows) {
 
     const monthlyRevenue = {};
     allMonths.forEach(m => monthlyRevenue[m] = 0);
-
     const leadSourceRevenue = { 'friend referral': 0, 'tiktok': 0, 'google maps': 0, 'instagram': 0 };
     
-    const matrix = {
-        'dr. ahmad': { nameDisplay: 'Dr. Ahmad', Cleaning: 0, Filling: 0, Implant: 0, Orthodontics: 0 },
-        'dr. layla': { nameDisplay: 'Dr. Layla', Cleaning: 0, Filling: 0, Implant: 0, Orthodontics: 0 },
-        'dr. sarah': { nameDisplay: 'Dr. Sarah', Cleaning: 0, Filling: 0, Implant: 0, Orthodontics: 0 }
-    };
+    // بناء مرن للمصفوفة حسب الأطباء الفعليين الموجودين في الفلتر لمنع الأخطاء البرمجية المتداخلة
+    const matrix = {};
+    const doctorNodes = document.querySelectorAll('#doctor-filters input');
+    doctorNodes.forEach(node => {
+        const val = node.value;
+        matrix[val.toLowerCase()] = { nameDisplay: val, Cleaning: 0, Filling: 0, Implant: 0, Orthodontics: 0 };
+    });
 
     rows.forEach(row => {
         const rev = parseFloat(row['Revenue']) || 0;
@@ -508,44 +699,49 @@ function processClinicData(rows) {
 
     const noShowRate = totalAppointments > 0 ? ((noShowCount / totalAppointments) * 100).toFixed(1) : 0;
 
-    // تحديث الأرقام الكبيرة في اللوحة
+    // تحديث الأرقام للمدير
     document.getElementById('total-revenue').innerText = "$" + totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2});
     document.getElementById('total-appointments').innerText = totalAppointments.toLocaleString();
     document.getElementById('noshow-rate').innerText = noShowRate + "%";
 
-    // تحديث الرسوم البيانية
-    trendChart.updateSeries([{ name: 'Revenue', data: allMonths.map(m => Math.round(monthlyRevenue[m])) }]);
-
+    // تحديث الرسوم التنفيذية للعيادة
+    trendChart.updateSeries([{ name: 'الإيرادات', data: allMonths.map(m => Math.round(monthlyRevenue[m])) }]);
+    
     statusChart.updateSeries([
         parseFloat(((completedCount / totalAppointments) * 100).toFixed(1)) || 0,
         parseFloat(noShowRate) || 0,
         parseFloat(((canceledCount / totalAppointments) * 100).toFixed(1)) || 0
     ]);
-
+    
     leadChart.updateSeries([{
-        name: 'Revenue',
-        data: [
-            leadSourceRevenue['friend referral'],
-            leadSourceRevenue['tiktok'],
-            leadSourceRevenue['google maps'],
-            leadSourceRevenue['instagram']
-        ]
+        name: 'الإيرادات',
+        data: [leadSourceRevenue['friend referral'], leadSourceRevenue['tiktok'], leadSourceRevenue['google maps'], leadSourceRevenue['instagram']]
     }]);
 
-    // تحديث جدول المصفوفة
+    // عرض مصفوفة تقييم أداء الكادر الطبي للعيادة
     const tbody = document.getElementById('matrix-body');
     tbody.innerHTML = '';
     Object.keys(matrix).forEach(key => {
         const doctor = matrix[key];
         tbody.innerHTML += `
             <tr>
-                <td>${doctor.nameDisplay}</td>
+                <td><strong>${doctor.nameDisplay}</strong></td>
                 <td>$${doctor.Cleaning.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
-                <td class="${doctor.Filling < 40000 ? 'highlight-red' : ''}">$${doctor.Filling.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
+                <td class="${doctor.Filling < 20000 ? 'highlight-red' : ''}">$${doctor.Filling.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
                 <td>$${doctor.Implant.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
-                <td class="${doctor.Orthodontics < 50000 ? 'highlight-red' : ''}">$${doctor.Orthodontics.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
+                <td class="${doctor.Orthodontics < 30000 ? 'highlight-red' : ''}">$${doctor.Orthodontics.toLocaleString(undefined, {maximumFractionDigits:0})}</td>
             </tr>`;
     });
+}
+
+// دالة محاكاة بيانات منفصلة تماماً للعيادة المنافسة/الأخرى توضيحاً للـ Multi-tenancy
+function loadEliteMockData() {
+    globalUploadedRows = [
+        { Patient_ID: 1, Appointment_Date: '01/15/2026', Doctor_Name: 'Dr. Khaled', Service_Type: 'Implant', Lead_Source: 'TikTok', Status: 'Completed', Revenue: 1500 },
+        { Patient_ID: 2, Appointment_Date: '02/20/2026', Doctor_Name: 'Dr. Yasmin', Service_Type: 'Cleaning', Lead_Source: 'Instagram', Status: 'Completed', Revenue: 850 },
+        { Patient_ID: 3, Appointment_Date: '03/05/2026', Doctor_Name: 'Dr. Khaled', Service_Type: 'Filling', Lead_Source: 'Google Maps', Status: 'No-Show', Revenue: 0 }
+    ];
+    applyFiltersAndProcess();
 }
 </script>
 </body>
