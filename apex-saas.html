@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apex Strategies - Next-Gen SaaS BI Platform</title>
     
-    <link href="https://fonts.googleapis.com/css2=family=Cairo:wght@300;400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -421,7 +421,7 @@
             
             <form id="saas-login-form" onsubmit="executeSaaSLogin(event)">
                 <div class="form-group">
-                    <label>البريد الإلكتروني الحساب</label>
+                    <label>البريد الإلكتروني للحساب</label>
                     <input type="email" id="auth-username" required placeholder="example@apex.com">
                 </div>
                 
@@ -434,9 +434,9 @@
             </form>
             
             <div class="demo-accounts-box">
-                <strong>🔑 تنويه الاختبار:</strong><br>
-                يتم التحقق من الحساب بشكل حي عبر السيرفر المحلي المشفر.<br>
-                تأكد من تشغيل ملف الباكيند أولاً لاستقبال بيانات الدخول.
+                <strong>🔑 تنويه الاختبار (حسابات تجريبية):</strong><br>
+                • للمدير: admin@apex.com (الباسورد: 123456)<br>
+                • للعميل: client@apex.com (الباسورد: 123456)
             </div>
         </div>
     </div>
@@ -599,7 +599,6 @@
                 </div>
             </div>
 
-
             <div id="view-client-dashboard" class="view-section">
                 <div class="welcome-widget">
                     <div>
@@ -704,15 +703,14 @@
     </div>
 
     <script>
-        // 1. دالة تسجيل الدخول والربط الفعلي بالـ Backend عبر السيرفر
+        // 1. دالة تسجيل الدخول والربط الفعلي بالـ Backend
         async function executeSaaSLogin(event) {
-            event.preventDefault(); // منع الصفحة من التحديث التلقائي لنموذج الـ Form
+            event.preventDefault(); 
 
             const emailInput = document.getElementById('auth-username').value;
             const passwordInput = document.getElementById('auth-password').value;
 
             try {
-                // إرسال الطلب لرابط الـ Sign-in الخاص بملف الباكيند FastAPI
                 const response = await fetch('http://127.0.0.1:8000/api/signin', {
                     method: 'POST',
                     headers: {
@@ -727,31 +725,30 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('تم التحقق بنجاح! أهلاً بك في منصة جيل المستقبل.');
+                    alert('تم التحقق بنجاح! أهلاً بك في منصة Apex Strategies.');
                     
-                    // إخفاء شاشة تسجيل الدخول وعرض لوحة التحكم بالكامل
                     document.getElementById('saas-login-screen').style.display = 'none';
                     document.getElementById('saas-app-wrapper').style.display = 'flex';
 
-                    // تحديث بيانات المستخدم في الهيدر العلوي ديناميكياً حسب الرد القادم من الباكيند
+                    // تحديث الاسم ديناميكياً
                     document.getElementById('username-display').innerText = data.user.name;
                     
-                    // فحص دور المستخدم وتجهيز القوائم واللوحات المناسبة له
+                    // فحص دور المستخدم وتحديد القوائم واللوحات المناسبة
                     if (data.user.role === 'admin' || data.user.email.includes('admin')) {
                         setupAdminEnvironment();
                     } else {
                         setupClientEnvironment(data.user);
                     }
                     
-                    // رسم المخططات البيانية الافتراضية للوحة التحكم
+                    // بناء ورسم الرسوم البيانية
                     renderInitialCharts();
 
                 } else {
-                    alert('فشل تسجيل الدخول: ' + (data.detail || 'يرجى التحقق من صحة البيانات وتشفيرها.'));
+                    alert('فشل تسجيل الدخول: ' + (data.detail || 'يرجى التحقق من صحة البيانات.'));
                 }
             } catch (error) {
                 console.error('Error during fetch:', error);
-                alert('تعذر الاتصال بسيرفر الباكيند. تأكد من تشغيل ملف Backend.py عبر السيرفر المحلي!');
+                alert('تعذر الاتصال بسيرفر الباكيند. تأكد من تشغيل ملف الباكيند أولاً!');
             }
         }
 
@@ -764,11 +761,10 @@
             document.getElementById('menu-admin-group').style.display = 'flex';
             document.getElementById('menu-client-group').style.display = 'none';
             
-            // تفعيل التبويب الأول للمدير افتراضياً
             navigateSaaSView('view-admin-overview', 'm-overview');
         }
 
-        // 3. إعداد بيئة العميل الذكية (Client View)
+        // 3. إعداد بيئة العميل (Client View)
         function setupClientEnvironment(user) {
             document.getElementById('role-badge-display').innerText = 'Client';
             document.getElementById('role-badge-display').className = 'badge-role client';
@@ -777,69 +773,68 @@
             document.getElementById('menu-admin-group').style.display = 'none';
             document.getElementById('menu-client-group').style.display = 'flex';
             
-            // تعديل ترحيب العميل وملفه الشخصي بشكل ديناميكي مخصص
             document.getElementById('client-welcome-heading').innerText = `مرحباً بك يا ${user.name}`;
             
-            // تفعيل التبويب الأول للعميل افتراضياً
             navigateSaaSView('view-client-dashboard', 'm-client-dash');
         }
 
-        // 4. التنقل التفاعلي الذكي بين الصفحات (Tabs Navigator)
+        // 4. التنقل التفاعلي الذكي بين الأقسام والتبويبات
         function navigateSaaSView(viewId, menuItemId) {
-            // إخفاء جميع الأقسام والـ Views
+            // إخفاء جميع الأقسام أولاً
             const sections = document.querySelectorAll('.view-section');
-            sections.forEach(sec => sec.classList.remove('active'));
+            sections.forEach(section => section.classList.remove('active'));
             
-            // إزالة التنشيط من جميع عناصر القائمة
+            // إزالة التحديد النشط من القوائم الجانبية
             const menuItems = document.querySelectorAll('.menu-item');
             menuItems.forEach(item => item.classList.remove('active'));
             
-            // إظهار القسم المطلوب وتنشيط الزر الخاص به
+            // إظهار القسم المطلوب وتنشيطه
             document.getElementById(viewId).classList.add('active');
-            document.getElementById(menuItemId).classList.add('active');
+            if(menuItemId) {
+                document.getElementById(menuItemId).classList.add('active');
+            }
         }
 
-        // 5. دالة تسجيل الخروج والعودة لشاشة الدخول
+        // 5. دالة تسجيل الخروج
         function executeSaaSLogout() {
             document.getElementById('saas-app-wrapper').style.display = 'none';
             document.getElementById('saas-login-screen').style.display = 'flex';
-            document.getElementById('auth-password').value = ''; // تنظيف حقل الباسورد للأمان
-            alert('تم تسجيل خروجك من المنصة بأمان.');
+            document.getElementById('saas-login-form').reset();
         }
 
-        // 6. رسم المخططات البيانية التفاعلية الافتراضية للمنصة
+        // 6. رسم المخططات البيانية التفاعلية (ApexCharts)
         function renderInitialCharts() {
-            // مخطط الأرباح العام للـ Admin
-            var optionsRevenue = {
-                series: [{ name: 'الإيرادات المتكررة (MRR)', data: [4000, 6500, 8900, 11000, 14500] }],
-                chart: { type: 'line', height: 260, toolbar: { show: false }, forex: { padding: 0 } },
-                stroke: { curve: 'smooth', width: 3 },
+            // مخطط الإيرادات الخاص بالمدير
+            var revenueOptions = {
+                chart: { type: 'line', height: 250, theme: 'dark', foreColor: '#94a3b8' },
+                series: [{ name: 'MRR Growth', data: [10000, 12500, 11800, 14500] }],
+                xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr'] },
                 colors: ['#3b82f6'],
-                theme: { mode: 'dark' },
-                xaxis: { categories: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو'] }
+                grid: { borderColor: 'rgba(255,255,255,0.05)' }
             };
-            new ApexCharts(document.querySelector("#chart-admin-revenue"), optionsRevenue).render();
+            document.getElementById('chart-admin-revenue').innerHTML = "";
+            new ApexCharts(document.querySelector("#chart-admin-revenue"), revenueOptions).render();
 
-            // مخطط توزيع خطط الاشتراك للـ Admin
-            var optionsPlans = {
-                series: [5, 4, 3],
-                chart: { type: 'donut', height: 260 },
-                labels: ['باقة الأعمال Pro', 'باقة المؤسسات Enterprise', 'الباقة الفردية Basic'],
-                colors: ['#3b82f6', '#8b5cf6', '#f59e0b'],
-                theme: { mode: 'dark' },
-                legend: { position: 'bottom' }
+            // مخطط توزيع الخطط والباقات للمدير
+            var plansOptions = {
+                chart: { type: 'donut', height: 250, foreColor: '#94a3b8' },
+                series: [5, 5, 2],
+                labels: ['Basic', 'Professional', 'Enterprise'],
+                colors: ['#3b82f6', '#8b5cf6', '#f59e0b']
             };
-            new ApexCharts(document.querySelector("#chart-admin-plans"), optionsPlans).render();
+            document.getElementById('chart-admin-plans').innerHTML = "";
+            new ApexCharts(document.querySelector("#chart-admin-plans"), plansOptions).render();
 
-            // مخطط افتراضي داخل لوحة العميل (Client Main Chart)
-            var optionsClient = {
-                series: [{ name: 'الأداء والإنتاجية', data: [75, 82, 80, 88, 84, 92] }],
-                chart: { type: 'bar', height: 280, toolbar: { show: false } },
+            // مخطط الأداء الربع سنوي للعميل
+            var clientOptions = {
+                chart: { type: 'bar', height: 250, theme: 'dark', foreColor: '#94a3b8' },
+                series: [{ name: 'مستوى الأداء التشغيلي %', data: [82, 86, 89, 94.2] }],
+                xaxis: { categories: ['Q1', 'Q2', 'Q3', 'Q4'] },
                 colors: ['#8b5cf6'],
-                theme: { mode: 'dark' },
-                xaxis: { categories: ['الأسبوع 1', 'الأسبوع 2', 'الأسبوع 3', 'الأسبوع 4', 'الأسبوع 5', 'الأسبوع 6'] }
+                grid: { borderColor: 'rgba(255,255,255,0.05)' }
             };
-            new ApexCharts(document.querySelector("#client-main-chart"), optionsClient).render();
+            document.getElementById('client-main-chart').innerHTML = "";
+            new ApexCharts(document.querySelector("#client-main-chart"), clientOptions).render();
         }
     </script>
 </body>
