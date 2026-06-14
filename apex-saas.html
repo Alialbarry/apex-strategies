@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apex Strategies - Next-Gen SaaS BI Platform</title>
     
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2=family=Cairo:wght@300;400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     
-    <!-- ApexCharts & SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
@@ -416,71 +414,64 @@
 </head>
 <body>
 
-    <!-- ================= 1. شاشة تسجيل الدخول الموحدة للمنصة ================= -->
     <div id="saas-login-screen" class="login-screen">
         <div class="login-card">
             <div class="brand-logo">APEX <span>STRATEGIES</span></div>
             <div class="login-subtitle">منصة ذكاء الأعمال المخصصة وإدارة الاشتراكات السحابية</div>
             
-            <div class="form-group">
-                <label>اسم المستخدم أو البريد الإلكتروني</label>
-                <input type="text" id="auth-username" value="admin@apex.com">
-            </div>
-            
-            <div class="form-group">
-                <label>كلمة المرور الشخصية</label>
-                <input type="password" id="auth-password" value="123456">
-            </div>
-            
-            <button class="btn-action" onclick="executeSaaSLogin()">تسجيل دخول آمن للمنصة</button>
+            <form id="saas-login-form" onsubmit="executeSaaSLogin(event)">
+                <div class="form-group">
+                    <label>البريد الإلكتروني الحساب</label>
+                    <input type="email" id="auth-username" required placeholder="example@apex.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>كلمة المرور الشخصية</label>
+                    <input type="password" id="auth-password" required placeholder="••••••••">
+                </div>
+                
+                <button type="submit" class="btn-action">تسجيل دخول آمن للمنصة</button>
+            </form>
             
             <div class="demo-accounts-box">
-                <strong>🔑 حسابات العرض المضمنة لاختبار السيناريوهات:</strong><br>
-                • مدير النظام بالكامل: admin@apex.com | 123456<br>
-                • عميل قطاع المصانع (Enterprise): factory@client.com | 123456<br>
-                • عميل قطاع العيادات (Professional): clinic@client.com | 123456
+                <strong>🔑 تنويه الاختبار:</strong><br>
+                يتم التحقق من الحساب بشكل حي عبر السيرفر المحلي المشفر.<br>
+                تأكد من تشغيل ملف الباكيند أولاً لاستقبال بيانات الدخول.
             </div>
         </div>
     </div>
 
-    <!-- ================= 2. هيكل التطبيق واللوحات البرمجية بعد التحقق ================= -->
     <div id="saas-app-wrapper" class="app-wrapper">
         
-        <!-- القائمة الجانبية للنظام السحابي الموحد -->
         <aside class="app-sidebar">
             <div class="brand-logo">APEX <span>SaaS</span></div>
             
-            <!-- قائمة المدير (تظهر للـ Admin فقط) -->
             <ul class="sidebar-menu" id="menu-admin-group" style="display:none;">
-                <li class="menu-item active" id="m-overview" onclick="navigateSaaSView('admin-overview', 'm-overview')">نظرة عامة والمنصة</li>
-                <li class="menu-item" id="m-users" onclick="navigateSaaSView('admin-users', 'm-users')">إدارة المستخدمين Users</li>
-                <li class="menu-item" id="m-templates" onclick="navigateSaaSView('admin-templates', 'm-templates')">قوالب القطاعات Templates</li>
+                <li class="menu-item active" id="m-overview" onclick="navigateSaaSView('view-admin-overview', 'm-overview')">نظرة عامة والمنصة</li>
+                <li class="menu-item" id="m-users" onclick="navigateSaaSView('view-admin-users', 'm-users')">إدارة المستخدمين Users</li>
+                <li class="menu-item" id="m-templates" onclick="navigateSaaSView('view-admin-templates', 'm-templates')">قوالب القطاعات Templates</li>
             </ul>
 
-            <!-- قائمة العميل التفاعلية (تظهر عند دخول العميل فقط) -->
             <ul class="sidebar-menu" id="menu-client-group" style="display:none;">
-                <li class="menu-item active" id="m-client-dash" onclick="navigateSaaSView('client-dashboard', 'm-client-dash')">لوحة البيانات التحليلية</li>
-                <li class="menu-item" id="m-client-files" onclick="navigateSaaSView('client-files', 'm-client-files')">إدارة ورفع الملفات</li>
-                <li class="menu-item" id="m-client-profile" onclick="navigateSaaSView('client-profile', 'm-client-profile')">الملف الشخصي والاشتراك</li>
+                <li class="menu-item active" id="m-client-dash" onclick="navigateSaaSView('view-client-dashboard', 'm-client-dash')">لوحة البيانات التحليلية</li>
+                <li class="menu-item" id="m-client-files" onclick="navigateSaaSView('view-client-files', 'm-client-files')">إدارة ورفع الملفات</li>
+                <li class="menu-item" id="m-client-profile" onclick="navigateSaaSView('view-client-profile', 'm-client-profile')">الملف الشخصي والاشتراك</li>
             </ul>
         </aside>
 
-        <!-- الهيدر العلوي لملف تعريف المستخدم والتحكم في الحساب -->
         <header class="app-header">
             <div>
                 <h3 id="current-tenant-title" style="font-size:16px; font-weight:600;">بوابة Apex الاستشارية</h3>
             </div>
             <div class="header-profile">
-                <span id="role-badge-display" class="badge-role admin">Admin</span>
-                <span id="username-display" style="font-size:14px; font-weight:600;">المدير العام</span>
+                <span id="role-badge-display" class="badge-role">Client</span>
+                <span id="username-display" style="font-size:14px; font-weight:600;">جاري التحميل...</span>
                 <button class="btn-logout" onclick="executeSaaSLogout()">تسجيل الخروج</button>
             </div>
         </header>
 
-        <!-- مساحة العرض الرئيسية المتغيرة (Viewport) -->
         <main class="main-viewport">
 
-            <!-- [رؤية المدير 1] صفحة المؤشرات العامة للمنصة والاشتراكات والتدفق المالي -->
             <div id="view-admin-overview" class="view-section">
                 <div class="welcome-widget">
                     <div>
@@ -520,7 +511,6 @@
                 </div>
             </div>
 
-            <!-- [رؤية المدير 2] الصفحة المستقلة المطلوبة: Users Management -->
             <div id="view-admin-users" class="view-section">
                 <div class="welcome-widget">
                     <div>
@@ -567,14 +557,21 @@
                                 </tr>
                             </thead>
                             <tbody id="users-management-tbody">
-                                <!-- البيانات يتم حقنها برمجياً لضمان الفاعلية والتحديث -->
+                                <tr>
+                                    <td>APX-CLN-402</td>
+                                    <td>مجمع النخبة الطبي</td>
+                                    <td>أ. نورة التميمي</td>
+                                    <td>clinic@client.com</td>
+                                    <td><span class="pill pro">Professional</span></td>
+                                    <td><span class="pill active">نشط</span></td>
+                                    <td><button class="btn-small-tool">تعديل</button></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- [رؤية المدير 3] صفحة إدارة قوالب القطاعات (Templates) -->
             <div id="view-admin-templates" class="view-section">
                 <div class="welcome-widget">
                     <div>
@@ -603,7 +600,6 @@
             </div>
 
 
-            <!-- [رؤية العميل 1] صفحة لوحة البيانات التفاعلية الذكية والمخصصة للعميل فقط -->
             <div id="view-client-dashboard" class="view-section">
                 <div class="welcome-widget">
                     <div>
@@ -612,23 +608,29 @@
                     </div>
                 </div>
 
-                <!-- شريط التنقل بين اللوحات المخصصة المتاحة للعميل حسب خطته واحتياجاته -->
                 <div class="tab-navigation" id="client-dynamic-tabs-nav">
-                    <!-- التبويبات تُحقن برمجياً بناءً على ملف الـ JSON المخصص للعميل -->
+                    <button class="tab-sub-btn active">المؤشرات العامة للقطاع</button>
                 </div>
 
-                <!-- مؤشرات الأداء المتغيرة للعميل KPI Cards -->
                 <div class="kpi-grid" id="client-dynamic-kpi-grid">
-                    <!-- يتم حقنها ديناميكياً -->
+                    <div class="kpi-card-saas">
+                        <h4>معدل الأداء التشغيلي الحالي</h4>
+                        <div class="value" style="color: var(--accent-blue)" id="dash-kpi-1">94.2%</div>
+                    </div>
+                    <div class="kpi-card-saas purple">
+                        <h4>الكفاءة الإنتاجية العامة</h4>
+                        <div class="value" style="color: var(--accent-purple)" id="dash-kpi-2">86.5%</div>
+                    </div>
                 </div>
 
-                <!-- الرسوم البيانية والجداول المخصصة والمفلترة للعميل المحددة له فقط -->
                 <div class="charts-grid-saas" id="client-dynamic-charts-grid">
-                    <!-- يتم حقنها ديناميكياً -->
+                    <div class="panel-card">
+                        <h3>تحليل الأداء الربع سنوي</h3>
+                        <div id="client-main-chart"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- [رؤية العميل 2] صفحة إدارة ورفع السجلات الطبية أو المالية للعميل -->
             <div id="view-client-files" class="view-section">
                 <div class="welcome-widget">
                     <div>
@@ -652,7 +654,6 @@
                 </div>
             </div>
 
-            <!-- [رؤية العميل 3] صفحة الملف الشخصي للاشتراك والتراخيص الممنوحة للشركة -->
             <div id="view-client-profile" class="view-section">
                 <div class="welcome-widget">
                     <div>
@@ -667,15 +668,15 @@
                         <table class="saas-data-table" style="margin-top:10px;">
                             <tr>
                                 <td>الخطة المفعلة:</td>
-                                <td><span class="pill ent" id="prof-plan-pill">Enterprise</span></td>
+                                <td><span class="pill ent" id="prof-plan-pill">Professional</span></td>
                             </tr>
                             <tr>
                                 <td>أقصى عدد مستخدمين مسموح:</td>
-                                <td id="prof-max-users">مفتوح</td>
+                                <td id="prof-max-users">حتى 5 مستخدمين</td>
                             </tr>
                             <tr>
                                 <td>تواتر تحديث البيانات المجدول:</td>
-                                <td id="prof-update-freq">يومي مباشر</td>
+                                <td id="prof-update-freq">أسبوعي مباشر</td>
                             </tr>
                             <tr>
                                 <td>حالة الاشتراك المالي:</td>
@@ -702,307 +703,144 @@
         </main>
     </div>
 
-    <!-- ================= 3. شفرة البرمجة والذكاء السحابي التفاعلي المنطقي ================= -->
     <script>
-        // قواعد البيانات السحابية الوهمية المخزنة لمحاكاة الـ (SaaS Tenants Dynamic Data Engine)
-        const mockSaaSTenants = {
-            "admin": {
-                role: "admin",
-                username: "د. أحمد (المدير العام)",
-                tenantTitle: "لوحة التحكم السحابية - Apex Strategies"
-            },
-            "factory": {
-                role: "client",
-                username: "المهندس خالد - مدير العمليات",
-                tenantTitle: "بوابة تحليلات شركة التصنيع المتكاملة (Factory Co.)",
-                clientId: "APX-FAC-993",
-                plan: "Enterprise Plan",
-                planClass: "ent",
-                maxUsers: "مفتوح (غير محدود)",
-                updateFreq: "يومي مباشر",
-                // إعدادات لوحة التحكم المخصصة لقطاع المصانع بالـ JSON الديناميكي
-                dashboards: [
-                    {
-                        name: "تحليلات الإنتاج وسلسلة التوريد",
-                        kpis: [
-                            { title: "كفاءة المعدات الإجمالية OEE", value: "84.2%", class: "success" },
-                            { title: "حجم الإنتاج الكلي (طن)", value: "14,250", class: "blue" },
-                            { title: "معدل الهدر في المواد الخام", value: "1.8%", class: "warning" }
-                        ],
-                        charts: [
-                            { type: "line", title: "معدلات خطوط الإنتاج الأسبوعية", id: "c-fact-1", series: [{ name: "خط A", data: [45, 52, 49, 62, 58, 70] }, { name: "خط B", data: [38, 42, 40, 48, 52, 55] }], categories: ["السبت", "الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس"] },
-                            { type: "bar", title: "كفاءة المشتريات والتوريد حسب المورد", id: "c-fact-2", series: [{ name: "الالتزام بالتسليم %", data: [95, 88, 76, 92] }], categories: ["مورد حديد اليمامة", "سيراميك المستقبل", "المتحدة للغاز", "الوطنية للتعبئة"] }
-                        ]
+        // 1. دالة تسجيل الدخول والربط الفعلي بالـ Backend عبر السيرفر
+        async function executeSaaSLogin(event) {
+            event.preventDefault(); // منع الصفحة من التحديث التلقائي لنموذج الـ Form
+
+            const emailInput = document.getElementById('auth-username').value;
+            const passwordInput = document.getElementById('auth-password').value;
+
+            try {
+                // إرسال الطلب لرابط الـ Sign-in الخاص بملف الباكيند FastAPI
+                const response = await fetch('http://127.0.0.1:8000/api/signin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
                     },
-                    {
-                        name: "تحليل الأرباح والخسائر P&L",
-                        kpis: [
-                            { title: "صافي الأرباح التشغيلية", value: "$420,000", class: "success" },
-                            { title: "التكاليف الثابتة والمتغيرة", value: "$180,000", class: "danger" }
-                        ],
-                        charts: [
-                            { type: "donut", title: "توزيع المصروفات التشغيلية للمصنع", id: "c-fact-3", series: [40, 25, 20, 15], labels: ["طاقة وكهرباء", "أجور عمالة", "صيانة دورية", "شحن ولوجستيات"] }
-                        ]
+                    body: JSON.stringify({
+                        email: emailInput,
+                        password: passwordInput
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('تم التحقق بنجاح! أهلاً بك في منصة جيل المستقبل.');
+                    
+                    // إخفاء شاشة تسجيل الدخول وعرض لوحة التحكم بالكامل
+                    document.getElementById('saas-login-screen').style.display = 'none';
+                    document.getElementById('saas-app-wrapper').style.display = 'flex';
+
+                    // تحديث بيانات المستخدم في الهيدر العلوي ديناميكياً حسب الرد القادم من الباكيند
+                    document.getElementById('username-display').innerText = data.user.name;
+                    
+                    // فحص دور المستخدم وتجهيز القوائم واللوحات المناسبة له
+                    if (data.user.role === 'admin' || data.user.email.includes('admin')) {
+                        setupAdminEnvironment();
+                    } else {
+                        setupClientEnvironment(data.user);
                     }
-                ]
-            },
-            "clinic": {
-                role: "client",
-                username: "أ. نورة التميمي - المدير المالي",
-                tenantTitle: "بوابة التقارير الطبية - مجمع النخبة الطبي",
-                clientId: "APX-CLN-402",
-                plan: "Professional Plan",
-                planClass: "pro",
-                maxUsers: "حتى 5 مستخدمين",
-                updateFreq: "أسبوعي مجدول",
-                dashboards: [
-                    {
-                        name: "الأداء المالي وحجوزات العيادات",
-                        kpis: [
-                            { title: "إجمالي الإيرادات المحققة", value: "$84,620", class: "success" },
-                            { title: "إجمالي المواعيد المحجوزة", value: "1,240", class: "purple" },
-                            { title: "معدل عدم حضور المرضى No-Show", value: "12.4%", class: "danger" }
-                        ],
-                        charts: [
-                            { type: "donut", title: "نسب الحجوزات حسب حالات المواعيد", id: "c-cln-1", series: [70, 18, 12], labels: ["Completed", "No-Show", "Canceled"] },
-                            { type: "bar", title: "توزيع الإيرادات حسب التخصصات الطبية", id: "c-cln-2", series: [{ name: "الإيراد ($)", data: [34000, 22000, 18000, 10620] }], categories: ["جراحة الأسنان Ortho", "الجلدية والليزر", "العيادة الباطنية", "الأطفال"] }
-                        ]
-                    }
-                ]
-            }
-        };
+                    
+                    // رسم المخططات البيانية الافتراضية للوحة التحكم
+                    renderInitialCharts();
 
-        // مصفوفة سجلات العملاء الكاملة المخصصة لصفحة Users Management التابعة للمدير
-        const globalSaaSUsersList = [
-            { id: "APX-FAC-993", company: "شركة التصنيع المتكاملة", user: "المهندس خالد", email: "factory@client.com", plan: "Enterprise Plan", planClass: "ent", status: "نشط", statusClass: "active" },
-            { id: "APX-CLN-402", company: "مجمع النخبة الطبي", user: "أ. نورة التميمي", email: "clinic@client.com", plan: "Professional Plan", planClass: "pro", status: "نشط", statusClass: "active" },
-            { id: "APX-TRD-102", company: "مجموعة العبيكان للتجارة", user: "أ. عبد الله العبيكان", email: "trade@gbeikan.com", plan: "Enterprise Plan", planClass: "ent", status: "نشط", statusClass: "active" },
-            { id: "APX-LOG-551", company: "أجنحة الشحن اللوجستية", user: "م. سلطان الجابري", email: "sultan@wings.com", plan: "Basic Plan", planClass: "basic", status: "موقوف", statusClass: "suspend" }
-        ];
-
-        let activeChartsInstances = []; // لتتبع الرسوم ومسح كاش المتصفح عند التنقل والتبديل
-
-        // تفعيل تسجيل الدخول الآمن والفصل الصارم للـ Tenants
-        function executeSaaSLogin() {
-            const userField = document.getElementById('auth-username').value.trim();
-            
-            let tenantKey = "";
-            if (userField.includes("admin")) tenantKey = "admin";
-            else if (userField.includes("factory")) tenantKey = "factory";
-            else if (userField.includes("clinic")) tenantKey = "clinic";
-
-            const tenant = mockSaaSTenants[tenantKey];
-
-            if (!tenant) {
-                alert("بيانات الحساب خاطئة أو غير مسجلة في خوادم الـ SaaS.");
-                return;
-            }
-
-            // إخفاء شاشة الدخول وعرض بيئة العمل
-            document.getElementById('saas-login-screen').style.display = 'none';
-            document.getElementById('saas-app-wrapper').style.display = 'block';
-
-            // ملء بيانات الواجهة العلوية المشتركة حسب العميل المشترك
-            document.getElementById('current-tenant-title').innerText = tenant.tenantTitle;
-            document.getElementById('username-display').innerText = tenant.username;
-            
-            const rBadge = document.getElementById('role-badge-display');
-            rBadge.innerText = tenant.role.toUpperCase();
-            if(tenant.role === "admin") {
-                rBadge.className = "badge-role admin";
-                document.getElementById('menu-admin-group').style.display = 'flex';
-                document.getElementById('menu-client-group').style.display = 'none';
-                // بناء رسوم لوحة المدير الافتراضية
-                navigateSaaSView('admin-overview', 'm-overview');
-                renderAdminStrategicCharts();
-            } else {
-                rBadge.className = "badge-role client";
-                document.getElementById('menu-admin-group').style.display = 'none';
-                document.getElementById('menu-client-group').style.display = 'flex';
-                
-                // ملء صفحة الملف الشخصي للعميل برمجياً حسب خطته الحالية
-                document.getElementById('prof-plan-pill').innerText = tenant.plan;
-                document.getElementById('prof-plan-pill').className = "pill " + tenant.planClass;
-                document.getElementById('prof-max-users').innerText = tenant.maxUsers;
-                document.getElementById('prof-update-freq').innerText = tenant.updateFreq;
-
-                // تحويل الرؤية مباشرة للـ Dashboard المخصص للعميل
-                navigateSaaSView('client-dashboard', 'm-client-dash');
-                initializeClientDynamicDashboard(tenant);
-            }
-        }
-
-        function executeSaaSLogout() {
-            // تدمير كافة الرسوم البيانية المفتوحة لمنع بطء الذاكرة
-            activeChartsInstances.forEach(c => { try { c.destroy(); } catch(e){} });
-            activeChartsInstances = [];
-
-            document.getElementById('saas-login-screen').style.display = 'flex';
-            document.getElementById('saas-app-wrapper').style.display = 'none';
-        }
-
-        // آلية التبديل السلس المحمي داخل الـ Viewport للمنصة
-        function navigateSaaSView(viewId, menuItemId) {
-            // إخفاء جميع الواجهات
-            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
-            // إلغاء تفعيل عناصر القائمة
-            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-
-            // إظهار الواجهة المطلوبة وتفعيل عنصر القائمة
-            document.getElementById('view-' + viewId).classList.add('active');
-            if(menuItemId) {
-                document.getElementById(menuItemId).classList.add('active');
-            }
-
-            // إذا دخل المدير لصفحة إدارة المستخدمين، نقوم ببناء الجدول فوراً
-            if (viewId === 'admin-users') {
-                populateUsersManagementTable();
-            }
-        }
-
-        // بناء صفحة جدول إدارة المستخدمين والعملاء (Users Management Table)
-        function populateUsersManagementTable() {
-            const tbody = document.getElementById('users-management-tbody');
-            tbody.innerHTML = "";
-
-            globalSaaSUsersList.forEach(u => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td><code style="color:var(--accent-blue); font-weight:bold;">${u.id}</code></td>
-                        <td><strong>${u.company}</strong></td>
-                        <td>${u.user}</td>
-                        <td><span style="font-family:'Poppins'; font-size:13px;">${u.email}</span></td>
-                        <td><span class="pill ${u.planClass}">${u.plan}</span></td>
-                        <td><span class="pill ${u.statusClass}">${u.status}</span></td>
-                        <td>
-                            <button class="btn-small-tool" onclick="alert('تعديل صلاحيات وتصميم لوحة العميل: ${u.id}')">تخصيص اللوحة 🛠️</button>
-                            <button class="btn-small-tool" style="border-color:var(--warning); color:var(--warning);" onclick="alert('إعادة تعيين كلمة مرور الحساب للبريد: ${u.email}')">تعيين الباسورد 🔑</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        // بناء الرسوم الاستراتيجية للوحة تحكم المدير (Admin Dashboard Metrics)
-        function renderAdminStrategicCharts() {
-            activeChartsInstances.forEach(c => { try { c.destroy(); } catch(e){} });
-            activeChartsInstances = [];
-
-            const revChart = new ApexCharts(document.querySelector("#chart-admin-revenue"), {
-                chart: { height: 260, type: 'area', theme: 'dark', background: 'transparent', toolbar: {show:false} },
-                colors: ['#3b82f6'],
-                stroke: { curve: 'smooth', width: 3 },
-                series: [{ name: 'إجمالي الإيرادات المحققة $', data: [8200, 9400, 11000, 12800, 13900, 14500] }],
-                xaxis: { categories: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'], labels:{style:{colors:'#94a3b8'}} },
-                grid: { borderColor: 'rgba(255,255,255,0.05)' }
-            });
-            revChart.render();
-            activeChartsInstances.push(revChart);
-
-            const plansChart = new ApexCharts(document.querySelector("#chart-admin-plans"), {
-                chart: { height: 260, type: 'donut', theme: 'dark' },
-                colors: ['#3b82f6', '#8b5cf6', '#f59e0b'],
-                series: [2, 5, 3],
-                labels: ['Basic Plan', 'Professional Plan', 'Enterprise Plan'],
-                legend: { position: 'bottom', labels:{colors:'#94a3b8'} }
-            });
-            plansChart.render();
-            activeChartsInstances.push(plansChart);
-        }
-
-        // محرك حقن وبناء لوحات التحكم المخصصة للعملاء ديناميكياً (Tenant Custom Widget Injection)
-        function initializeClientDynamicDashboard(tenant) {
-            document.getElementById('client-welcome-heading').innerText = "مرحباً بك مجدداً، " + tenant.username;
-            document.getElementById('client-welcome-sub').innerText = "تستعرض الآن لوحات معلومات: " + tenant.tenantTitle + " | كود العميل: " + tenant.clientId;
-
-            const tabsNav = document.getElementById('client-dynamic-tabs-nav');
-            tabsNav.innerHTML = "";
-
-            tenant.dashboards.forEach((dash, idx) => {
-                const btn = document.createElement('button');
-                btn.className = "tab-sub-btn" + (idx === 0 ? " active" : "");
-                btn.innerText = dash.name;
-                btn.onclick = function() {
-                    document.querySelectorAll('.tab-sub-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    renderClientTargetDashboardLayout(dash);
-                };
-                tabsNav.appendChild(btn);
-            });
-
-            // عرض اللوحة الأولى الافتراضية للعميل عند الدخول
-            renderClientTargetDashboardLayout(tenant.dashboards[0]);
-        }
-
-        function renderClientTargetDashboardLayout(dash) {
-            // 1. حقن الـ KPIs المخصصة للعميل في هذا القسم
-            const kpiGrid = document.getElementById('client-dynamic-kpi-grid');
-            kpiGrid.innerHTML = "";
-            dash.kpis.forEach(k => {
-                kpiGrid.innerHTML += `
-                    <div class="kpi-card-saas ${k.class}">
-                        <h4>${k.title}</h4>
-                        <div class="value">${k.value}</div>
-                    </div>
-                `;
-            });
-
-            // 2. بناء الهيكل والرسوم البيانية المحددة له بالملف
-            const chartsGrid = document.getElementById('client-dynamic-charts-grid');
-            chartsGrid.innerHTML = "";
-
-            dash.charts.forEach(c => {
-                const card = document.createElement('div');
-                card.className = "panel-card";
-                card.innerHTML = `<h3>${c.title}</h3><div id="${c.id}"></div>`;
-                chartsGrid.appendChild(card);
-
-                // خيارات الرسم البياني التفاعلي المتوافق بالكامل مع الهواتف والأجهزة الذكية
-                let options = {
-                    chart: { height: 260, type: c.type, theme: 'dark', background: 'transparent', toolbar: {show:false} },
-                    series: c.type === 'donut' ? c.series : c.series,
-                    grid: { borderColor: 'rgba(255,255,255,0.05)' }
-                };
-
-                if (c.type === 'donut') {
-                    options.labels = c.labels;
-                    options.legend = { position: 'bottom', labels: { colors: '#94a3b8' } };
                 } else {
-                    options.xaxis = { categories: c.categories, labels: { style: { colors: '#94a3b8' } } };
-                    if (c.type === 'line') options.stroke = { curve: 'smooth', width: 3 };
+                    alert('فشل تسجيل الدخول: ' + (data.detail || 'يرجى التحقق من صحة البيانات وتشفيرها.'));
                 }
-
-                setTimeout(() => {
-                    const chartInst = new ApexCharts(document.getElementById(c.id), options);
-                    chartInst.render();
-                    activeChartsInstances.push(chartInst);
-                }, 50);
-            });
+            } catch (error) {
+                console.error('Error during fetch:', error);
+                alert('تعذر الاتصال بسيرفر الباكيند. تأكد من تشغيل ملف Backend.py عبر السيرفر المحلي!');
+            }
         }
 
-        // قارئ ملفات الإكسل المتقدم للعملاء لتحديث قواعد البيانات واللوحات البيانية فوراً بالمتصفح
-        document.getElementById('client-excel-uploader').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+        // 2. إعداد بيئة المدير (Admin View)
+        function setupAdminEnvironment() {
+            document.getElementById('role-badge-display').innerText = 'Admin';
+            document.getElementById('role-badge-display').className = 'badge-role admin';
+            document.getElementById('current-tenant-title').innerText = 'لوحة الإشراف العام - Apex Strategies';
+            
+            document.getElementById('menu-admin-group').style.display = 'flex';
+            document.getElementById('menu-client-group').style.display = 'none';
+            
+            // تفعيل التبويب الأول للمدير افتراضياً
+            navigateSaaSView('view-admin-overview', 'm-overview');
+        }
 
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                try {
-                    const data = new Uint8Array(evt.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const sheetName = workbook.SheetNames[0];
-                    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+        // 3. إعداد بيئة العميل الذكية (Client View)
+        function setupClientEnvironment(user) {
+            document.getElementById('role-badge-display').innerText = 'Client';
+            document.getElementById('role-badge-display').className = 'badge-role client';
+            document.getElementById('current-tenant-title').innerText = 'بوابة التحليلات المخصصة لشركتكم';
+            
+            document.getElementById('menu-admin-group').style.display = 'none';
+            document.getElementById('menu-client-group').style.display = 'flex';
+            
+            // تعديل ترحيب العميل وملفه الشخصي بشكل ديناميكي مخصص
+            document.getElementById('client-welcome-heading').innerText = `مرحباً بك يا ${user.name}`;
+            
+            // تفعيل التبويب الأول للعميل افتراضياً
+            navigateSaaSView('view-client-dashboard', 'm-client-dash');
+        }
 
-                    document.getElementById('upload-status-log').innerHTML = `
-                        <span style="color:var(--success);">✔ نجحت المزامنة! تم قراءة ${rows.length} سطر بيانات بنجاح، وجاري تحديث الرسوم التفاعلية للوحة...</span>
-                    `;
-                    alert("نجحت عملية التحقق من البيانات وتحديث الرسوم البيانية للوحة التحكم الخاصة بك فوراً!");
-                } catch(err) {
-                    alert("حدث خطأ في هيكل الملف المرفوع، يرجى مطابقة الأعمدة القياسية.");
-                }
+        // 4. التنقل التفاعلي الذكي بين الصفحات (Tabs Navigator)
+        function navigateSaaSView(viewId, menuItemId) {
+            // إخفاء جميع الأقسام والـ Views
+            const sections = document.querySelectorAll('.view-section');
+            sections.forEach(sec => sec.classList.remove('active'));
+            
+            // إزالة التنشيط من جميع عناصر القائمة
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => item.classList.remove('active'));
+            
+            // إظهار القسم المطلوب وتنشيط الزر الخاص به
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById(menuItemId).classList.add('active');
+        }
+
+        // 5. دالة تسجيل الخروج والعودة لشاشة الدخول
+        function executeSaaSLogout() {
+            document.getElementById('saas-app-wrapper').style.display = 'none';
+            document.getElementById('saas-login-screen').style.display = 'flex';
+            document.getElementById('auth-password').value = ''; // تنظيف حقل الباسورد للأمان
+            alert('تم تسجيل خروجك من المنصة بأمان.');
+        }
+
+        // 6. رسم المخططات البيانية التفاعلية الافتراضية للمنصة
+        function renderInitialCharts() {
+            // مخطط الأرباح العام للـ Admin
+            var optionsRevenue = {
+                series: [{ name: 'الإيرادات المتكررة (MRR)', data: [4000, 6500, 8900, 11000, 14500] }],
+                chart: { type: 'line', height: 260, toolbar: { show: false }, forex: { padding: 0 } },
+                stroke: { curve: 'smooth', width: 3 },
+                colors: ['#3b82f6'],
+                theme: { mode: 'dark' },
+                xaxis: { categories: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو'] }
             };
-            reader.readAsArrayBuffer(file);
-        });
+            new ApexCharts(document.querySelector("#chart-admin-revenue"), optionsRevenue).render();
+
+            // مخطط توزيع خطط الاشتراك للـ Admin
+            var optionsPlans = {
+                series: [5, 4, 3],
+                chart: { type: 'donut', height: 260 },
+                labels: ['باقة الأعمال Pro', 'باقة المؤسسات Enterprise', 'الباقة الفردية Basic'],
+                colors: ['#3b82f6', '#8b5cf6', '#f59e0b'],
+                theme: { mode: 'dark' },
+                legend: { position: 'bottom' }
+            };
+            new ApexCharts(document.querySelector("#chart-admin-plans"), optionsPlans).render();
+
+            // مخطط افتراضي داخل لوحة العميل (Client Main Chart)
+            var optionsClient = {
+                series: [{ name: 'الأداء والإنتاجية', data: [75, 82, 80, 88, 84, 92] }],
+                chart: { type: 'bar', height: 280, toolbar: { show: false } },
+                colors: ['#8b5cf6'],
+                theme: { mode: 'dark' },
+                xaxis: { categories: ['الأسبوع 1', 'الأسبوع 2', 'الأسبوع 3', 'الأسبوع 4', 'الأسبوع 5', 'الأسبوع 6'] }
+            };
+            new ApexCharts(document.querySelector("#client-main-chart"), optionsClient).render();
+        }
     </script>
 </body>
 </html>
