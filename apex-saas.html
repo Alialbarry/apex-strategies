@@ -841,6 +841,57 @@
             document.getElementById('client-main-chart').innerHTML = "";
             new ApexCharts(document.querySelector("#client-main-chart"), clientOptions).render();
         }
+        // --- تفعيل مراقبة رفع ملف الإكسل وإرساله حياً للباكيند ---
+document.getElementById('client-excel-uploader').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const statusLog = document.getElementById('upload-status-log');
+    statusLog.innerHTML = `⏳ جاري رفع الملف ومعالجته تحليلياً في الباكيند...`;
+    statusLog.style.color = 'var(--warning)';
+
+    // بناء نموذج البيانات لإرسال الملف
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const response = await fetch('http://127.0.0.1:8000/api/client/upload-data', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            statusLog.innerHTML = `✅ ${result.message}`;
+            statusLog.style.color = 'var(--success)';
+            alert('تم تحديث لوحة البيانات والـ KPIs بناءً على ملفك المرفوع!');
+
+            // 1. تحديث الكروت الفورية (KPIs) في لوحة العميل ديناميكياً
+            document.getElementById('dash-kpi-1').innerText = result.kpis.performance;
+            document.getElementById('dash-kpi-2').innerText = result.kpis.efficiency;
+
+            // 2. تحديث الرسم البياني للعميل فوراً بالبيانات المستخرجة من الإكسل
+            var updatedOptions = {
+                chart: { type: 'bar', height: 250, theme: 'dark', foreColor: '#94a3b8' },
+                series: [{ name: 'مستوى الأداء التشغيلي المحدث %', data: result.chart_data }],
+                xaxis: { categories: ['Q1', 'Q2', 'Q3', 'Q4'] },
+                colors: ['#10b981'], // يتغير للون الأخضر دلالة على التحديث
+                grid: { borderColor: 'rgba(255,255,255,0.05)' }
+            };
+            document.getElementById('client-main-chart').innerHTML = "";
+            new ApexCharts(document.querySelector("#client-main-chart"), updatedOptions).render();
+
+        } else {
+            statusLog.innerHTML = `❌ خطأ: ${result.detail}`;
+            statusLog.style.color = 'var(--danger)';
+        }
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        statusLog.innerHTML = `❌ تعذر الاتصال بالسيرفر أثناء معالجة الملف.`;
+        statusLog.style.color = 'var(--danger)';
+    }
+});
     </script>
 </body>
 </html>
