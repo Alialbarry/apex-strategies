@@ -136,7 +136,7 @@
 
         /* APPLICATION CORE LAYOUT */
         .app-wrapper {
-            display: none; /* تظهر بعد تسجيل الدخول */
+            display: none; 
             min-height: 100vh;
         }
 
@@ -436,7 +436,7 @@
             <div class="demo-accounts-box">
                 <strong>🔑 تنويه الاختبار (حسابات تجريبية):</strong><br>
                 • للمدير: admin@apex.com (الباسورد: 123456)<br>
-                • للعميل: client@apex.com (الباسورد: 123456)
+                • للعميل: قم بإنشاء حساب أولاً عبر الـ Swagger للاختبار الحي!
             </div>
         </div>
     </div>
@@ -519,36 +519,14 @@
                     </div>
                 </div>
 
-                <div class="panel-card" style="margin-bottom: 25px;">
-                    <h3>إحصائيات حسابات العملاء الموزعة</h3>
-                    <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 0;">
-                        <div style="text-align:center;">
-                            <span style="color:var(--text-secondary); font-size:12px;">إجمالي الحسابات</span>
-                            <div style="font-size:22px; font-weight:700;">14</div>
-                        </div>
-                        <div style="text-align:center;">
-                            <span style="color:var(--success); font-size:12px;">النشطة حالياً</span>
-                            <div style="font-size:22px; font-weight:700; color:var(--success);">12</div>
-                        </div>
-                        <div style="text-align:center;">
-                            <span style="color:var(--danger); font-size:12px;">المعطلة موقتاً</span>
-                            <div style="font-size:22px; font-weight:700; color:var(--danger);">2</div>
-                        </div>
-                        <div style="text-align:center;">
-                            <span style="color:var(--accent-blue); font-size:12px;">مسجلي الدخول اليوم</span>
-                            <div style="font-size:22px; font-weight:700; color:var(--accent-blue);">7</div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="panel-card">
-                    <h3>جدول التحكم والمراقبة التفصيلي للمستخدمين</h3>
+                    <h3>جدول التحكم والمراقبة التفصيلي للمستخدمين (قاعدة البيانات الحية)</h3>
                     <div class="saas-table-wrapper">
                         <table class="saas-data-table">
                             <thead>
                                 <tr>
                                     <th>Client ID</th>
-                                    <th>اسم الشركة المنشأة</th>
+                                    <th>اسم الحساب / النشاط</th>
                                     <th>المسؤول الرئيسي</th>
                                     <th>البريد الإلكتروني</th>
                                     <th>نوع الخطة والاشتراك</th>
@@ -557,16 +535,7 @@
                                 </tr>
                             </thead>
                             <tbody id="users-management-tbody">
-                                <tr>
-                                    <td>APX-CLN-402</td>
-                                    <td>مجمع النخبة الطبي</td>
-                                    <td>أ. نورة التميمي</td>
-                                    <td>clinic@client.com</td>
-                                    <td><span class="pill pro">Professional</span></td>
-                                    <td><span class="pill active">نشط</span></td>
-                                    <td><button class="btn-small-tool">تعديل</button></td>
-                                </tr>
-                            </tbody>
+                                </tbody>
                         </table>
                     </div>
                 </div>
@@ -703,7 +672,7 @@
     </div>
 
     <script>
-        // 1. دالة تسجيل الدخول والربط الفعلي بالـ Backend
+        // 1. دالة تسجيل الدخول والربط بالـ Backend وقاعدة البيانات
         async function executeSaaSLogin(event) {
             event.preventDefault(); 
 
@@ -730,17 +699,17 @@
                     document.getElementById('saas-login-screen').style.display = 'none';
                     document.getElementById('saas-app-wrapper').style.display = 'flex';
 
-                    // تحديث الاسم ديناميكياً
+                    // تحديث الاسم ديناميكياً بناء على الـ Response القادم من الـ SQLite
                     document.getElementById('username-display').innerText = data.user.name;
                     
-                    // فحص دور المستخدم وتحديد القوائم واللوحات المناسبة
-                    if (data.user.role === 'admin' || data.user.email.includes('admin')) {
+                    // فحص دور المستخدم وتحديد القوائم واللوحات المناسبة للـ Role
+                    if (data.user.role === 'admin') {
                         setupAdminEnvironment();
                     } else {
                         setupClientEnvironment(data.user);
                     }
                     
-                    // بناء ورسم الرسوم البيانية
+                    // بناء ورسم الرسوم البيانية التفاعلية
                     renderInitialCharts();
 
                 } else {
@@ -752,8 +721,8 @@
             }
         }
 
-        // 2. إعداد بيئة المدير (Admin View)
-        function setupAdminEnvironment() {
+        // 2. إعداد بيئة المدير (Admin View) وجلب المستخدمين حياً من قاعدة البيانات
+        async function setupAdminEnvironment() {
             document.getElementById('role-badge-display').innerText = 'Admin';
             document.getElementById('role-badge-display').className = 'badge-role admin';
             document.getElementById('current-tenant-title').innerText = 'لوحة الإشراف العام - Apex Strategies';
@@ -762,6 +731,42 @@
             document.getElementById('menu-client-group').style.display = 'none';
             
             navigateSaaSView('view-admin-overview', 'm-overview');
+
+            // طلب قائمة المستخدمين من الباكيند حياً
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/admin/users');
+                if (response.ok) {
+                    const users = await response.json();
+                    const tbody = document.getElementById('users-management-tbody');
+                    
+                    // تنظيف الجدول من السطور القديمة والثابتة
+                    tbody.innerHTML = ''; 
+
+                    // بناء السطور ديناميكياً بناءً على الحسابات الفعالة في SQLite
+                    users.forEach(user => {
+                        const tr = document.createElement('tr');
+                        
+                        // تحديد شكل الـ Pill بناءً على نوع الحساب
+                        let typeClass = 'basic';
+                        if (user.account_type.toLowerCase() === 'clinic') typeClass = 'pro';
+                        if (user.account_type.toLowerCase() === 'business') typeClass = 'ent';
+                        if (user.account_type.toLowerCase() === 'admin') typeClass = 'basic';
+
+                        tr.innerHTML = `
+                            <td>${user.id.substring(0, 8)}...</td>
+                            <td>${user.account_type === 'Admin' ? 'إدارة النظام' : 'شركة أو عيادة مسجلة'}</td>
+                            <td>${user.first_name} ${user.last_name}</td>
+                            <td>${user.email}</td>
+                            <td><span class="pill ${typeClass}">${user.account_type}</span></td>
+                            <td><span class="pill active">نشط</span></td>
+                            <td><button class="btn-small-tool" onclick="alert('ميزة التعديل للحساب ${user.id} ستتوفر قريباً!')">تعديل</button></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (error) {
+                console.error('فشل جلب الحسابات الحية للوحة الأدمن:', error);
+            }
         }
 
         // 3. إعداد بيئة العميل (Client View)
@@ -775,20 +780,20 @@
             
             document.getElementById('client-welcome-heading').innerText = `مرحباً بك يا ${user.name}`;
             
+            // تحديث الباقة المعروضة بملف العميل التعريفي
+            document.getElementById('prof-plan-pill').innerText = user.account_type;
+            
             navigateSaaSView('view-client-dashboard', 'm-client-dash');
         }
 
         // 4. التنقل التفاعلي الذكي بين الأقسام والتبويبات
         function navigateSaaSView(viewId, menuItemId) {
-            // إخفاء جميع الأقسام أولاً
             const sections = document.querySelectorAll('.view-section');
             sections.forEach(section => section.classList.remove('active'));
             
-            // إزالة التحديد النشط من القوائم الجانبية
             const menuItems = document.querySelectorAll('.menu-item');
             menuItems.forEach(item => item.classList.remove('active'));
             
-            // إظهار القسم المطلوب وتنشيطه
             document.getElementById(viewId).classList.add('active');
             if(menuItemId) {
                 document.getElementById(menuItemId).classList.add('active');
