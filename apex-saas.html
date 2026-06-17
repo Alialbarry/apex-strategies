@@ -3,816 +3,843 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex SaaS - بوابة تحليلات الأعمال المخصصة</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <title>Apex Strategies - Next-Gen SaaS BI Platform</title>
     
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
     <style>
         :root {
-            --bg-base: #0f172a;
-            --bg-surface: #1e293b;
-            --bg-card: #334155;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
+            --bg-main: #0b0f19;
+            --bg-card: #151b2c;
+            --bg-sidebar: #111625;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.05);
             --success: #10b981;
-            --warning: #f59e0b;
             --danger: #ef4444;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: rgba(255, 255, 255, 0.08);
-            --sidebar-width: 260px;
+            --warning: #f59e0b;
         }
 
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Cairo', sans-serif;
+            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
+            font-family: 'Cairo', 'Poppins', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
             overflow-x: hidden;
         }
 
-        /* --- الهيكل العام والتصميم الجانبي (Sidebar) --- */
-        .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--bg-surface);
-            border-left: 1px solid var(--border);
+        /* LOGIN SCREEN Styles */
+        .login-screen {
             display: flex;
-            flex-direction: column;
-            padding: 24px 16px;
-            position: fixed;
-            height: 100vh;
-            right: 0;
-            top: 0;
-            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: radial-gradient(circle at center, #1a233a 0%, #0b0f19 100%);
         }
 
-        .brand-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding-bottom: 32px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 24px;
+        .login-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
         }
 
         .brand-logo {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--success));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-size: 28px;
             font-weight: 700;
-            font-size: 1.2rem;
-            color: white;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
         }
+        .brand-logo span { color: var(--accent-blue); }
 
-        .brand-name {
-            font-size: 1.3rem;
-            font-weight: 700;
-            background: linear-gradient(to left, #ffffff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .menu-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            flex-grow: 1;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .menu-item:hover, .menu-item.active {
-            background-color: rgba(59, 130, 246, 0.1);
-            color: var(--primary);
-        }
-
-        .menu-item.active {
-            border-right: 4px solid var(--primary);
-            background-color: rgba(59, 130, 246, 0.15);
-        }
-
-        .logout-box {
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-        }
-
-        .btn-logout {
-            width: 100%;
-            padding: 10px;
-            background-color: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .btn-logout:hover {
-            background-color: var(--danger);
-            color: white;
-        }
-
-        /* --- منطقة المحتوى الرئيسية --- */
-        .main-wrapper {
-            margin-right: var(--sidebar-width);
-            width: calc(100% - var(--sidebar-width));
-            padding: 32px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* شريط العلو الملاحي */
-        .top-navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-            background-color: var(--bg-surface);
-            padding: 16px 24px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-        }
-
-        .user-profile-badge {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .avatar-circle {
-            width: 42px;
-            height: 42px;
-            background-color: var(--bg-card);
-            border: 2px solid var(--primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .user-meta-info h4 {
-            font-size: 0.95rem;
-            font-weight: 600;
-        }
-
-        .user-meta-info span {
-            font-size: 0.8rem;
-            color: var(--success);
-            background: rgba(16, 185, 129, 0.1);
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-weight: bold;
-        }
-
-        /* --- لوحات العرض والـ Views --- */
-        .saas-view {
-            display: none;
-            animation: fadeIn 0.3s ease-in-out forwards;
-        }
-
-        .saas-view.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* تصاميم الكروت والشبكات */
-        .view-title-box {
-            margin-bottom: 24px;
-        }
-
-        .view-title-box h2 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .view-title-box p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        /* شبكة الكروت الإحصائية KPIs */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 24px;
-        }
-
-        .kpi-card {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .kpi-card::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 4px;
-            background-color: var(--primary);
-        }
-
-        .kpi-card.success::before { background-color: var(--success); }
-        .kpi-card.warning::before { background-color: var(--warning); }
-
-        .kpi-label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .kpi-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        /* صناديق الرسوم والمحتوى البصري */
-        .analytics-block {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-        }
-
-        .block-header {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* --- تصاميم الجداول (للأدمن) --- */
-        .custom-table-container {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: right;
-            font-size: 0.9rem;
-        }
-
-        .data-table th {
-            background-color: rgba(255, 255, 255, 0.03);
-            padding: 14px 16px;
-            font-weight: 600;
-            color: var(--text-muted);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .data-table td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .data-table tr:hover {
-            background-color: rgba(255, 255, 255, 0.01);
-        }
-
-        /* --- النماذج والفورم (Forms) --- */
-        .form-card {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 32px;
-            max-width: 600px;
+        .login-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 30px;
         }
 
         .form-group {
+            text-align: right;
             margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            font-size: 0.9rem;
-            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-secondary);
             margin-bottom: 8px;
-            color: var(--text-muted);
+            font-weight: 600;
         }
 
-        .form-control {
+        .form-group input {
             width: 100%;
             padding: 12px 16px;
-            background-color: var(--bg-base);
-            border: 1px solid var(--border);
-            border-radius: 8px;
+            background: var(--bg-main);
+            border: 1px solid #27314a;
             color: white;
-            font-size: 0.95rem;
+            border-radius: 8px;
+            font-size: 15px;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.3s ease;
         }
 
-        .form-control:focus {
-            border-color: var(--primary);
+        .form-group input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
 
-        .btn-submit {
-            padding: 12px 24px;
-            background-color: var(--primary);
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--accent-blue), #2563eb);
             color: white;
             border: none;
             border-radius: 8px;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
-            font-size: 0.95rem;
-            transition: background-color 0.2s;
+            font-family: inherit;
+            transition: all 0.3s ease;
         }
 
-        .btn-submit:hover {
-            background-color: var(--primary-hover);
+        .btn-action:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
         }
 
-        /* منطقة رفع الملفات المخصصة */
-        .uploader-zone {
-            border: 2px dashed var(--border);
-            border-radius: 12px;
-            padding: 40px;
-            text-align: center;
-            background-color: rgba(255, 255, 255, 0.01);
+        .demo-accounts-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px dashed rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 25px;
+            font-size: 12px;
+            text-align: right;
+            color: #60a5fa;
+        }
+
+        /* APPLICATION CORE LAYOUT */
+        .app-wrapper {
+            display: none; 
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styling */
+        .app-sidebar {
+            width: 260px;
+            background: var(--bg-sidebar);
+            border-left: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            padding: 25px 20px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            margin-top: 35px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
-        .uploader-zone:hover {
-            border-color: var(--primary);
-            background-color: rgba(59, 130, 246, 0.02);
+        .menu-item:hover, .menu-item.active {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-blue);
         }
 
-        .uploader-zone p {
-            margin-top: 12px;
-            font-size: 0.95rem;
-            color: var(--text-muted);
+        /* Top Header */
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 260px;
+            height: 75px;
+            background: rgba(11, 15, 25, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 90;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
         }
 
-        #upload-status-log {
-            margin-top: 16px;
+        .header-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .badge-role {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .badge-role.admin { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .badge-role.client { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .btn-logout:hover { background: var(--danger); color: white; border-color: var(--danger); }
+
+        /* Main Content Viewport */
+        .main-viewport {
+            margin-right: 260px;
+            padding: 105px 40px 40px 40px;
+        }
+
+        .view-section {
+            display: none;
+        }
+        .view-section.active {
+            display: block;
+        }
+
+        /* UI Component Cards & Rows */
+        .welcome-widget {
+            background: linear-gradient(135deg, rgba(21, 27, 44, 0.6) 0%, rgba(31, 41, 64, 0.4) 100%);
+            border: 1px solid var(--border-color);
+            padding: 25px 35px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card-saas {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 22px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card-saas::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; width: 4px; height: 100%;
+            background: var(--accent-blue);
+        }
+        .kpi-card-saas.purple::before { background: var(--accent-purple); }
+        .kpi-card-saas.success::before { background: var(--success); }
+        .kpi-card-saas.warning::before { background: var(--warning); }
+
+        .kpi-card-saas h4 {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .kpi-card-saas .value {
+            font-size: 28px;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .charts-grid-saas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .panel-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 25px;
+        }
+
+        .panel-card h3 {
+            font-size: 16px;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Enterprise Management Data Tables */
+        .saas-table-wrapper {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        .saas-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .saas-data-table th {
+            background: rgba(255,255,255,0.02);
+            color: var(--text-secondary);
+            padding: 14px 16px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .saas-data-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            color: #cbd5e1;
+        }
+
+        .saas-data-table tr:hover td {
+            background: rgba(255,255,255,0.01);
+        }
+
+        /* Status Pills */
+        .pill {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
             font-weight: bold;
-            font-size: 0.9rem;
+            display: inline-block;
         }
+        .pill.basic { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+        .pill.pro { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+        .pill.ent { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .pill.active { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .pill.suspend { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+        /* Dynamic Selector Tabs inside Client View */
+        .tab-navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .tab-sub-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .tab-sub-btn.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        /* File Upload Area */
+        .upload-zone {
+            border: 2px dashed #27314a;
+            padding: 15px 25px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(255,255,255,0.01);
+            color: var(--accent-blue);
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .upload-zone:hover { background: rgba(59,130,246,0.05); }
+
+        /* Quick Action Utility Buttons */
+        .btn-small-tool {
+            background: #222d45;
+            color: #cbd5e1;
+            border: 1px solid var(--border-color);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            font-family: inherit;
+            margin-left: 5px;
+        }
+        .btn-small-tool:hover { background: var(--accent-blue); color: white; }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div class="brand-section">
-            <div class="brand-logo">A</div>
-            <div class="brand-name">APEX SaaS</div>
-        </div>
-
-        <ul class="menu-list">
-            <li class="menu-item active" id="m-client-dash" onclick="navigateSaaSView('view-client-dashboard', 'm-client-dash')" style="display: none;">📊 لوحة تحليلاتك المخصصة</li>
-            <li class="menu-item" id="m-client-upload" onclick="navigateSaaSView('view-client-upload', 'm-client-upload')" style="display: none;">⚙️ إدارة ورفع البيانات</li>
+    <div id="saas-login-screen" class="login-screen">
+        <div class="login-card">
+            <div class="brand-logo">APEX <span>STRATEGIES</span></div>
+            <div class="login-subtitle">منصة ذكاء الأعمال المخصصة وإدارة الاشتراكات السحابية</div>
             
-            <li class="menu-item active" id="m-admin-users" onclick="navigateSaaSView('view-admin-users', 'm-admin-users')" style="display: none;">👥 إدارة العملاء والحسابات</li>
-            <li class="menu-item" id="m-admin-create" onclick="navigateSaaSView('view-admin-create', 'm-admin-create')" style="display: none;">🛠️ إنشاء لوحة وعميل جديد</li>
-            
-            <li class="menu-item" id="m-shared-profile" onclick="navigateSaaSView('view-shared-profile', 'm-shared-profile')">🔒 الملف الشخصي والأمان</li>
-        </ul>
-
-        <div class="logout-box">
-            <button class="btn-logout" onclick="performSaaSLogout()">تسجيل الخروج</button>
-        </div>
-    </aside>
-
-    <main class="main-wrapper">
-        
-        <header class="top-navbar">
-            <div class="project-indicator">
-                <span style="color: var(--text-muted); font-size: 0.85rem;">المشروع النشط الحالي:</span>
-                <h3 id="global-project-title" style="font-weight: 700; color: white;">جاري التحميل...</h3>
-            </div>
-            <div class="user-profile-badge">
-                <div class="user-meta-info" style="text-align: left;">
-                    <h4 id="global-user-fullname">اسم المستخدم</h4>
-                    <span id="global-user-role">نوع الحساب</span>
+            <form id="saas-login-form" onsubmit="executeSaaSLogin(event)">
+                <div class="form-group">
+                    <label>البريد الإلكتروني للحساب</label>
+                    <input type="email" id="auth-username" required placeholder="example@apex.com">
                 </div>
-                <div class="avatar-circle" id="global-avatar-letter">U</div>
+                
+                <div class="form-group">
+                    <label>كلمة المرور الشخصية</label>
+                    <input type="password" id="auth-password" required placeholder="••••••••">
+                </div>
+                
+                <button type="submit" class="btn-action">تسجيل دخول آمن للمنصة</button>
+            </form>
+            
+            <div class="demo-accounts-box">
+                <strong>🔑 تنويه الاختبار (حسابات تجريبية):</strong><br>
+                • للمدير: admin@apex.com (الباسورد: 123456)<br>
+                • للعميل: قم بإنشاء حساب أولاً عبر الـ Swagger للاختبار الحي!
+            </div>
+        </div>
+    </div>
+
+    <div id="saas-app-wrapper" class="app-wrapper">
+        
+        <aside class="app-sidebar">
+            <div class="brand-logo">APEX <span>SaaS</span></div>
+            
+            <ul class="sidebar-menu" id="menu-admin-group" style="display:none;">
+                <li class="menu-item active" id="m-overview" onclick="navigateSaaSView('view-admin-overview', 'm-overview')">نظرة عامة والمنصة</li>
+                <li class="menu-item" id="m-users" onclick="navigateSaaSView('view-admin-users', 'm-users')">إدارة المستخدمين Users</li>
+                <li class="menu-item" id="m-templates" onclick="navigateSaaSView('view-admin-templates', 'm-templates')">قوالب القطاعات Templates</li>
+            </ul>
+
+            <ul class="sidebar-menu" id="menu-client-group" style="display:none;">
+                <li class="menu-item active" id="m-client-dash" onclick="navigateSaaSView('view-client-dashboard', 'm-client-dash')">لوحة البيانات التحليلية</li>
+                <li class="menu-item" id="m-client-files" onclick="navigateSaaSView('view-client-files', 'm-client-files')">إدارة ورفع الملفات</li>
+                <li class="menu-item" id="m-client-profile" onclick="navigateSaaSView('view-client-profile', 'm-client-profile')">الملف الشخصي والاشتراك</li>
+            </ul>
+        </aside>
+
+        <header class="app-header">
+            <div>
+                <h3 id="current-tenant-title" style="font-size:16px; font-weight:600;">بوابة Apex الاستشارية</h3>
+            </div>
+            <div class="header-profile">
+                <span id="role-badge-display" class="badge-role">Client</span>
+                <span id="username-display" style="font-size:14px; font-weight:600;">جاري التحميل...</span>
+                <button class="btn-logout" onclick="executeSaaSLogout()">تسجيل الخروج</button>
             </div>
         </header>
 
-        <section id="view-client-dashboard" class="saas-view">
-            <div class="view-title-box">
-                <h2 id="dynamic-dash-heading">لوحة البيانات التحليلية المخصصة</h2>
-                <p>مؤشرات الأداء المستخرجة حياً بناءً على ملفات عملك وبيانات الـ Power BI المبرمجة.</p>
-            </div>
+        <main class="main-viewport">
 
-            <div class="kpi-grid" id="dynamic-kpis-container">
+            <div id="view-admin-overview" class="view-section">
+                <div class="welcome-widget">
+                    <div>
+                        <h2>لوحة القيادة التنفيذية ومراقبة الـ SaaS</h2>
+                        <p style="color:var(--text-secondary); font-size:13px; margin-top:5px;">مراقبة الأداء المالي، التراخيص النشطة، وحالة الـ Dashboards المخصصة لعملائك.</p>
+                    </div>
                 </div>
 
-            <div class="analytics-block">
-                <div class="block-header">
-                    <span id="dynamic-chart-title">رسم بياني تحليلي مخصص لبياناتك</span>
+                <div class="kpi-grid">
+                    <div class="kpi-card-saas">
+                        <h4>العملاء والشركات النشطة</h4>
+                        <div class="value" style="color: var(--accent-blue)">12</div>
+                    </div>
+                    <div class="kpi-card-saas purple">
+                        <h4>الاشتراكات النشطة Active Contracts</h4>
+                        <div class="value" style="color: var(--accent-purple)">10</div>
+                    </div>
+                    <div class="kpi-card-saas success">
+                        <h4>الإيرادات الشهرية المتكررة MRR</h4>
+                        <div class="value" style="color: var(--success)">$14,500</div>
+                    </div>
+                    <div class="kpi-card-saas warning">
+                        <h4>عدد اللوحات المصممة المخصصة</h4>
+                        <div class="value" style="color: var(--warning)">28</div>
+                    </div>
                 </div>
-                <div id="client-main-chart"></div>
-            </div>
-        </section>
 
-        <section id="view-client-upload" class="saas-view">
-            <div class="view-title-box">
-                <h2>مركز مزامنة وتحديث البيانات</h2>
-                <p>ارفع ملف الـ Excel أو الـ CSV الجديد هنا لتحديث الرسوم والمؤشرات البيانية لحسابك فوراً.</p>
-            </div>
-
-            <div class="analytics-block" style="max-width: 650px;">
-                <div class="block-header">استيراد ملف البيانات المحدث للوحة</div>
-                <div class="uploader-zone" onclick="document.getElementById('client-excel-uploader').click()">
-                    <span style="font-size: 2.5rem;">📁</span>
-                    <p>اضغط هنا لاختيار ملف البيانات الخاص بعملك (Excel / CSV)</p>
-                    <input type="file" id="client-excel-uploader" style="display: none;" accept=".xlsx, .xls, .csv">
+                <div class="charts-grid-saas">
+                    <div class="panel-card">
+                        <h3>منحنى نمو خطط الاشتراكات الشهرية (SaaS MRR)</h3>
+                        <div id="chart-admin-revenue"></div>
+                    </div>
+                    <div class="panel-card">
+                        <h3>توزيع العملاء حسب باقات الاشتراك</h3>
+                        <div id="chart-admin-plans"></div>
+                    </div>
                 </div>
-                <div id="upload-status-log">جاهز لاستقبال ملف البيانات لتحديث الداشبورد...</div>
-            </div>
-        </section>
-
-        <section id="view-admin-users" class="saas-view">
-            <div class="view-title-box">
-                <h2>إدارة حسابات وعملاء المنصة</h2>
-                <p>مراقبة شاملة لكافة حسابات العملاء المسجلين والأنظمة النشطة على الـ SQLite حالياً.</p>
             </div>
 
-            <div class="analytics-block">
-                <div class="block-header">قائمة العملاء النشطين ومشاريع الـ BI المرتبطة</div>
-                <div class="custom-table-container">
-                    <table class="data-table">
-                        <thead>
+            <div id="view-admin-users" class="view-section">
+                <div class="welcome-widget">
+                    <div>
+                        <h2>إدارة حسابات المستخدمين والشركات (Users Management)</h2>
+                        <p style="color:var(--text-secondary); font-size:13px; margin-top:5px;">الصلاحيات الكاملة لإنشاء حسابات العملاء يدوياً، تعديل باقاتهم، وتخصيص لوحاتهم البيانية.</p>
+                    </div>
+                </div>
+
+                <div class="panel-card">
+                    <h3>جدول التحكم والمراقبة التفصيلي للمستخدمين (قاعدة البيانات الحية)</h3>
+                    <div class="saas-table-wrapper">
+                        <table class="saas-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Client ID</th>
+                                    <th>اسم الحساب / النشاط</th>
+                                    <th>المسؤول الرئيسي</th>
+                                    <th>البريد الإلكتروني</th>
+                                    <th>نوع الخطة والاشتراك</th>
+                                    <th>حالة الحساب</th>
+                                    <th>خيارات إدارية (Admin)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-management-tbody">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-admin-templates" class="view-section">
+                <div class="welcome-widget">
+                    <div>
+                        <h2>إدارة وتطوير قوالب القطاعات المسبقة (Templates)</h2>
+                        <p style="color:var(--text-secondary); font-size:13px; margin-top:5px;">إنشاء وتعديل القوالب القياسية للقطاعات المختلفة لتكون نقطة البداية لتخصيص لوحة كل عميل.</p>
+                    </div>
+                </div>
+
+                <div class="charts-grid-saas" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="panel-card">
+                        <h3>قالب قطاع المصانع والإنتاج</h3>
+                        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:15px;">يحتوي على: تحليل OEE، هدر الإنتاج، كفاءة سلسلة التوريد، ومراقبة الـ Capacity.</p>
+                        <button class="btn-action" style="padding:8px; font-size:13px;">تعديل القالب الهيكلي</button>
+                    </div>
+                    <div class="panel-card">
+                        <h3>قالب العيادات والمراكز الطبية</h3>
+                        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:15px;">يحتوي على: معدلات No-Show، توزيع الإيرادات حسب الخدمة والأطباء، وأوقات الانتظار.</p>
+                        <button class="btn-action" style="padding:8px; font-size:13px;">تعديل القالب الهيكلي</button>
+                    </div>
+                    <div class="panel-card">
+                        <h3>قالب الشركات التجارية والتوزيع</h3>
+                        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:15px;">يحتوي على: تحليل أرباح وخسائر P&L، تدوير المخزون، والمبيعات الشهرية.</p>
+                        <button class="btn-action" style="padding:8px; font-size:13px;">تعديل القالب الهيكلي</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-client-dashboard" class="view-section">
+                <div class="welcome-widget">
+                    <div>
+                        <h2 id="client-welcome-heading">مرحباً بك في نظام التحليلات التنفيذي</h2>
+                        <p style="color:var(--text-secondary); font-size:13px; margin-top:5px;" id="client-welcome-sub">تستعرض الآن اللوحات المصممة لك خصيصاً من قبل مستشاري Apex.</p>
+                    </div>
+                </div>
+
+                <div class="tab-navigation" id="client-dynamic-tabs-nav">
+                    <button class="tab-sub-btn active">المؤشرات العامة للقطاع</button>
+                </div>
+
+                <div class="kpi-grid" id="client-dynamic-kpi-grid">
+                    <div class="kpi-card-saas">
+                        <h4>معدل الأداء التشغيلي الحالي</h4>
+                        <div class="value" style="color: var(--accent-blue)" id="dash-kpi-1">94.2%</div>
+                    </div>
+                    <div class="kpi-card-saas purple">
+                        <h4>الكفاءة الإنتاجية العامة</h4>
+                        <div class="value" style="color: var(--accent-purple)" id="dash-kpi-2">86.5%</div>
+                    </div>
+                </div>
+
+                <div class="charts-grid-saas" id="client-dynamic-charts-grid">
+                    <div class="panel-card">
+                        <h3>تحليل الأداء الربع سنوي</h3>
+                        <div id="client-main-chart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-client-files" class="view-section">
+                <div class="welcome-widget">
+                    <div>
+                        <h2>مركز مزامنة ورفع البيانات والملفات</h2>
+                        <p style="color:var(--text-secondary); font-size:13px; margin-top:5px;">ارفع ملفات الـ Excel أو الـ CSV لتحديث الرسوم والتقارير الذكية تلقائياً وبأمان كامل.</p>
+                    </div>
+                </div>
+
+                <div class="panel-card" style="max-width:600px; margin: 0 auto;">
+                    <h3>استيراد ملف جديد للوحة</h3>
+                    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:20px;">يدعم النظام قراءة ملفات البيانات ومطابقتها مع الجداول التحليلية المخصصة لحسابك فوراً.</p>
+                    
+                    <label class="upload-zone">
+                        📂 اضغط هنا لاستيراد ملف البيانات الخاص بعملك وتحديث الـ Dashboard
+                        <input type="file" id="client-excel-uploader" accept=".xlsx, .xls, .csv" style="display:none;">
+                    </label>
+                    
+                    <div style="margin-top:20px; font-size:12px; color:var(--text-secondary);" id="upload-status-log">
+                        • حالة النظام: جاهز لتلقي ملفات التحديث.
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-client-profile" class="view-section">
+                <div class="welcome-widget">
+                    <div>
+                        <h2>الملف التعريفي للشركة وتفاصيل ترخيص الـ SaaS</h2>
+                        <p style="color:var(--text-secondary); font-size:13px; margin-top:5px;">التحكم ببيانات الدخول، مراجعة فواتير الدفع، وتفاصيل باقة الـ SaaS المشترك بها.</p>
+                    </div>
+                </div>
+
+                <div class="charts-grid-saas">
+                    <div class="panel-card">
+                        <h3>تفاصيل ترخيص المنصة الحالي</h3>
+                        <table class="saas-data-table" style="margin-top:10px;">
                             <tr>
-                                <th>اسم العميل</th>
-                                <th>البريد الإلكتروني</th>
-                                <th>الداشبورد المخصصة (نوع الحساب)</th>
+                                <td>الخطة المفعلة:</td>
+                                <td><span class="pill ent" id="prof-plan-pill">Professional</span></td>
                             </tr>
-                        </thead>
-                        <tbody id="admin-users-table-body">
-                            </tbody>
-                    </table>
+                            <tr>
+                                <td>أقصى عدد مستخدمين مسموح:</td>
+                                <td id="prof-max-users">حتى 5 مستخدمين</td>
+                            </tr>
+                            <tr>
+                                <td>تواتر تحديث البيانات المجدول:</td>
+                                <td id="prof-update-freq">أسبوعي مباشر</td>
+                            </tr>
+                            <tr>
+                                <td>حالة الاشتراك المالي:</td>
+                                <td><span class="pill active">تم الدفع (نشط)</span></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="panel-card">
+                        <h3>تحديث كلمة مرور الحساب</h3>
+                        <div class="form-group">
+                            <label>كلمة المرور الحالية</label>
+                            <input type="password" placeholder="••••••••">
+                        </div>
+                        <div class="form-group">
+                            <label>كلمة المرور الجديدة</label>
+                            <input type="password" placeholder="••••••••">
+                        </div>
+                        <button class="btn-action" style="padding:10px; font-size:14px;">حفظ كلمة المرور الجديدة</button>
+                    </div>
                 </div>
             </div>
-        </section>
 
-        <section id="view-admin-create" class="saas-view">
-            <div class="view-title-box">
-                <h2>إنشاء عميل مخصص وربطه بداشبورد الـ Power BI</h2>
-                <p>قم بتسجيل حساب عميلك الجديد وتسمية اللوحة البيانية المبرمجة له للتحكم الكامل بصلاحياته.</p>
-            </div>
-
-            <div class="form-card">
-                <form id="admin-create-user-form" onsubmit="handleAdminCreateUser(event)">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                        <div class="form-group">
-                            <label>الاسم الأول للعميل</label>
-                            <input type="text" id="add-first-name" class="form-control" placeholder="مثال: أحمد" required>
-                        </div>
-                        <div class="form-group">
-                            <label>العائلة / الشركة</label>
-                            <input type="text" id="add-last-name" class="form-control" placeholder="مثال: المصري" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>البريد الإلكتروني (المستخدم للدخول)</label>
-                        <input type="email" id="add-email" class="form-control" placeholder="name@company.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label>كلمة المرور الابتدائية للعميل</label>
-                        <input type="password" id="add-password" class="form-control" placeholder="حد أدنى 6 خانات" required>
-                    </div>
-                    <div class="form-group">
-                        <label>اسم الداشبورد المخصصة (BI Dashboard Identifier)</label>
-                        <input type="text" id="add-account-type" class="form-control" placeholder="مثال: Kashkaval Cheese Board" required>
-                        <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px; display: block;">
-                            هذا الاسم يحدد شكل وهوية لوحة البيانات التي قمت ببرمجتها لهذا العميل بناءً على متطلباته.
-                        </small>
-                    </div>
-                    <button type="submit" class="btn-submit" style="width: 100%;">🚀 إنشاء الحساب وربط اللوحة فوراً</button>
-                </form>
-            </div>
-        </section>
-
-        <section id="view-shared-profile" class="saas-view">
-            <div class="view-title-box">
-                <h2>إعدادات الحساب وتأمين الخصوصية</h2>
-                <p>يمكنك تعديل وتحديث كلمة مرور حسابك الشخصي بشكل آمن ومشفر داخل قاعدة البيانات في أي وقت.</p>
-            </div>
-
-            <div class="form-card">
-                <form id="shared-change-password-form" onsubmit="handleSharedChangePassword(event)">
-                    <div class="form-group">
-                        <label>كلمة المرور الحالية</label>
-                        <input type="password" id="profile-current-password" class="form-control" placeholder="أدخل باسورك الحالي" required>
-                    </div>
-                    <div class="form-group">
-                        <label>كلمة المرور الجديدة</label>
-                        <input type="password" id="profile-new-password" class="form-control" placeholder="6 خانات أو أكثر" required>
-                    </div>
-                    <div class="form-group">
-                        <label>تأكيد كلمة المرور الجديدة</label>
-                        <input type="password" id="profile-confirm-password" class="form-control" placeholder="أعد كتابة الباسورد الجديد" required>
-                    </div>
-                    <button type="submit" class="btn-submit">🔒 حفظ وتحديث كلمة المرور</button>
-                </form>
-            </div>
-        </section>
-
-    </main>
+        </main>
+    </div>
 
     <script>
-        let currentUserData = null;
-        let activeChartInstance = null;
+        // 1. دالة تسجيل الدخول والربط بالـ Backend وقاعدة البيانات
+        async function executeSaaSLogin(event) {
+            event.preventDefault(); 
 
-        window.addEventListener('DOMContentLoaded', function() {
-            const savedUser = localStorage.getItem('apex_saas_session');
-            if (!savedUser) {
-                alert('عذراً، لم يتم العثور على جلسة نشطة! يرجى الدخول من صفحة تسجيل الدخول أولاً.');
-                window.location.href = '/signin-ar.html';
-                return;
+            const emailInput = document.getElementById('auth-username').value;
+            const passwordInput = document.getElementById('auth-password').value;
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/signin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: emailInput,
+                        password: passwordInput
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('تم التحقق بنجاح! أهلاً بك في منصة Apex Strategies.');
+                    
+                    document.getElementById('saas-login-screen').style.display = 'none';
+                    document.getElementById('saas-app-wrapper').style.display = 'flex';
+
+                    // تحديث الاسم ديناميكياً بناء على الـ Response القادم من الـ SQLite
+                    document.getElementById('username-display').innerText = data.user.name;
+                    
+                    // فحص دور المستخدم وتحديد القوائم واللوحات المناسبة للـ Role
+                    if (data.user.role === 'admin') {
+                        setupAdminEnvironment();
+                    } else {
+                        setupClientEnvironment(data.user);
+                    }
+                    
+                    // بناء ورسم الرسوم البيانية التفاعلية
+                    renderInitialCharts();
+
+                } else {
+                    alert('فشل تسجيل الدخول: ' + (data.detail || 'يرجى التحقق من صحة البيانات.'));
+                }
+            } catch (error) {
+                console.error('Error during fetch:', error);
+                alert('تعذر الاتصال بسيرفر الباكيند. تأكد من تشغيل ملف الباكيند أولاً!');
             }
-
-            currentUserData = JSON.parse(savedUser);
-            setupGlobalUIHeaders();
-            initializeSaaSRolesLayout();
-        });
-
-        function setupGlobalUIHeaders() {
-            document.getElementById('global-user-fullname').innerText = currentUserData.name;
-            document.getElementById('global-user-role').innerText = currentUserData.role === 'admin' ? 'مدير المنصة' : 'عميل نشط';
-            document.getElementById('global-avatar-letter').innerText = currentUserData.name.charAt(0);
-            document.getElementById('global-project-title').innerText = currentUserData.account_type;
         }
 
-        function initializeSaaSRolesLayout() {
-            if (currentUserData.role === 'admin') {
-                document.getElementById('m-admin-users').style.display = 'flex';
-                document.getElementById('m-admin-create').style.display = 'flex';
-                navigateSaaSView('view-admin-users', 'm-admin-users');
-                loadAdminUsersTable();
-            } else {
-                document.getElementById('m-client-dash').style.display = 'flex';
-                document.getElementById('m-client-upload').style.display = 'flex';
-                navigateSaaSView('view-client-dashboard', 'm-client-dash');
-                renderCustomClientDashboard(null);
-            }
-        }
-
-        function navigateSaaSView(viewId, menuItemId) {
-            document.querySelectorAll('.saas-view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-
-            document.getElementById(viewId).classList.add('active');
-            document.getElementById(menuItemId).classList.add('active');
-
-            if (viewId === 'view-admin-users') {
-                loadAdminUsersTable();
-            }
-        }
-
-        function renderCustomClientDashboard(backendKpisAndCharts) {
-            const container = document.getElementById('dynamic-kpis-container');
-            const dashHeading = document.getElementById('dynamic-dash-heading');
-            const chartTitle = document.getElementById('dynamic-chart-title');
+        // 2. إعداد بيئة المدير (Admin View) وجلب المستخدمين حياً من قاعدة البيانات
+        async function setupAdminEnvironment() {
+            document.getElementById('role-badge-display').innerText = 'Admin';
+            document.getElementById('role-badge-display').className = 'badge-role admin';
+            document.getElementById('current-tenant-title').innerText = 'لوحة الإشراف العام - Apex Strategies';
             
-            const boardType = currentUserData.account_type;
-            dashHeading.innerText = `اللوحة التحليلية: ${boardType}`;
+            document.getElementById('menu-admin-group').style.display = 'flex';
+            document.getElementById('menu-client-group').style.display = 'none';
+            
+            navigateSaaSView('view-admin-overview', 'm-overview');
 
-            let v1 = backendKpisAndCharts ? backendKpisAndCharts.kpis.val1 : "85.0%";
-            let v2 = backendKpisAndCharts ? backendKpisAndCharts.kpis.val2 : "78.5%";
-            let seriesData = backendKpisAndCharts ? backendKpisAndCharts.chart_data : [70, 75, 85, 78];
+            // طلب قائمة المستخدمين من الباكيند حياً
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/admin/users');
+                if (response.ok) {
+                    const users = await response.json();
+                    const tbody = document.getElementById('users-management-tbody');
+                    
+                    // تنظيف الجدول من السطور القديمة والثابتة
+                    tbody.innerHTML = ''; 
 
-            // تخصيص شكل اللوحة بناءً على اسم المشروع المربوط بالعميل
-            if (boardType.includes("Cheese") || boardType.includes("مصنع") || boardType.includes("Factory")) {
-                container.innerHTML = `
-                    <div class="kpi-card">
-                        <span class="kpi-label">📊 جودة الإنتاج التشغيلي العامة</span>
-                        <div class="kpi-value" id="dash-kpi-1">${v1}</div>
-                    </div>
-                    <div class="kpi-card success">
-                        <span class="kpi-label">⏱️ كفاءة التعبئة وخطوط التبريد</span>
-                        <div class="kpi-value" id="dash-kpi-2">${v2}</div>
-                    </div>
-                    <div class="kpi-card warning">
-                        <span class="kpi-label">⚠️ نسبة الهدر / تثبيط المركبات الضارة</span>
-                        <div class="kpi-value">1.4%</div>
-                    </div>
-                `;
-                chartTitle.innerText = "تحليل حجم الإنتاج ومطابقة المؤشرات ربع السنوية للمصنع";
-            } else if (boardType.includes("Clinic") || boardType.includes("عيادة") || boardType.includes("Medical")) {
-                container.innerHTML = `
-                    <div class="kpi-card">
-                        <span class="kpi-label">👥 إجمالي المرضى والمراجعين</span>
-                        <div class="kpi-value" id="dash-kpi-1">${v1}</div>
-                    </div>
-                    <div class="kpi-card success">
-                        <span class="kpi-label">🕒 متوسط زمن الانتظار والمراجعة</span>
-                        <div class="kpi-value" id="dash-kpi-2">${v2}</div>
-                    </div>
-                `;
-                chartTitle.innerText = "المخطط الزمني لتدفق المرضى والخدمات الطبية المستهدفة";
-            } else {
-                container.innerHTML = `
-                    <div class="kpi-card">
-                        <span class="kpi-label">📈 معدل الأداء والإنتاجية العام</span>
-                        <div class="kpi-value" id="dash-kpi-1">${v1}</div>
-                    </div>
-                    <div class="kpi-card success">
-                        <span class="kpi-label">💡 مؤشر الكفاءة الكلية المتوقع</span>
-                        <div class="kpi-value" id="dash-kpi-2">${v2}</div>
-                    </div>
-                `;
-                chartTitle.innerText = "لوحة تحليل البيانات الموحدة للشركات الاستراتيجية";
+                    // بناء السطور ديناميكياً بناءً على الحسابات الفعالة في SQLite
+                    users.forEach(user => {
+                        const tr = document.createElement('tr');
+                        
+                        // تحديد شكل الـ Pill بناءً على نوع الحساب
+                        let typeClass = 'basic';
+                        if (user.account_type.toLowerCase() === 'clinic') typeClass = 'pro';
+                        if (user.account_type.toLowerCase() === 'business') typeClass = 'ent';
+                        if (user.account_type.toLowerCase() === 'admin') typeClass = 'basic';
+
+                        tr.innerHTML = `
+                            <td>${user.id.substring(0, 8)}...</td>
+                            <td>${user.account_type === 'Admin' ? 'إدارة النظام' : 'شركة أو عيادة مسجلة'}</td>
+                            <td>${user.first_name} ${user.last_name}</td>
+                            <td>${user.email}</td>
+                            <td><span class="pill ${typeClass}">${user.account_type}</span></td>
+                            <td><span class="pill active">نشط</span></td>
+                            <td><button class="btn-small-tool" onclick="alert('ميزة التعديل للحساب ${user.id} ستتوفر قريباً!')">تعديل</button></td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (error) {
+                console.error('فشل جلب الحسابات الحية للوحة الأدمن:', error);
             }
+        }
 
-            var options = {
-                chart: { type: 'bar', height: 260, theme: 'dark', foreColor: '#94a3b8', toolbar: {show: false} },
-                series: [{ name: 'نسبة الأداء والمطابقة الفعلي %', data: seriesData }],
-                xaxis: { categories: ['الربع الأول', 'الربع الثاني', 'الربع الثالث', 'الربع الرابع'] },
+        // 3. إعداد بيئة العميل (Client View)
+        function setupClientEnvironment(user) {
+            document.getElementById('role-badge-display').innerText = 'Client';
+            document.getElementById('role-badge-display').className = 'badge-role client';
+            document.getElementById('current-tenant-title').innerText = 'بوابة التحليلات المخصصة لشركتكم';
+            
+            document.getElementById('menu-admin-group').style.display = 'none';
+            document.getElementById('menu-client-group').style.display = 'flex';
+            
+            document.getElementById('client-welcome-heading').innerText = `مرحباً بك يا ${user.name}`;
+            
+            // تحديث الباقة المعروضة بملف العميل التعريفي
+            document.getElementById('prof-plan-pill').innerText = user.account_type;
+            
+            navigateSaaSView('view-client-dashboard', 'm-client-dash');
+        }
+
+        // 4. التنقل التفاعلي الذكي بين الأقسام والتبويبات
+        function navigateSaaSView(viewId, menuItemId) {
+            const sections = document.querySelectorAll('.view-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => item.classList.remove('active'));
+            
+            document.getElementById(viewId).classList.add('active');
+            if(menuItemId) {
+                document.getElementById(menuItemId).classList.add('active');
+            }
+        }
+
+        // 5. دالة تسجيل الخروج
+        function executeSaaSLogout() {
+            document.getElementById('saas-app-wrapper').style.display = 'none';
+            document.getElementById('saas-login-screen').style.display = 'flex';
+            document.getElementById('saas-login-form').reset();
+        }
+
+        // 6. رسم المخططات البيانية التفاعلية (ApexCharts)
+        function renderInitialCharts() {
+            // مخطط الإيرادات الخاص بالمدير
+            var revenueOptions = {
+                chart: { type: 'line', height: 250, theme: 'dark', foreColor: '#94a3b8' },
+                series: [{ name: 'MRR Growth', data: [10000, 12500, 11800, 14500] }],
+                xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr'] },
                 colors: ['#3b82f6'],
                 grid: { borderColor: 'rgba(255,255,255,0.05)' }
             };
+            document.getElementById('chart-admin-revenue').innerHTML = "";
+            new ApexCharts(document.querySelector("#chart-admin-revenue"), revenueOptions).render();
 
-            if(activeChartInstance) { activeChartInstance.destroy(); }
+            // مخطط توزيع الخطط والباقات للمدير
+            var plansOptions = {
+                chart: { type: 'donut', height: 250, foreColor: '#94a3b8' },
+                series: [5, 5, 2],
+                labels: ['Basic', 'Professional', 'Enterprise'],
+                colors: ['#3b82f6', '#8b5cf6', '#f59e0b']
+            };
+            document.getElementById('chart-admin-plans').innerHTML = "";
+            new ApexCharts(document.querySelector("#chart-admin-plans"), plansOptions).render();
+
+            // مخطط الأداء الربع سنوي للعميل
+            var clientOptions = {
+                chart: { type: 'bar', height: 250, theme: 'dark', foreColor: '#94a3b8' },
+                series: [{ name: 'مستوى الأداء التشغيلي %', data: [82, 86, 89, 94.2] }],
+                xaxis: { categories: ['Q1', 'Q2', 'Q3', 'Q4'] },
+                colors: ['#8b5cf6'],
+                grid: { borderColor: 'rgba(255,255,255,0.05)' }
+            };
             document.getElementById('client-main-chart').innerHTML = "";
-            activeChartInstance = new ApexCharts(document.querySelector("#client-main-chart"), options);
-            activeChartInstance.render();
-        }
-
-        document.getElementById('client-excel-uploader').addEventListener('change', async function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const statusLog = document.getElementById('upload-status-log');
-            statusLog.innerHTML = `⏳ جاري معالجة ملف الإكسل ومطابقة البيانات في الباكيند...`;
-            statusLog.style.color = 'var(--warning)';
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            try {
-                const response = await fetch('http://127.0.0.1:8000/api/client/upload-data', {
-                    method: 'POST',
-                    body: formData
-                });
-                const result = await response.json();
-
-                if (response.ok) {
-                    statusLog.innerHTML = `✅ ${result.message}`;
-                    statusLog.style.color = 'var(--success)';
-                    alert('تمت قراءة وتحليل ملف الإكسل بنجاح! جاري تحديث داشبورد عمالك حياً...');
-
-                    renderCustomClientDashboard(result);
-                    navigateSaaSView('view-client-dashboard', 'm-client-dash');
-                } else {
-                    statusLog.innerHTML = `❌ خطأ في السيرفر: ${result.detail}`;
-                    statusLog.style.color = 'var(--danger)';
-                }
-            } catch (err) {
-                statusLog.innerHTML = `❌ فشل الاتصال بالباكيند أثناء معالجة البيانات.`;
-                statusLog.style.color = 'var(--danger)';
-            }
-        });
-
-        async function loadAdminUsersTable() {
-            try {
-                const response = await fetch('http://127.0.0.1:8000/api/admin/users');
-                const users = await response.json();
-                
-                const tbody = document.getElementById('admin-users-table-body');
-                tbody.innerHTML = "";
-
-                users.forEach(u => {
-                    if(u.account_type === 'Admin') return;
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td style="font-weight: 600;">👤 ${u.first_name} ${u.last_name}</td>
-                        <td style="color: var(--text-muted);">${u.email}</td>
-                        <td><span style="color: var(--primary); background: rgba(59,130,246,0.1); padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 0.85rem;">${u.account_type}</span></td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch (error) {
-                console.error('فشل جلب جدول العملاء:', error);
-            }
-        }
-
-        async function handleAdminCreateUser(e) {
-            e.preventDefault();
-            
-            const payload = {
-                first_name: document.getElementById('add-first-name').value,
-                last_name: document.getElementById('add-last-name').value,
-                email: document.getElementById('add-email').value,
-                password: document.getElementById('add-password').value,
-                account_type: document.getElementById('add-account-type').value
-            };
-
-            try {
-                const response = await fetch('http://127.0.0.1:8000/api/admin/create-user', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                const result = await response.json();
-
-                if (response.ok) {
-                    alert(`✅ تم بنجاح إنشاء الحساب الجديد للعميل وتخصيص لوحة: [${result.account_type}] له.`);
-                    document.getElementById('admin-create-user-form').reset();
-                    navigateSaaSView('view-admin-users', 'm-admin-users');
-                } else {
-                    alert(`❌ خطأ أثناء الإنشاء: ${result.detail}`);
-                }
-            } catch (error) {
-                alert('❌ تعذر الاتصال بالسيرفر لحفظ الحساب الجديد.');
-            }
-        }
-
-        async function handleSharedChangePassword(e) {
-            e.preventDefault();
-
-            const currentPwd = document.getElementById('profile-current-password').value;
-            const newPwd = document.getElementById('profile-new-password').value;
-            const confirmPwd = document.getElementById('profile-confirm-password').value;
-
-            if (newPwd !== confirmPwd) {
-                alert('❌ خطأ: كلمة المرور الجديدة وتأكيدها غير متطابقين!');
-                return;
-            }
-
-            const payload = {
-                email: currentUserData.email,
-                current_password: currentPwd,
-                new_password: newPwd
-            };
-
-            try {
-                const response = await fetch('http://127.0.0.1:8000/api/user/change-password', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-
-                if (response.ok) {
-                    alert('🔒 تم تحديث وحفظ كلمة مرورك الشخصية بنجاح داخل قاعدة البيانات بشكل مشفر وآمن!');
-                    document.getElementById('shared-change-password-form').reset();
-                } else {
-                    alert(`❌ خطأ: ${result.detail}`);
-                }
-            } catch (error) {
-                alert('❌ حدث خطأ في الشبكة، تعذر حفظ التحديث.');
-            }
-        }
-
-        function performSaaSLogout() {
-            if (confirm('هل أنت متأكد من رغبتك في تسجيل الخروج وإنهاء الجلسة؟')) {
-                localStorage.removeItem('apex_saas_session');
-                window.location.href = '/signin-ar.html';
-            }
+            new ApexCharts(document.querySelector("#client-main-chart"), clientOptions).render();
         }
     </script>
 </body>
