@@ -1,0 +1,25 @@
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+body { background: #0f172a; color: #f8fafc; }
+
+/* صفحات الدخول */
+.auth-body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: radial-gradient(#1e293b, #0f172a); }
+.auth-container { background: #1e293b; padding: 40px; border-radius: 12px; width: 100%; max-width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+.auth-container h2 { text-align: center; margin-bottom: 25px; font-size: 22px; }
+.auth-container input, .auth-container select { width: 100%; padding: 12px; margin-bottom: 15px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white; }
+.btn-block { width: 100%; padding: 12px; background: #3b82f6; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+.btn-block:hover { background: #2563eb; }
+.toggle-text { margin-top: 15px; text-align: center; font-size: 14px; color: #94a3b8; }
+.toggle-text a { color: #3b82f6; text-decoration: none; }
+
+/* لوحات التحكم والسمات المخصصة ديناميكياً */
+.dash-nav { display: flex; justify-content: space-between; padding: 15px 5%; background: #1e293b; border-bottom: 1px solid #334155; }
+.dashboard-wrapper { padding: 40px 5%; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+
+/* السيمات المخصصة المرجوعة من الباك إند (Dynamic Themes) */
+.theme-dark { background: #0f172a !important; color: white; }
+.theme-blue_gradient { background: linear-gradient(135deg, #020617, #1e1b4b) !important; color: #f1f5f9; }
+
+.widget-card { background: #1e293b; border-radius: 12px; padding: 25px; border: 1px solid #334155; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+.widget-card h3 { font-size: 16px; color: #94a3b8; margin-bottom: 15px; }
+.kpi-value { font-size: 32px; font-weight: 700; color: #38bdf8; text-align: center; margin: 10px 0; }
+.btn-logout { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-right: 15px; }
