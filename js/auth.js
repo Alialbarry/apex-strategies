@@ -1,6 +1,4 @@
-// استبدل هذا بالرابط الثابت الخاص بجهازك أو سيرفر الاستضافة
-const API_BASE_URL = "http://127.0.0.1:8000/api";
-
+const API_BASE_URL = "https://veteran-antibody-strep.ngrok-free.dev/api";const API_BASE_URL = "http://127.0.0.1:8000/api";
 document.getElementById('show-signup').addEventListener('click', () => {
     document.getElementById('signin-form').style.display = 'none';
     document.getElementById('signup-form').style.display = 'block';
