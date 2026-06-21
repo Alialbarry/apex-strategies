@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apex Strategies - Clinic Data Analysis</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
-        /* -------------------------------------------------- */
-        /* هنا يتم كتابة كود الـ CSS (التنسيقات والألوان) التي أرسلتها */
-        /* -------------------------------------------------- */
         :root {
             --primary-bg: #F4F7F6;
             --sidebar-bg: #FFFFFF;
@@ -22,217 +20,50 @@
             --border-color: #E2E8F0;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        body {
-            background-color: var(--primary-bg);
-            color: var(--text-color);
-            display: flex;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* الهيكل الرئيسي وتوزيع الصفحة */
-        .dashboard-wrapper {
-            display: flex;
-            width: 100%;
-        }
-
-        /* القائمة الجانبية للفلاتر */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--primary-bg); color: var(--text-color); display: flex; min-height: 100vh; }
+        .dashboard-wrapper { display: flex; width: 100%; }
+        
         .filter-sidebar {
-            width: 280px;
-            background: var(--sidebar-bg);
-            border-left: 1px solid var(--border-color);
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-            box-shadow: -2px 0 10px rgba(0,0,0,0.02);
+            width: 280px; background: var(--sidebar-bg); border-left: 1px solid var(--border-color);
+            padding: 24px; display: flex; flex-direction: column; gap: 24px;
         }
-
-        .brand-area {
-            text-align: center;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .brand-area h2 {
-            font-size: 22px;
-            color: var(--blue-accent);
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .brand-area span {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .filter-group label {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text-color);
-        }
-
+        .brand-area { text-align: center; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+        .brand-area h2 { font-size: 22px; color: var(--blue-accent); font-weight: 700; }
+        
+        .filter-group { display: flex; flex-direction: column; gap: 10px; }
+        .filter-group label { font-weight: 600; font-size: 14px; }
         .filter-group input[type="text"] {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: #F7FAFC;
-            color: var(--text-muted);
-            font-size: 13px;
-            text-align: center;
+            width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; text-align: center;
         }
-
-        .checkbox-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            padding-right: 5px;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .checkbox-item input {
-            accent-color: var(--blue-accent);
-            width: 16px;
-            height: 16px;
-        }
-
-        /* تخصيص زر رفع ملف الـ Excel */
-        .upload-box {
-            margin-top: auto; /* يدفع الزر لأسفل القائمة الجانبية */
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-        }
+        .checkbox-list { display: flex; flex-direction: column; gap: 8px; }
+        .checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 13px; }
 
         .custom-file-upload {
-            display: block;
-            background: linear-gradient(135deg, var(--blue-accent), #2B6CB0);
-            color: white;
-            text-align: center;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(49, 130, 206, 0.2);
+            display: block; background: linear-gradient(135deg, var(--blue-accent), #2B6CB0);
+            color: white; text-align: center; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer;
+            transition: transform 0.2s;
         }
+        .custom-file-upload:hover { transform: translateY(-2px); }
 
-        .custom-file-upload:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(49, 130, 206, 0.3);
-        }
+        .main-content { flex: 1; padding: 32px; display: flex; flex-direction: column; gap: 32px; }
+        .dashboard-header { background: #FFFFFF; padding: 20px; border-radius: 12px; text-align: center; }
+        .dashboard-header h1 { font-size: 24px; color: var(--purple-accent); font-weight: 700; }
 
-        /* منطقة المحتوى الرئيسية */
-        .main-content {
-            flex: 1;
-            padding: 32px;
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
-        }
-
-        .dashboard-header {
-            background: #FFFFFF;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            text-align: center;
-        }
-
-        .dashboard-header h1 {
-            font-size: 24px;
-            color: var(--purple-accent);
-            font-weight: 700;
-        }
-
-        /* كروت الـ KPI العلوية */
-        .kpi-section {
-            display: flex;
-            gap: 24px;
-        }
-
+        .kpi-section { display: flex; gap: 24px; }
         .kpi-card {
-            flex: 1;
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-            border: 1px solid var(--border-color);
-            text-align: center;
+            flex: 1; background: var(--card-bg); border-radius: 12px; padding: 24px;
+            border: 1px solid var(--border-color); text-align: center;
         }
-
-        .kpi-card span {
-            font-size: 14px;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .kpi-card h2 {
-            font-size: 32px;
-            font-weight: 700;
-        }
-
-        /* ربط الألوان بالكروت لتطابق الصورة */
+        .kpi-card span { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+        .kpi-card h2 { font-size: 32px; font-weight: 700; }
         .kpi-card.revenue h2 { color: var(--green-accent); }
         .kpi-card.appointments h2 { color: var(--purple-accent); }
         .kpi-card.rate h2 { color: #319795; }
 
-        /* شبكة الرسوم البيانية */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 1.6fr 1.4fr;
-            gap: 24px;
-            min-height: 400px;
-        }
-
-        .chart-box {
-            background: var(--card-bg);
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-            border: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .chart-box h3 {
-            font-size: 16px;
-            color: var(--text-color);
-            font-weight: 600;
-        }
-
-        .chart-container {
-            position: relative;
-            flex: 1;
-            width: 100%;
-            height: 100%;
-        }
+        .charts-grid { display: grid; grid-template-columns: 1.6fr 1.4fr; gap: 24px; min-height: 380px; }
+        .chart-box { background: var(--card-bg); padding: 24px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 16px; }
+        .chart-container { position: relative; flex: 1; width: 100%; height: 100%; }
     </style>
 </head>
 <body>
@@ -264,14 +95,11 @@
                     <label class="checkbox-item"><input type="checkbox" checked> Cleaning</label>
                     <label class="checkbox-item"><input type="checkbox" checked> Filling</label>
                     <label class="checkbox-item"><input type="checkbox" checked> Implant</label>
-                    <label class="checkbox-item"><input type="checkbox" checked> Orthodontics</label>
                 </div>
             </div>
 
             <div class="filter-group upload-box">
-                <label for="excel-file-input" class="custom-file-upload">
-                    📁 رفع ملف بيانات العيادة (Excel)
-                </label>
+                <label for="excel-file-input" class="custom-file-upload">📁 رفع ملف البيانات (Excel)</label>
                 <input type="file" id="excel-file-input" accept=".xlsx, .xls" style="display:none;">
                 <span id="file-name-display" style="font-size: 11px; color: var(--text-muted); text-align: center; display: block; margin-top: 5px;"></span>
             </div>
@@ -283,39 +111,138 @@
             </header>
 
             <section class="kpi-section" id="kpi-container">
-                <div class="kpi-card revenue">
-                    <span>Total Revenue</span>
-                    <h2>$0.0</h2>
-                </div>
-                <div class="kpi-card appointments">
-                    <span>Total Appointment</span>
-                    <h2>0</h2>
-                </div>
-                <div class="kpi-card rate">
-                    <span>No_Show Rate</span>
-                    <h2>0.0%</h2>
-                </div>
+                <div class="kpi-card revenue"><span>Total Revenue</span><h2 id="kpi-rev">$0.0</h2></div>
+                <div class="kpi-card appointments"><span>Total Appointment</span><h2 id="kpi-app">0</h2></div>
+                <div class="kpi-card rate"><span>No_Show Rate</span><h2 id="kpi-rate">0.0%</h2></div>
             </section>
 
             <section class="charts-grid">
                 <div class="chart-box">
                     <h3>Monthly Revenue Trend</h3>
-                    <div class="chart-container">
-                        <canvas id="revenueTrendChart"></canvas>
-                    </div>
+                    <div class="chart-container"><canvas id="revenueTrendChart"></canvas></div>
                 </div>
-
                 <div class="chart-box">
                     <h3>Sum of Revenue by Lead_Source</h3>
-                    <div class="chart-container">
-                        <canvas id="leadSourceChart"></canvas>
-                    </div>
+                    <div class="chart-container"><canvas id="leadSourceChart"></canvas></div>
                 </div>
             </section>
         </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/dashboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('access_token');
+            
+            // حماية ذكية بدون طرد تلقائي لكشف الأخطاء في الكونسول
+            if (!token) {
+                console.error("⚠️ تنبيه أمني: لم يتم العثور على توكن في الـ LocalStorage!");
+            } else {
+                console.log("✅ التوكن موجود وجاهز للفحص:", token);
+            }
+
+            const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
+            let revenueTrendChart = null;
+            let leadSourceChart = null;
+
+            async function loadDashboardData() {
+                if (!token) return;
+                try {
+                    console.log("جاري استدعاء البيانات من السيرفر...");
+                    
+                    // 1. جلب إعدادات اللوحة
+                    const configResponse = await fetch(`${API_BASE_URL}/dashboard`, {
+                        method: 'GET',
+                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+                    });
+                    if (configResponse.ok) {
+                        const configData = await configResponse.json();
+                        document.getElementById('dashboard-title').innerText = configData.dashboard_name;
+                    }
+
+                    // 2. جلب البيانات التحليلية للعيادة
+                    const analyticsResponse = await fetch(`${API_BASE_URL}/dashboard/analytics`, {
+                        method: 'GET',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    if (!analyticsResponse.ok) return;
+                    const data = await analyticsResponse.json();
+                    console.log("تمت قراءة البيانات بنجاح:", data);
+
+                    // تحديث كروت الـ KPI بالأرقام المستلمة
+                    document.getElementById('kpi-rev').innerText = data[0].calculated_value;
+                    document.getElementById('kpi-app').innerText = data[1].calculated_value;
+                    document.getElementById('kpi-rate').innerText = data[2].calculated_value;
+
+                    // رسم الـ Line Chart
+                    const ctxLine = document.getElementById('revenueTrendChart').getContext('2d');
+                    if (revenueTrendChart) revenueTrendChart.destroy();
+                    revenueTrendChart = new Chart(ctxLine, {
+                        type: 'line',
+                        data: {
+                            labels: ['January', 'February', 'March', 'April'],
+                            datasets: [{
+                                label: 'Monthly Revenue',
+                                data: data[3].data_points,
+                                borderColor: '#E040FB',
+                                backgroundColor: 'rgba(224, 64, 251, 0.1)',
+                                fill: true,
+                                tension: 0.3
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+
+                    // رسم الـ Bar Chart الأفقي
+                    const ctxBar = document.getElementById('leadSourceChart').getContext('2d');
+                    if (leadSourceChart) leadSourceChart.destroy();
+                    leadSourceChart = new Chart(ctxBar, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Friend Referral', 'TikTok', 'Google Maps', 'Instagram'],
+                            datasets: [{
+                                data: data[4].data_points,
+                                backgroundColor: ['#3182CE', '#319795', '#805AD5', '#D53F8C']
+                            }]
+                        },
+                        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false }
+                    });
+
+                } catch (err) {
+                    console.error("خطأ أثناء معالجة العرض الديناميكي:", err);
+                }
+            }
+
+            // الاستماع المطور لرفع ملف الإكسيل وتحديث الرسوم حياً بدون Reload
+            document.getElementById('excel-file-input').addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                document.getElementById('file-name-display').innerText = `جاري معالجة: ${file.name}`;
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/dashboard/upload-excel`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` },
+                        body: formData
+                    });
+                    const result = await response.json();
+                    alert(result.message);
+                    if (response.ok) {
+                        await loadDashboardData(); // تحديث فوري للأرقام والرسوم حياً
+                    }
+                } catch (error) {
+                    alert("حدث خطأ أثناء الاتصال بالسيرفر لمعالجة الإكسيل.");
+                } finally {
+                    document.getElementById('file-name-display').innerText = "";
+                }
+            });
+
+            // التشغيل الأولي للوحة عند فتح الصفحة
+            await loadDashboardData();
+        });
+    </script>
 </body>
 </html>
