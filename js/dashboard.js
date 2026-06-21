@@ -1,24 +1,26 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('access_token');
     
-    // 1. التحقق الصارم: إذا لم يكن هناك توكن، اخرج فوراً
+    // طباعة التوكن في الكونسول للتأكد من وجوده أثناء الفحص
+    console.log("Current Token found:", token);
+    
     if (!token) {
         console.log("No token found, redirecting to login...");
         window.location.href = 'index.html';
         return;
     }
 
-    // رابط السيرفر الحالي المتصل عبر ngrok (تأكد من مطابقته للرابط الحالي عندك)
+    // رابط السيرفر المتصل عبر ngrok
     const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
 
-    // متغيرات للاحتفاظ بمراجع الرسوم البيانية لتحديثها لاحقاً
     let revenueTrendChart = null;
     let leadSourceChart = null;
 
-    // دالة رئيسية لجلب البيانات ورسم اللوحة
     async function loadDashboardData() {
         try {
-            // جلب إعدادات اللوحة العامة (العنوان والاسم المخصص)
+            console.log("Attempting to fetch layout from:", `${API_BASE_URL}/dashboard`);
+            
+            // 1. جلب إعدادات اللوحة العامة
             const configResponse = await fetch(`${API_BASE_URL}/dashboard`, {
                 method: 'GET',
                 headers: {
@@ -27,17 +29,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
 
+            console.log("Config Response Status:", configResponse.status);
+
             if (configResponse.ok) {
                 const configData = await configResponse.json();
-                document.getElementById('dashboard-title').innerText = configData.dashboard_name;
-            } else if (configResponse.status === 401) {
-                // إذا انتهت صلاحية التوكن أو كان خاطئاً، اخرج بصمت
-                localStorage.removeItem('access_token');
-                window.location.href = 'index.html';
+                const titleEl = document.getElementById('dashboard-title');
+                if (titleEl) titleEl.innerText = configData.dashboard_name;
+            } else if (configResponse.status === 401 || configResponse.status === 403) {
+                console.log("Unauthorized! Token might be invalid.");
+                // تعطيل التوجيه التلقائي مؤقتاً هنا حتى لا تخرج اللوحة من تلقاء نفسها أثناء الفحص
+                // localStorage.removeItem('access_token');
+                // window.location.href = 'index.html';
                 return;
             }
 
-            // جلب المقاييس والبيانات التحليلية الخاصة بعلي
+            // 2. جلب المقاييس والبيانات التحليلية الخاصة بعلي
             const analyticsResponse = await fetch(`${API_BASE_URL}/dashboard/analytics`, {
                 method: 'GET',
                 headers: {
@@ -47,8 +53,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (!analyticsResponse.ok) throw new Error('Failed to fetch analytics data');
             const data = await analyticsResponse.json();
+            console.log("Analytics Data Received:", data);
 
-            // تحديث الكروت الرقمية الثلاثة الـ KPIs
+            // 3. تحديث الكروت الرقمية الثلاثة الـ KPIs
             const kpiContainer = document.getElementById('kpi-container');
             if (kpiContainer && data.length >= 3) {
                 kpiContainer.innerHTML = `
@@ -67,7 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 `;
             }
 
-            // رسم أو تحديث منحنى الإيرادات الشهري (Line Chart)
+            // 4. رسم أو تحديث منحنى الإيرادات الشهري (Line Chart)
             const canvasLine = document.getElementById('revenueTrendChart');
             if (canvasLine && data[3]) {
                 const ctxLine = canvasLine.getContext('2d');
@@ -95,7 +102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             }
 
-            // رسم أو تحديث توزيع الإيرادات حسب المصدر (Horizontal Bar Chart)
+            // 5. رسم أو تحديث توزيع الإيرادات حسب المصدر (Horizontal Bar Chart)
             const canvasBar = document.getElementById('leadSourceChart');
             if (canvasBar && data[4]) {
                 const ctxBar = canvasBar.getContext('2d');
@@ -127,7 +134,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // --------------------------------------------------------
-    // الاستماع لحدث رفع ملف الـ Excel بأمان تام
+    // رفع ملف الـ Excel بأمان تام ومنع الـ Reload اللانهائي
     // --------------------------------------------------------
     const fileInput = document.getElementById('excel-file-input');
     if (fileInput) {
@@ -142,7 +149,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             formData.append('file', file);
 
             try {
-                // إصلاح خطأ الـ fetch هنا: أضفنا الـ Body المفقود مسبقاً!
                 const response = await fetch(`${API_BASE_URL}/dashboard/upload-excel`, {
                     method: 'POST',
                     headers: {
@@ -155,7 +161,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
                 if (response.ok) {
                     alert(result.message);
-                    await loadDashboardData(); // إعادة التحميل الفوري للبيانات حياً
+                    await loadDashboardData(); // تحديث حركي فوري للرسوم بدون استخدام location.reload()
                 } else {
                     alert(`فشل رفع ومعالجة الملف: ${result.detail}`);
                 }
@@ -168,6 +174,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // تشغيل الدالة المبدئية عند فتح الصفحة لأول مرة بأمان
+    // تشغيل الجلب المبدئي للبيانات
     await loadDashboardData();
 });
