@@ -131,16 +131,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // قراءة التوكن المحفوظ تلقائياً
             let token = localStorage.getItem('access_token');
             
-            // تحقق مرن لحماية الصفحة لمنع الحظر الفجائي ورسائل الأخطاء
             if (!token || token === "null" || token === "undefined" || token.length < 10) {
                 token = prompt("🔒 لم يتم استيراد رمز الجلسة تلقائياً. إذا كنت تملك الـ Token، يرجى لصقه هنا لتشغيل اللوحة الحية:");
                 if (token && token.length > 10) {
                     localStorage.setItem('access_token', token);
                 } else {
-                    alert("تنبيه: لا يمكن جلب البيانات دون وجود Token صالح. يرجى تسجيل الدخول أولاً.");
+                    alert("تنبيه: لا يمكن جلب البيانات دون وجود Token صالح.");
                     window.location.href = 'login.html';
                     return;
                 }
@@ -150,57 +148,83 @@
             let revenueTrendChart = null;
             let leadSourceChart = null;
 
+            // دالة موحدة لجلب وعرض البيانات لمنع تجميد الأرقام عند الصفر
             async function loadDashboardData() {
                 try {
-                    // 1. جلب إعدادات اللوحة
+                    // 1. جلب اسم اللوحة
                     const configResponse = await fetch(`${API_BASE_URL}/dashboard`, {
                         method: 'GET',
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (configResponse.ok) {
                         const configData = await configResponse.json();
-                        document.getElementById('dashboard-title').innerText = configData.dashboard_name;
+                        document.getElementById('dashboard-title').innerText = configData.dashboard_name || "APEX STRATEGIES";
                     }
 
-                    // 2. جلب البيانات التحليلية
+                    // 2. جلب وتحليل البيانات الاحصائية والرسومية
                     const analyticsResponse = await fetch(`${API_BASE_URL}/dashboard/analytics`, {
                         method: 'GET',
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     
                     if (!analyticsResponse.ok) return;
-                    const data = await analyticsResponse.json();
+                    const rawData = await analyticsResponse.json();
 
-                    document.getElementById('kpi-rev').innerText = data[0].calculated_value;
-                    document.getElementById('kpi-app').innerText = data[1].calculated_value;
-                    document.getElementById('kpi-rate').innerText = data[2].calculated_value;
+                    // معالجة مرنة: التحقق مما إذا كانت المصفوفة بداخل كائن فرعي أم مباشرة
+                    const data = Array.isArray(rawData) ? rawData : (rawData.analytics || rawData.data || []);
+                    if (data.length === 0) return;
 
-                    // رسم الرسوم البيانية
-                    const ctxLine = document.getElementById('revenueTrendChart').getContext('2d');
-                    if (revenueTrendChart) revenueTrendChart.destroy();
-                    revenueTrendChart = new Chart(ctxLine, {
-                        type: 'line',
-                        data: {
-                            labels: ['January', 'February', 'March', 'April'],
-                            datasets: [{ label: 'Monthly Revenue', data: data[3].data_points, borderColor: '#E040FB', backgroundColor: 'rgba(224, 64, 251, 0.1)', fill: true, tension: 0.3 }]
-                        },
-                        options: { responsive: true, maintainAspectRatio: false }
-                    });
+                    // البحث الديناميكي عن المؤشرات بحسب اسمها بدلاً من الترتيب الثابت العشوائي
+                    const revenueObj = data.find(item => item.metric_name === 'Total Revenue' || item.indicator_name === 'Total Revenue') || data[0];
+                    const appointmentObj = data.find(item => item.metric_name === 'Total Appointment' || item.indicator_name === 'Total Appointment') || data[1];
+                    const rateObj = data.find(item => item.metric_name === 'No_Show Rate' || item.indicator_name === 'No_Show Rate') || data[2];
 
-                    const ctxBar = document.getElementById('leadSourceChart').getContext('2d');
-                    if (leadSourceChart) leadSourceChart.destroy();
-                    leadSourceChart = new Chart(ctxBar, {
-                        type: 'bar',
-                        data: {
-                            labels: ['Friend Referral', 'TikTok', 'Google Maps', 'Instagram'],
-                            datasets: [{ data: data[4].data_points, backgroundColor: ['#3182CE', '#319795', '#805AD5', '#D53F8C'] }]
-                        },
-                        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false }
-                    });
-                } catch (err) { console.error("Error loading data:", err); }
+                    if (revenueObj) document.getElementById('kpi-rev').innerText = revenueObj.calculated_value;
+                    if (appointmentObj) document.getElementById('kpi-app').innerText = appointmentObj.calculated_value;
+                    if (rateObj) document.getElementById('kpi-rate').innerText = rateObj.calculated_value;
+
+                    // العثور على نقاط الرسوم البيانية ديناميكياً
+                    const trendObj = data.find(item => item.metric_name === 'Monthly Revenue Trend' || item.indicator_name === 'Monthly Revenue Trend') || data[3];
+                    const leadObj = data.find(item => item.metric_name === 'Sum of Revenue by Lead_Source' || item.indicator_name === 'Sum of Revenue by Lead_Source') || data[4];
+
+                    // رسم تحديث الخط الزمني للايرادات
+                    if (trendObj && trendObj.data_points) {
+                        const ctxLine = document.getElementById('revenueTrendChart').getContext('2d');
+                        if (revenueTrendChart) revenueTrendChart.destroy();
+                        
+                        // استخراج الأسماء والقيم من البيانات الحية إن وجدت، وإلا استخدام الافتراضي
+                        const labels = trendObj.labels || ['January', 'February', 'March', 'April'];
+                        
+                        revenueTrendChart = new Chart(ctxLine, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [{ label: 'Monthly Revenue', data: trendObj.data_points, borderColor: '#E040FB', backgroundColor: 'rgba(224, 64, 251, 0.1)', fill: true, tension: 0.3 }]
+                            },
+                            options: { responsive: true, maintainAspectRatio: false }
+                        });
+                    }
+
+                    // رسم تحديث قنوات الاستقطاب
+                    if (leadObj && leadObj.data_points) {
+                        const ctxBar = document.getElementById('leadSourceChart').getContext('2d');
+                        if (leadSourceChart) leadSourceChart.destroy();
+                        
+                        const labels = leadObj.labels || ['Friend Referral', 'TikTok', 'Google Maps', 'Instagram'];
+
+                        leadSourceChart = new Chart(ctxBar, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{ data: leadObj.data_points, backgroundColor: ['#3182CE', '#319795', '#805AD5', '#D53F8C'] }]
+                            },
+                            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false }
+                        });
+                    }
+                } catch (err) { console.error("Error rendering dashboard metrics:", err); }
             }
 
-            // رفع الملفات
+            // الاستماع لحدث رفع الإكسيل وإجبار الواجهة على التحديث
             document.getElementById('excel-file-input').addEventListener('change', async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -221,7 +245,10 @@
 
                     if (response.ok) {
                         alert("تم رفع ومعالجة ملف الإكسيل بنجاح!");
-                        await loadDashboardData();
+                        // 🚀 أهم خطوة: إعادة تشغيل الاستدعاء لجلب الأرقام الحقيقية فوراً بدلاً من بقائها أصفاراً
+                        setTimeout(async () => {
+                            await loadDashboardData();
+                        }, 800); 
                     } else {
                         alert("فشل رفع الملف. تأكد من تطابق الـ Token للجلسة الحالية.");
                     }
@@ -229,6 +256,7 @@
                 finally { if (nameDisplay) nameDisplay.innerText = ""; }
             });
 
+            // التحميل الأولي عند فتح الصفحة
             await loadDashboardData();
         });
     </script>
