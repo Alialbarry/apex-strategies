@@ -37,12 +37,10 @@
     <script>
         const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
 
-        // تنظيف الـ LocalStorage فور فتح الصفحة لضمان جلسة جديدة
         window.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('access_token');
         });
 
-        // التبديل بين واجهتي الدخول والتسجيل
         document.getElementById('show-signup').addEventListener('click', (e) => {
             e.preventDefault();
             document.getElementById('signin-form').style.display = 'none';
@@ -57,7 +55,6 @@
             document.getElementById('form-title').innerText = 'تسجيل الدخول إلى المنصة';
         });
 
-        // معالجة طلب تسجيل الدخول
         document.getElementById('signin-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -65,7 +62,6 @@
             const password = document.getElementById('login-password').value;
 
             try {
-                // 🚀 الحل النهائي والمطابق تماماً لطلب السيرفر: كائن JSON يحتوي على الحقل المطلوب "email"
                 const response = await fetch(`${API_BASE_URL}/signin`, {
                     method: 'POST',
                     headers: { 
@@ -79,13 +75,11 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    
                     if (data.access_token) {
-                        // حفظ التوكن النقي في المتصفح والتوجيه للداشبورد تلقائياً
                         localStorage.setItem('access_token', data.access_token);
                         window.location.href = 'dashboard.html';
                     } else {
-                        alert("تم تسجيل الدخول ولكن لم يتم استقبال التوكن من السيرفر.");
+                        alert("تم تسجيل الدخول ولكن لم يتم استقبال التوكن.");
                     }
                 } else {
                     const errResult = await response.json();
