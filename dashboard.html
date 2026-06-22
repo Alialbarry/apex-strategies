@@ -131,13 +131,18 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // القراءة التلقائية للتوكن المخزن من صفحة تسجيل الدخول
-            const token = localStorage.getItem('access_token');
+            // محاولة جلب التوكن من الذاكرة المحلية
+            let token = localStorage.getItem('access_token');
             
-            if (!token) {
-                alert("يرجى تسجيل الدخول أولاً للوصول إلى لوحة البيانات.");
-                window.location.href = 'index.html'; // إعادة توجيه لصفحة الدخول
-                return;
+            // تحسين الفحص: إذا لم يتم العثور على توكن تلقائي أو كان مسجلاً كـ null، نطلب من المستخدم تزويدنا به بدلاً من حظره مباشرة
+            if (!token || token === "null" || token === "undefined" || token.length < 10) {
+                token = prompt("🔒 لم يتم استرداد رمز الجلسة تلقائياً من صفحة الدخول. إذا كنت تملك الـ Token، يرجى لصقه هنا لتشغيل اللوحة الحية:");
+                if (token && token.length > 10) {
+                    localStorage.setItem('access_token', token);
+                } else {
+                    alert("تنبيه: لن تتمكن اللوحة من استدعاء البيانات بدون وجود Token صالح.");
+                    return;
+                }
             }
 
             const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
@@ -194,10 +199,13 @@
                 } catch (err) { console.error("Error loading data:", err); }
             }
 
-            // رفع الملف مع التوكن التلقائي
+            // حدث رفع ملف الإكسيل مع معالجة الرابط البرمجي والتوكن
             document.getElementById('excel-file-input').addEventListener('change', async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
+
+                const nameDisplay = document.getElementById('file-name-display');
+                if (nameDisplay) nameDisplay.innerText = `جاري معالجة: ${file.name}`;
 
                 const formData = new FormData();
                 formData.append('file', file); 
@@ -214,9 +222,10 @@
                         alert("تم رفع ومعالجة ملف الإكسيل بنجاح!");
                         await loadDashboardData();
                     } else {
-                        alert("فشل رفع الملف. تأكد من صلاحية التوكن.");
+                        alert("فشل رفع الملف. تأكد من صلاحية ومطابقة الـ Token الخاص بالجلسة الحالية.");
                     }
-                } catch (error) { alert("حدث خطأ أثناء الاتصال بالسيرفر."); }
+                } catch (error) { alert("حدث خطأ أثناء الاتصال بالسيرفر لمعالجة البيانات."); }
+                finally { if (nameDisplay) nameDisplay.innerText = ""; }
             });
 
             await loadDashboardData();
