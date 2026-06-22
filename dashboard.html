@@ -131,15 +131,19 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const token = localStorage.getItem('access_token');
+            // فحص وجود التوكن، وإذا كان null يتم طلبه فوراً عبر نافذة prompt لمنع خطأ 401
+            let token = localStorage.getItem('access_token');
             
-            if (!token) {
-                console.error("⚠️ تنبيه أمني: لم يتم العثور على توكن في الـ LocalStorage!");
-            } else {
-                console.log("✅ التوكن موجود وجاهز للفحص:", token);
+            if (!token || token === "null" || token === "undefined") {
+                token = prompt("🔐 لم يتم العثور على رمز الجلسة (Token). يرجى لصق الـ Token الخاص بك هنا لتشغيل اللوحة بنجاح:");
+                if (token) {
+                    localStorage.setItem('access_token', token);
+                    console.log("✅ تم استقبال وحفظ التوكن الجديد بنجاح.");
+                } else {
+                    alert("⚠️ تنبيه: لن تعمل اللوحة أو رفع الملفات بشكل صحيح بدون إدخال الـ Token.");
+                }
             }
 
-            // تذكر استبدال هذا الرابط برابط الـ ngrok الجديد الخاص بك إذا قمت بإعادة تشغيله
             const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
             let revenueTrendChart = null;
             let leadSourceChart = null;
@@ -216,7 +220,7 @@
             // الحدث المحدث والمصلح لتمرير التوكن في الرابط لحل مشكلة Field required
             document.getElementById('excel-file-input').addEventListener('change', async (e) => {
                 const file = e.target.files[0];
-                if (!file) return;
+                if (!file || !token) return;
 
                 const nameDisplay = document.getElementById('file-name-display');
                 if (nameDisplay) nameDisplay.innerText = `جاري معالجة: ${file.name}`;
@@ -227,14 +231,13 @@
                 try {
                     console.log("جاري رفع الملف إلى السيرفر...");
                     
-                    // تمرير التوكن كـ Query Parameter لإرضاء فحص الباكيند
+                    // تمرير التوكن المأخوذ حياً كـ Query Parameter لإرضاء فحص الباكيند
                     const uploadUrl = `${API_BASE_URL}/dashboard/upload-excel?token=${encodeURIComponent(token)}`;
 
                     const response = await fetch(uploadUrl, {
                         method: 'POST',
                         headers: { 
                             'Authorization': `Bearer ${token}`
-                            // نترك المتصفح يحدد الـ Content-Type تلقائياً لـ FormData
                         },
                         body: formData
                     });
