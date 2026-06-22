@@ -131,17 +131,13 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // فحص وجود التوكن، وإذا كان null يتم طلبه فوراً عبر نافذة prompt لمنع خطأ 401
-            let token = localStorage.getItem('access_token');
+            // القراءة التلقائية للتوكن المخزن من صفحة تسجيل الدخول
+            const token = localStorage.getItem('access_token');
             
-            if (!token || token === "null" || token === "undefined") {
-                token = prompt("🔐 لم يتم العثور على رمز الجلسة (Token). يرجى لصق الـ Token الخاص بك هنا لتشغيل اللوحة بنجاح:");
-                if (token) {
-                    localStorage.setItem('access_token', token);
-                    console.log("✅ تم استقبال وحفظ التوكن الجديد بنجاح.");
-                } else {
-                    alert("⚠️ تنبيه: لن تعمل اللوحة أو رفع الملفات بشكل صحيح بدون إدخال الـ Token.");
-                }
+            if (!token) {
+                alert("يرجى تسجيل الدخول أولاً للوصول إلى لوحة البيانات.");
+                window.location.href = 'index.html'; // إعادة توجيه لصفحة الدخول
+                return;
             }
 
             const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
@@ -149,21 +145,18 @@
             let leadSourceChart = null;
 
             async function loadDashboardData() {
-                if (!token) return;
                 try {
-                    console.log("جاري استدعاء البيانات من السيرفر...");
-                    
                     // 1. جلب إعدادات اللوحة
                     const configResponse = await fetch(`${API_BASE_URL}/dashboard`, {
                         method: 'GET',
-                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+                        headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (configResponse.ok) {
                         const configData = await configResponse.json();
                         document.getElementById('dashboard-title').innerText = configData.dashboard_name;
                     }
 
-                    // 2. جلب البيانات التحليلية للعيادة
+                    // 2. جلب البيانات التحليلية
                     const analyticsResponse = await fetch(`${API_BASE_URL}/dashboard/analytics`, {
                         method: 'GET',
                         headers: { 'Authorization': `Bearer ${token}` }
@@ -171,92 +164,59 @@
                     
                     if (!analyticsResponse.ok) return;
                     const data = await analyticsResponse.json();
-                    console.log("تمت قراءة البيانات بنجاح:", data);
 
-                    // تحديث كروت الـ KPI بالأرقام المستلمة
                     document.getElementById('kpi-rev').innerText = data[0].calculated_value;
                     document.getElementById('kpi-app').innerText = data[1].calculated_value;
                     document.getElementById('kpi-rate').innerText = data[2].calculated_value;
 
-                    // رسم الـ Line Chart
+                    // رسم الرسوم البيانية
                     const ctxLine = document.getElementById('revenueTrendChart').getContext('2d');
                     if (revenueTrendChart) revenueTrendChart.destroy();
                     revenueTrendChart = new Chart(ctxLine, {
                         type: 'line',
                         data: {
                             labels: ['January', 'February', 'March', 'April'],
-                            datasets: [{
-                                label: 'Monthly Revenue',
-                                data: data[3].data_points,
-                                borderColor: '#E040FB',
-                                backgroundColor: 'rgba(224, 64, 251, 0.1)',
-                                fill: true,
-                                tension: 0.3
-                            }]
+                            datasets: [{ label: 'Monthly Revenue', data: data[3].data_points, borderColor: '#E040FB', backgroundColor: 'rgba(224, 64, 251, 0.1)', fill: true, tension: 0.3 }]
                         },
                         options: { responsive: true, maintainAspectRatio: false }
                     });
 
-                    // رسم الـ Bar Chart الأفقي
                     const ctxBar = document.getElementById('leadSourceChart').getContext('2d');
                     if (leadSourceChart) leadSourceChart.destroy();
                     leadSourceChart = new Chart(ctxBar, {
                         type: 'bar',
                         data: {
                             labels: ['Friend Referral', 'TikTok', 'Google Maps', 'Instagram'],
-                            datasets: [{
-                                data: data[4].data_points,
-                                backgroundColor: ['#3182CE', '#319795', '#805AD5', '#D53F8C']
-                            }]
+                            datasets: [{ data: data[4].data_points, backgroundColor: ['#3182CE', '#319795', '#805AD5', '#D53F8C'] }]
                         },
                         options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false }
                     });
-
-                } catch (err) {
-                    console.error("خطأ أثناء معالجة العرض الديناميكي:", err);
-                }
+                } catch (err) { console.error("Error loading data:", err); }
             }
 
-            // الحدث المحدث والمصلح لتمرير التوكن في الرابط لحل مشكلة Field required
+            // رفع الملف مع التوكن التلقائي
             document.getElementById('excel-file-input').addEventListener('change', async (e) => {
                 const file = e.target.files[0];
-                if (!file || !token) return;
+                if (!file) return;
 
-                const nameDisplay = document.getElementById('file-name-display');
-                if (nameDisplay) nameDisplay.innerText = `جاري معالجة: ${file.name}`;
-                
                 const formData = new FormData();
                 formData.append('file', file); 
 
                 try {
-                    console.log("جاري رفع الملف إلى السيرفر...");
-                    
-                    // تمرير التوكن المأخوذ حياً كـ Query Parameter لإرضاء فحص الباكيند
                     const uploadUrl = `${API_BASE_URL}/dashboard/upload-excel?token=${encodeURIComponent(token)}`;
-
                     const response = await fetch(uploadUrl, {
                         method: 'POST',
-                        headers: { 
-                            'Authorization': `Bearer ${token}`
-                        },
+                        headers: { 'Authorization': `Bearer ${token}` },
                         body: formData
                     });
 
-                    const result = await response.json();
-                    
                     if (response.ok) {
-                        alert(result.message || "تم رفع ومعالجة ملف الإكسيل بنجاح!");
-                        await loadDashboardData(); // تحديث فوري للأرقام والرسوم حياً
+                        alert("تم رفع ومعالجة ملف الإكسيل بنجاح!");
+                        await loadDashboardData();
                     } else {
-                        const errorMsg = result.detail ? JSON.stringify(result.detail) : "خطأ في هيكلة ملف البيانات";
-                        alert(`فشل معالجة الملف (Code ${response.status}): ${errorMsg}`);
+                        alert("فشل رفع الملف. تأكد من صلاحية التوكن.");
                     }
-                } catch (error) {
-                    console.error("Upload Error:", error);
-                    alert("حدث خطأ أثناء الاتصال بالسيرفر لمعالجة الإكسيل.");
-                } finally {
-                    if (nameDisplay) nameDisplay.innerText = "";
-                }
+                } catch (error) { alert("حدث خطأ أثناء الاتصال بالسيرفر."); }
             });
 
             await loadDashboardData();
