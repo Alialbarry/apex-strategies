@@ -133,14 +133,13 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const token = localStorage.getItem('access_token');
             
-            // حماية ذكية بدون طرد تلقائي لكشف الأخطاء في الكونسول
             if (!token) {
                 console.error("⚠️ تنبيه أمني: لم يتم العثور على توكن في الـ LocalStorage!");
             } else {
                 console.log("✅ التوكن موجود وجاهز للفحص:", token);
             }
 
-            const API_BASE_URL = '  https://veteran-antibody-strep.ngrok-free.dev/api';
+            const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
             let revenueTrendChart = null;
             let leadSourceChart = null;
 
@@ -213,34 +212,44 @@
                 }
             }
 
-            // الاستماع المطور لرفع ملف الإكسيل وتحديث الرسوم حياً بدون Reload
+            // الحدث المحدث والمصلح لمنع خطأ 422 و undefined
             document.getElementById('excel-file-input').addEventListener('change', async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
 
-                document.getElementById('file-name-display').innerText = `جاري معالجة: ${file.name}`;
+                const nameDisplay = document.getElementById('file-name-display');
+                if (nameDisplay) nameDisplay.innerText = `جاري معالجة: ${file.name}`;
+                
                 const formData = new FormData();
-                formData.append('file', file);
+                formData.append('file', file); 
 
                 try {
+                    console.log("جاري رفع الملف إلى السيرفر...");
                     const response = await fetch(`${API_BASE_URL}/dashboard/upload-excel`, {
                         method: 'POST',
-                        headers: { 'Authorization': `Bearer ${token}` },
+                        headers: { 
+                            'Authorization': `Bearer ${token}`
+                        },
                         body: formData
                     });
+
                     const result = await response.json();
-                    alert(result.message);
+                    
                     if (response.ok) {
-                        await loadDashboardData(); // تحديث فوري للأرقام والرسوم حياً
+                        alert(result.message || "تم رفع ومعالجة ملف الإكسيل بنجاح!");
+                        await loadDashboardData(); 
+                    } else {
+                        const errorMsg = result.detail ? JSON.stringify(result.detail) : "خطأ في هيكلة ملف البيانات";
+                        alert(`فشل معالجة الملف (Code ${response.status}): ${errorMsg}`);
                     }
                 } catch (error) {
+                    console.error("Upload Error:", error);
                     alert("حدث خطأ أثناء الاتصال بالسيرفر لمعالجة الإكسيل.");
                 } finally {
-                    document.getElementById('file-name-display').innerText = "";
+                    if (nameDisplay) nameDisplay.innerText = "";
                 }
             });
 
-            // التشغيل الأولي للوحة عند فتح الصفحة
             await loadDashboardData();
         });
     </script>
