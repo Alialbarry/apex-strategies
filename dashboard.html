@@ -139,6 +139,7 @@
                 console.log("✅ التوكن موجود وجاهز للفحص:", token);
             }
 
+            // تذكر استبدال هذا الرابط برابط الـ ngrok الجديد الخاص بك إذا قمت بإعادة تشغيله
             const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
             let revenueTrendChart = null;
             let leadSourceChart = null;
@@ -212,7 +213,7 @@
                 }
             }
 
-            // الحدث المحدث والمصلح لمنع خطأ 422 و undefined
+            // الحدث المحدث والمصلح لتمرير التوكن في الرابط لحل مشكلة Field required
             document.getElementById('excel-file-input').addEventListener('change', async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -225,10 +226,15 @@
 
                 try {
                     console.log("جاري رفع الملف إلى السيرفر...");
-                    const response = await fetch(`${API_BASE_URL}/dashboard/upload-excel`, {
+                    
+                    // تمرير التوكن كـ Query Parameter لإرضاء فحص الباكيند
+                    const uploadUrl = `${API_BASE_URL}/dashboard/upload-excel?token=${encodeURIComponent(token)}`;
+
+                    const response = await fetch(uploadUrl, {
                         method: 'POST',
                         headers: { 
                             'Authorization': `Bearer ${token}`
+                            // نترك المتصفح يحدد الـ Content-Type تلقائياً لـ FormData
                         },
                         body: formData
                     });
@@ -237,7 +243,7 @@
                     
                     if (response.ok) {
                         alert(result.message || "تم رفع ومعالجة ملف الإكسيل بنجاح!");
-                        await loadDashboardData(); 
+                        await loadDashboardData(); // تحديث فوري للأرقام والرسوم حياً
                     } else {
                         const errorMsg = result.detail ? JSON.stringify(result.detail) : "خطأ في هيكلة ملف البيانات";
                         alert(`فشل معالجة الملف (Code ${response.status}): ${errorMsg}`);
