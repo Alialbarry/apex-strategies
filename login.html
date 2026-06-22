@@ -15,7 +15,7 @@
             <input type="email" id="login-email" placeholder="البريد الإلكتروني" required>
             <input type="password" id="login-password" placeholder="كلمة المرور" required>
             <button type="submit" class="btn-block">دخول</button>
-            <p class="toggle-text">ليس لديك حساب？ <a href="#" id="show-signup">إنشاء حساب جديد</a></p>
+            <p class="toggle-text">ليس لديك حساب؟ <a href="#" id="show-signup">إنشاء حساب جديد</a></p>
         </form>
 
         <form id="signup-form" style="display: none;">
@@ -37,12 +37,12 @@
     <script>
         const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
 
-        // تنظيف الـ LocalStorage فور فتح الصفحة لضمان بداية جلسة نظيفة
+        // تنظيف الـ LocalStorage فور فتح الصفحة لضمان جلسة جديدة
         window.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('access_token');
         });
 
-        // التبديل المرئي بين واجهتي تسجيل الدخول وإنشاء الحساب
+        // التبديل بين واجهتي الدخول والتسجيل
         document.getElementById('show-signup').addEventListener('click', (e) => {
             e.preventDefault();
             document.getElementById('signin-form').style.display = 'none';
@@ -65,14 +65,14 @@
             const password = document.getElementById('login-password').value;
 
             try {
-                // إرسال البيانات كـ JSON Object صريح لحل خطأ الـ Dictionary المتوقع في السيرفر
+                // 🚀 الحل النهائي والمطابق تماماً لطلب السيرفر: كائن JSON يحتوي على الحقل المطلوب "email"
                 const response = await fetch(`${API_BASE_URL}/signin`, {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json' 
                     },
                     body: JSON.stringify({
-                        username: email, 
+                        email: email, 
                         password: password
                     })
                 });
