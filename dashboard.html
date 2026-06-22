@@ -131,16 +131,17 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // محاولة جلب التوكن من الذاكرة المحلية
+            // قراءة التوكن المحفوظ تلقائياً
             let token = localStorage.getItem('access_token');
             
-            // تحسين الفحص: إذا لم يتم العثور على توكن تلقائي أو كان مسجلاً كـ null، نطلب من المستخدم تزويدنا به بدلاً من حظره مباشرة
+            // تحقق مرن لحماية الصفحة لمنع الحظر الفجائي ورسائل الأخطاء القاسية
             if (!token || token === "null" || token === "undefined" || token.length < 10) {
-                token = prompt("🔒 لم يتم استرداد رمز الجلسة تلقائياً من صفحة الدخول. إذا كنت تملك الـ Token، يرجى لصقه هنا لتشغيل اللوحة الحية:");
+                token = prompt("🔒 لم يتم استيراد رمز الجلسة تلقائياً. إذا كنت تملك الـ Token، يرجى لصقه هنا لتشغيل اللوحة الحية:");
                 if (token && token.length > 10) {
                     localStorage.setItem('access_token', token);
                 } else {
-                    alert("تنبيه: لن تتمكن اللوحة من استدعاء البيانات بدون وجود Token صالح.");
+                    alert("تنبيه: لا يمكن جلب البيانات دون وجود Token صالح. يرجى تسجيل الدخول أولاً.");
+                    window.location.href = 'login.html';
                     return;
                 }
             }
@@ -199,7 +200,7 @@
                 } catch (err) { console.error("Error loading data:", err); }
             }
 
-            // حدث رفع ملف الإكسيل مع معالجة الرابط البرمجي والتوكن
+            // رفع الملفات
             document.getElementById('excel-file-input').addEventListener('change', async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -222,7 +223,7 @@
                         alert("تم رفع ومعالجة ملف الإكسيل بنجاح!");
                         await loadDashboardData();
                     } else {
-                        alert("فشل رفع الملف. تأكد من صلاحية ومطابقة الـ Token الخاص بالجلسة الحالية.");
+                        alert("فشل رفع الملف. تأكد من تطابق الـ Token للجلسة الحالية.");
                     }
                 } catch (error) { alert("حدث خطأ أثناء الاتصال بالسيرفر لمعالجة البيانات."); }
                 finally { if (nameDisplay) nameDisplay.innerText = ""; }
