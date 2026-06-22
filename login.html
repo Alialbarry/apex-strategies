@@ -37,11 +37,12 @@
     <script>
         const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
 
-        // تنظيف الـ LocalStorage فور فتح الصفحة للتخلص من أي قيم تالفة سابقة مثل "="
+        // تنظيف الـ LocalStorage فور فتح الصفحة للتخلص من أي قيم تالفة سابقة (مثل "=")
         window.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('access_token');
         });
 
+        // التبديل المرئي بين واجهتي تسجيل الدخول وإنشاء الحساب
         document.getElementById('show-signup').addEventListener('click', (e) => {
             e.preventDefault();
             document.getElementById('signin-form').style.display = 'none';
@@ -56,6 +57,7 @@
             document.getElementById('form-title').innerText = 'تسجيل الدخول إلى المنصة';
         });
 
+        // معالجة إرسال طلب تسجيل الدخول
         document.getElementById('signin-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -63,34 +65,39 @@
             const password = document.getElementById('login-password').value;
 
             try {
-                // تعديل: إرسال البيانات كـ JSON صافي لتتوافق مع توقعات السيرفر وتمنع الـ 422 أو Object Error
+                // صياغة البيانات كـ Form Data (URLSearchParams) لإرضاء السيرفر وحل خطأ 422
+                const formData = new URLSearchParams();
+                formData.append('username', email); // FastAPI OAuth2 يتوقع اسم المتغير ليكون username
+                formData.append('password', password);
+
                 const response = await fetch(`${API_BASE_URL}/signin`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: email,
-                        password: password
-                    })
+                    headers: { 
+                        'Content-Type': 'application/x-www-form-urlencoded' 
+                    },
+                    body: formData
                 });
 
                 if (response.ok) {
                     const data = await response.json();
                     
+                    // حفظ التوكن في الـ LocalStorage والتوجيه إلى لوحة التحكم
                     if (data.access_token) {
                         localStorage.setItem('access_token', data.access_token);
+                        console.log("✅ تم حفظ التوكن التلقائي بنجاح في الـ LocalStorage");
                         window.location.href = 'dashboard.html';
                     } else {
-                        alert("تم تسجيل الدخول ولكن لم يتم استقبال التوكن.");
+                        alert("تم تسجيل الدخول ولكن لم يتم استقبال رمز الوصول (Token).");
                     }
                 } else {
                     const errResult = await response.json();
-                    // تفكيك الـ Object وإظهاره بشكل نصي مقروء ومفهوم
-                    let errorText = errResult.detail ? (typeof errResult.detail === 'object' ? JSON.stringify(errResult.detail) : errResult.detail) : "البيانات المدخلة غير صحيحة";
+                    // قراءة تفاصيل الخطأ بشكل نصوص واضحة بدلاً من [object Object]
+                    let errorText = errResult.detail ? (typeof errResult.detail === 'object' ? JSON.stringify(errResult.detail) : errResult.detail) : "البريد الإلكتروني أو كلمة المرور غير صحيحة";
                     alert(`فشل الدخول: ${errorText}`);
                 }
             } catch (error) {
                 console.error("Signin Error:", error);
-                alert("حدث خطأ أثناء الاتصال بالسيرفر، تأكد من أن ngrok يعمل بشكل صحيح.");
+                alert("حدث خطأ في الاتصال بالخادم، تأكد من أن السيرفر ورابط ngrok يعملان بشكل صحيح.");
             }
         });
     </script>
