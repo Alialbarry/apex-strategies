@@ -150,11 +150,12 @@
 
             async function loadDashboardData() {
                 try {
-                    // 1. جلب اسم اللوحة (تم إضافة الـ ngrok header هنا لتخطي الحظر)
+                    // 1. جلب التكوين الأساسي للوحة واسمها مع تخطي تحذير Ngrok
                     const configResponse = await fetch(`${API_BASE_URL}/dashboard`, {
                         method: 'GET',
                         headers: { 
                             'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
                             'ngrok-skip-browser-warning': 'true'
                         }
                     });
@@ -163,11 +164,12 @@
                         document.getElementById('dashboard-title').textContent = configData.dashboard_name || "APEX STRATEGIES";
                     }
 
-                    // 2. جلب وتحليل البيانات الاحصائية (تم إضافة الـ ngrok header هنا لتخطي الحظر)
+                    // 2. جلب وتحليل البيانات الإحصائية والرسومية مع تخطي تحذير Ngrok
                     const analyticsResponse = await fetch(`${API_BASE_URL}/dashboard/analytics`, {
                         method: 'GET',
                         headers: { 
                             'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
                             'ngrok-skip-browser-warning': 'true'
                         }
                     });
@@ -189,7 +191,7 @@
                     const trendObj = data.find(item => item.metric_name === 'Monthly Revenue Trend' || item.indicator_name === 'Monthly Revenue Trend') || data[3];
                     const leadObj = data.find(item => item.metric_name === 'Sum of Revenue by Lead_Source' || item.indicator_name === 'Sum of Revenue by Lead_Source') || data[4];
 
-                    // رسم تحديث الخط الزمني للايرادات
+                    // رسم وتحديث الخط الزمني للإيرادات
                     if (trendObj && trendObj.data_points) {
                         const ctxLine = document.getElementById('revenueTrendChart').getContext('2d');
                         if (revenueTrendChart) revenueTrendChart.destroy();
@@ -206,7 +208,7 @@
                         });
                     }
 
-                    // رسم تحديث قنوات الاستقطاب
+                    // رسم وتحديث قنوات الاستقطاب (Bar Chart)
                     if (leadObj && leadObj.data_points) {
                         const ctxBar = document.getElementById('leadSourceChart').getContext('2d');
                         if (leadSourceChart) leadSourceChart.destroy();
@@ -229,10 +231,12 @@
                             }
                         });
                     }
-                } catch (err) { console.error("Error rendering dashboard metrics:", err); }
+                } catch (err) { 
+                    console.error("Error rendering dashboard metrics:", err); 
+                }
             }
 
-            // الاستماع لحدث رفع الإكسيل وإجبار الواجهة على التحديث
+            // الاستماع لحدث رفع الإكسيل وإجبار الواجهة على طلب البيانات وتحديث الرسوم
             document.getElementById('excel-file-input').addEventListener('change', async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -244,28 +248,36 @@
                 formData.append('file', file); 
 
                 try {
-                    const uploadUrl = `${API_BASE_URL}/dashboard/upload-excel?token=${encodeURIComponent(token)}`;
+                    // تم تعديل المسار لتخطي المشاكل السابقة في النفق
+                    const uploadUrl = `${API_BASE_URL}/dashboard/upload-excel`;
                     const response = await fetch(uploadUrl, {
                         method: 'POST',
                         headers: { 
                             'Authorization': `Bearer ${token}`,
-                            'ngrok-skip-browser-warning': 'true' // تم إضافة الهيدر لتخطي الحظر أثناء الرفع أيضاً
+                            'ngrok-skip-browser-warning': 'true' // حاسم لتفادي الـ CORS Block أثناء الرفع
                         },
                         body: formData
                     });
 
                     if (response.ok) {
                         alert("تم رفع ومعالجة ملف الإكسيل بنجاح!");
+                        // مهلة صغيرة للتأكد من انتهاء الخادم من إدخال البيانات بجدول المستخدم ثم سحبها حية
                         setTimeout(async () => {
                             await loadDashboardData();
                         }, 800); 
                     } else {
-                        alert("فشل رفع الملف. تأكد من تطابق الـ Token للجلسة الحالية.");
+                        const errData = await response.json().catch(() => ({}));
+                        alert(`فشل رفع الملف: ${errData.detail || "تأكد من صلاحية الجلسة واستخدام ملف صحيح"}`);
                     }
-                } catch (error) { alert("حدث خطأ أثناء الاتصال بالسيرفر لمعالجة البيانات."); }
-                finally { if (nameDisplay) nameDisplay.textContent = ""; }
+                } catch (error) { 
+                    console.error("Upload error:", error);
+                    alert("حدث خطأ أثناء الاتصال بالسيرفر لمعالجة البيانات."); 
+                } finally { 
+                    if (nameDisplay) nameDisplay.textContent = ""; 
+                }
             });
 
+            // التشغيل الأولي لجلب البيانات فور دخول الصفحة
             await loadDashboardData();
         });
     </script>
