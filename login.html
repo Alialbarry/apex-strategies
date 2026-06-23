@@ -37,10 +37,12 @@
     <script>
         const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
 
+        // تنظيف التوكن القديم عند فتح الصفحة لضمان سلامة الجلسة
         window.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('access_token');
         });
 
+        // التحويل إلى واجهة إنشاء حساب جديد
         document.getElementById('show-signup').addEventListener('click', (e) => {
             e.preventDefault();
             document.getElementById('signin-form').style.display = 'none';
@@ -48,6 +50,7 @@
             document.getElementById('form-title').innerText = 'إنشاء حساب جديد';
         });
 
+        // التحويل إلى واجهة تسجيل الدخول
         document.getElementById('show-signin').addEventListener('click', (e) => {
             e.preventDefault();
             document.getElementById('signup-form').style.display = 'none';
@@ -55,6 +58,7 @@
             document.getElementById('form-title').innerText = 'تسجيل الدخول إلى المنصة';
         });
 
+        // 1. معالجة إرسال نموذج تسجيل الدخول (Sign In)
         document.getElementById('signin-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -79,7 +83,7 @@
                         localStorage.setItem('access_token', data.access_token);
                         window.location.href = 'dashboard.html';
                     } else {
-                        alert("تم تسجيل الدخول ولكن لم يتم استقبال التوكن.");
+                        alert("تم تسجيل الدخول ولكن لم يتم استقبال توكن الجلسة الموثق.");
                     }
                 } else {
                     const errResult = await response.json();
@@ -88,7 +92,52 @@
                 }
             } catch (error) {
                 console.error("Signin Error:", error);
-                alert("حدث خطأ في الاتصال بالخادم، تأكد من تشغيل الباكيند ورابط ngrok.");
+                alert("حدث خطأ في الاتصال بالخادم، تأكد من تشغيل الباكيند ورابط ngrok بشكل مستقر.");
+            }
+        });
+
+        // 2. معالجة إرسال نموذج إنشاء حساب جديد (Sign Up) - تم إضافته وتأمينه كاملاً
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const firstName = document.getElementById('reg-firstname').value;
+            const lastName = document.getElementById('reg-lastname').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const accountType = document.getElementById('reg-sector').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        first_name: firstName,
+                        last_name: lastName,
+                        email: email,
+                        password: password,
+                        account_type: accountType
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.access_token) {
+                        localStorage.setItem('access_token', data.access_token);
+                        alert("تم إنشاء حسابك وبناء لوحة تحكم قطاعك الافتراضية بنجاح!");
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        alert("تم إنشاء الحساب، يرجى التوجه لصفحة تسجيل الدخول.");
+                    }
+                } else {
+                    const errResult = await response.json();
+                    let errorText = errResult.detail ? (typeof errResult.detail === 'object' ? JSON.stringify(errResult.detail) : errResult.detail) : "يرجى التحقق من صحة البيانات المدخلة وطول كلمة المرور.";
+                    alert(`فشل إنشاء الحساب: ${errorText}`);
+                }
+            } catch (error) {
+                console.error("Signup Error:", error);
+                alert("حدث خطأ في الاتصال، تأكد من أن السيرفر يعمل ونفق ngrok مفتوح.");
             }
         });
     </script>
