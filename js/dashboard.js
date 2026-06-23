@@ -1,26 +1,35 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('access_token');
     
-    // طباعة التوكن في الكونسول للتأكد من وجوده أثناء الفحص
+    // طباعة التوكن في الكونسول للتأكد من وجوده أثناء الفحص والـ Debugging
     console.log("Current Token found:", token);
     
     if (!token) {
         console.log("No token found, redirecting to login...");
-        window.location.href = 'index.html';
+        window.location.href = 'login.html'; // تعديل المسار ليتطابق مع صفحة الدخول الموحدة
         return;
     }
 
-    // رابط السيرفر المتصل عبر ngrok
+    // رابط السيرفر المتصل عبر نفق ngrok المشفر
     const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
 
     let revenueTrendChart = null;
     let leadSourceChart = null;
 
+    // تفعيل زر تسجيل الخروج برمجياً وتنظيف الجلسة
+    const logoutBtn = document.querySelector('.btn-logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('access_token');
+            window.location.href = 'login.html';
+        });
+    }
+
     async function loadDashboardData() {
         try {
             console.log("Attempting to fetch layout from:", `${API_BASE_URL}/dashboard`);
             
-            // 1. جلب إعدادات اللوحة العامة
+            // 1. جلب إعدادات وتسمية اللوحة العامة لكل قطاع وعميل
             const configResponse = await fetch(`${API_BASE_URL}/dashboard`, {
                 method: 'GET',
                 headers: {
@@ -29,21 +38,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
 
-            console.log("Config Response Status:", configResponse.status);
-
             if (configResponse.ok) {
                 const configData = await configResponse.json();
                 const titleEl = document.getElementById('dashboard-title');
                 if (titleEl) titleEl.innerText = configData.dashboard_name;
             } else if (configResponse.status === 401 || configResponse.status === 403) {
-                console.log("Unauthorized! Token might be invalid.");
-                // تعطيل التوجيه التلقائي مؤقتاً هنا حتى لا تخرج اللوحة من تلقاء نفسها أثناء الفحص
-                // localStorage.removeItem('access_token');
-                // window.location.href = 'index.html';
+                console.log("Unauthorized token! Redirecting...");
+                localStorage.removeItem('access_token');
+                window.location.href = 'login.html';
                 return;
             }
 
-            // 2. جلب المقاييس والبيانات التحليلية الخاصة بعلي
+            // 2. جلب المقاييس والبيانات التحليلية الحية المخصصة من قاعدة البيانات
             const analyticsResponse = await fetch(`${API_BASE_URL}/dashboard/analytics`, {
                 method: 'GET',
                 headers: {
@@ -55,28 +61,35 @@ document.addEventListener('DOMContentLoaded', async () => {
             const data = await analyticsResponse.json();
             console.log("Analytics Data Received:", data);
 
-            // 3. تحديث الكروت الرقمية الثلاثة الـ KPIs
+            // 3. تحديث الكروت الرقمية (KPIs) بالبحث الديناميكي لضمان دعم كافة الحسابات والقطاعات
             const kpiContainer = document.getElementById('kpi-container');
-            if (kpiContainer && data.length >= 3) {
+            if (kpiContainer) {
+                // البحث المرن عن المؤشر بدلاً من الاعتماد اللامركزي على الـ index الثابت للمصفوفة
+                const revMetric = data.find(m => m.metric_name.toLowerCase().includes('revenue') || m.metric_name.includes('كفاءة') || m.metric_name.includes('المرضى')) || {calculated_value: "0.0", metric_name: "المؤشر الرئيسي"};
+                const appMetric = data.find(m => m.metric_name.toLowerCase().includes('appointment') || m.metric_name.includes('الهدر') || m.metric_name.includes('الانتظار')) || {calculated_value: "0.0", metric_name: "المؤشر الثاني"};
+                const rateMetric = data.find(m => m.metric_name.toLowerCase().includes('rate') || m.metric_name.includes('دوران') || m.metric_name.includes('إيرادات')) || {calculated_value: "0.0", metric_name: "المؤشر الثالث"};
+
                 kpiContainer.innerHTML = `
-                    <div class="kpi-card revenue">
-                        <span>Total Revenue</span>
-                        <h2>${data[0].calculated_value}</h2>
+                    <div class="widget-card">
+                        <h3>${revMetric.metric_name}</h3>
+                        <div class="kpi-value">${revMetric.calculated_value}</div>
                     </div>
-                    <div class="kpi-card appointments">
-                        <span>Total Appointment</span>
-                        <h2>${data[1].calculated_value}</h2>
+                    <div class="widget-card">
+                        <h3>${appMetric.metric_name}</h3>
+                        <div class="kpi-value">${appMetric.calculated_value}</div>
                     </div>
-                    <div class="kpi-card rate">
-                        <span>No_Show Rate</span>
-                        <h2>${data[2].calculated_value}</h2>
+                    <div class="widget-card">
+                        <h3>${rateMetric.metric_name}</h3>
+                        <div class="kpi-value">${rateMetric.calculated_value}</div>
                     </div>
                 `;
             }
 
-            // 4. رسم أو تحديث منحنى الإيرادات الشهري (Line Chart)
+            // 4. رسم أو تحديث منحنى الاتجاهات الخطي (Line Chart)
             const canvasLine = document.getElementById('revenueTrendChart');
-            if (canvasLine && data[3]) {
+            const lineMetric = data.find(m => m.chart_type === 'line');
+            
+            if (canvasLine && lineMetric) {
                 const ctxLine = canvasLine.getContext('2d');
                 if (revenueTrendChart) { revenueTrendChart.destroy(); }
                 
@@ -85,8 +98,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     data: {
                         labels: ['January', 'February', 'March', 'April'],
                         datasets: [{
-                            label: 'Monthly Revenue Trend',
-                            data: data[3].data_points,
+                            label: lineMetric.metric_name,
+                            data: lineMetric.data_points,
                             borderColor: '#E040FB',
                             backgroundColor: 'rgba(224, 64, 251, 0.1)',
                             fill: true,
@@ -97,14 +110,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false } }
+                        plugins: { legend: { display: true, labels: { color: '#94a3b8' } } }
                     }
                 });
             }
 
-            // 5. رسم أو تحديث توزيع الإيرادات حسب المصدر (Horizontal Bar Chart)
+            // 5. رسم أو تحديث توزيع الإيرادات والنسب الشريطة (Horizontal Bar Chart)
             const canvasBar = document.getElementById('leadSourceChart');
-            if (canvasBar && data[4]) {
+            const barMetric = data.find(m => m.chart_type === 'bar');
+            
+            if (canvasBar && barMetric) {
                 const ctxBar = canvasBar.getContext('2d');
                 if (leadSourceChart) { leadSourceChart.destroy(); }
                 
@@ -113,7 +128,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     data: {
                         labels: ['Friend Referral', 'TikTok', 'Google Maps', 'Instagram'],
                         datasets: [{
-                            data: data[4].data_points,
+                            label: barMetric.metric_name,
+                            data: barMetric.data_points,
                             backgroundColor: ['#3182CE', '#319795', '#805AD5', '#D53F8C'],
                             borderWidth: 0,
                             borderRadius: 4
@@ -143,7 +159,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!file) return;
 
             const nameDisplay = document.getElementById('file-name-display');
-            if (nameDisplay) nameDisplay.innerText = `جاري معالجة: ${file.name}`;
+            if (nameDisplay) nameDisplay.innerText = `جاري معالجة وحساب: ${file.name}`;
             
             const formData = new FormData();
             formData.append('file', file);
@@ -160,20 +176,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const result = await response.json();
                 
                 if (response.ok) {
-                    alert(result.message);
-                    await loadDashboardData(); // تحديث حركي فوري للرسوم بدون استخدام location.reload()
+                    alert(result.message || "تمت المعالجة بنجاح");
+                    await loadDashboardData(); // تحديث حركي فوري للرسوم والمقاييس بدون كراش أو تحديث قسري
                 } else {
-                    alert(`فشل رفع ومعالجة الملف: ${result.detail}`);
+                    alert(`فشل رفع ومعالجة الملف: ${result.detail || "خطأ غير معروف"}`);
                 }
             } catch (error) {
                 console.error("Upload Error:", error);
-                alert("حدث خطأ في الاتصال بالسيرفر أثناء رفع ملف الإكسيل.");
+                alert("حدث خطأ في الاتصال بالسيرفر أثناء رفع ملف الإكسيل، يرجى التحقق من استقرار نفق الاتصال.");
             } finally {
+                if (fileInput) fileInput.value = ""; // تنظيف حقل الإدخال للسماح برفع نفس الملف مجدداً
                 if (nameDisplay) nameDisplay.innerText = "";
             }
         });
     }
 
-    // تشغيل الجلب المبدئي للبيانات
+    // تشغيل الجلب المبدئي لبناء الواجهة فور فتح الصفحة
     await loadDashboardData();
 });
