@@ -385,15 +385,17 @@
 
         /* File Upload Area */
         .upload-zone {
+            display: block;
             border: 2px dashed #27314a;
-            padding: 15px 25px;
+            padding: 30px 25px;
             border-radius: 8px;
             text-align: center;
             cursor: pointer;
             background: rgba(255,255,255,0.01);
             color: var(--accent-blue);
             font-weight: bold;
-            font-size: 13px;
+            font-size: 14px;
+            transition: all 0.3s;
         }
         .upload-zone:hover { background: rgba(59,130,246,0.05); }
 
@@ -535,7 +537,7 @@
                                 </tr>
                             </thead>
                             <tbody id="users-management-tbody">
-                                </tbody>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -672,7 +674,10 @@
     </div>
 
     <script>
-        // 1. دالة تسجيل الدخول والربط بالـ Backend وقاعدة البيانات
+        // المتغيرات العالمية للاحتفاظ بنسخ الـ Charts لتحديثها أو تدميرها عند الضرورة
+        let revenueChart, plansChart, clientMainChart;
+
+        // 1. دالة تسجيل الدخول والربط بالـ Backend
         async function executeSaaSLogin(event) {
             event.preventDefault(); 
 
@@ -699,7 +704,7 @@
                     document.getElementById('saas-login-screen').style.display = 'none';
                     document.getElementById('saas-app-wrapper').style.display = 'flex';
 
-                    // تحديث الاسم ديناميكياً بناء على الـ Response القادم من الـ SQLite
+                    // تحديث الاسم ديناميكياً
                     document.getElementById('username-display').innerText = data.user.name;
                     
                     // فحص دور المستخدم وتحديد القوائم واللوحات المناسبة للـ Role
@@ -710,7 +715,7 @@
                     }
                     
                     // بناء ورسم الرسوم البيانية التفاعلية
-                    renderInitialCharts();
+                    renderInitialCharts(data.user.role);
 
                 } else {
                     alert('فشل تسجيل الدخول: ' + (data.detail || 'يرجى التحقق من صحة البيانات.'));
@@ -732,34 +737,30 @@
             
             navigateSaaSView('view-admin-overview', 'm-overview');
 
-            // طلب قائمة المستخدمين من الباكيند حياً
+            // طلب قائمة المستخدمين من الباكيند
             try {
                 const response = await fetch('http://127.0.0.1:8000/api/admin/users');
                 if (response.ok) {
                     const users = await response.json();
                     const tbody = document.getElementById('users-management-tbody');
                     
-                    // تنظيف الجدول من السطور القديمة والثابتة
                     tbody.innerHTML = ''; 
 
-                    // بناء السطور ديناميكياً بناءً على الحسابات الفعالة في SQLite
                     users.forEach(user => {
                         const tr = document.createElement('tr');
                         
-                        // تحديد شكل الـ Pill بناءً على نوع الحساب
                         let typeClass = 'basic';
-                        if (user.account_type.toLowerCase() === 'clinic') typeClass = 'pro';
-                        if (user.account_type.toLowerCase() === 'business') typeClass = 'ent';
-                        if (user.account_type.toLowerCase() === 'admin') typeClass = 'basic';
+                        if (user.account_type && user.account_type.toLowerCase() === 'clinic') typeClass = 'pro';
+                        if (user.account_type && user.account_type.toLowerCase() === 'business') typeClass = 'ent';
 
                         tr.innerHTML = `
-                            <td>${user.id.substring(0, 8)}...</td>
+                            <td>${user.id ? user.id.substring(0, 8) + '...' : 'N/A'}</td>
                             <td>${user.account_type === 'Admin' ? 'إدارة النظام' : 'شركة أو عيادة مسجلة'}</td>
-                            <td>${user.first_name} ${user.last_name}</td>
-                            <td>${user.email}</td>
-                            <td><span class="pill ${typeClass}">${user.account_type}</span></td>
+                            <td>${user.first_name || ''} ${user.last_name || ''}</td>
+                            <td>${user.email || ''}</td>
+                            <td><span class="pill ${typeClass}">${user.account_type || 'Basic'}</span></td>
                             <td><span class="pill active">نشط</span></td>
-                            <td><button class="btn-small-tool" onclick="alert('ميزة التعديل للحساب ${user.id} ستتوفر قريباً!')">تعديل</button></td>
+                            <td><button class="btn-small-tool" onclick="alert('ميزة التعديل للحساب ستتوفر قريباً!')">تعديل</button></td>
                         `;
                         tbody.appendChild(tr);
                     });
@@ -781,7 +782,7 @@
             document.getElementById('client-welcome-heading').innerText = `مرحباً بك يا ${user.name}`;
             
             // تحديث الباقة المعروضة بملف العميل التعريفي
-            document.getElementById('prof-plan-pill').innerText = user.account_type;
+            document.getElementById('prof-plan-pill').innerText = user.account_type || 'Professional';
             
             navigateSaaSView('view-client-dashboard', 'm-client-dash');
         }
@@ -794,52 +795,74 @@
             const menuItems = document.querySelectorAll('.menu-item');
             menuItems.forEach(item => item.classList.remove('active'));
             
-            document.getElementById(viewId).classList.add('active');
-            if(menuItemId) {
-                document.getElementById(menuItemId).classList.add('active');
+            const targetSection = document.getElementById(viewId);
+            if (targetSection) targetSection.classList.add('active');
+            
+            const targetMenuItem = document.getElementById(menuItemId);
+            if (targetMenuItem) targetMenuItem.classList.add('active');
+        }
+
+        // 5. دالة بناء وإطلاق الرسوم البيانية (ApexCharts) بالتوافق مع النمط الداكن للمنصة
+        function renderInitialCharts(role) {
+            const chartThemeOptions = {
+                mode: 'dark',
+                palette: 'palette1'
+            };
+
+            if (role === 'admin') {
+                // منحنى الإيرادات للأدمن
+                const revenueOptions = {
+                    chart: { type: 'area', height: 260, toolbar: { show: false }, background: 'transparent' },
+                    theme: chartThemeOptions,
+                    colors: ['#3b82f6'],
+                    stroke: { curve: 'smooth', width: 3 },
+                    series: [{ name: 'MRR ($)', data: [8500, 9800, 11200, 12500, 13900, 14500] }],
+                    xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'] },
+                    grid: { borderColor: 'rgba(255,255,255,0.05)' }
+                };
+                if(revenueChart) revenueChart.destroy();
+                revenueChart = new ApexCharts(document.getElementById('chart-admin-revenue'), revenueOptions);
+                revenueChart.render();
+
+                // توزيع الخطط للأدمن
+                const plansOptions = {
+                    chart: { type: 'donut', height: 260, background: 'transparent' },
+                    theme: chartThemeOptions,
+                    colors: ['#3b82f6', '#8b5cf6', '#f59e0b'],
+                    series: [5, 4, 3],
+                    labels: ['الأساسية Basic', 'الاحترافية Pro', 'المؤسسات Enterprise'],
+                    legend: { position: 'bottom' }
+                };
+                if(plansChart) plansChart.destroy();
+                plansChart = new ApexCharts(document.getElementById('chart-admin-plans'), plansOptions);
+                plansChart.render();
+            } else {
+                // تحليلات الأداء الربع سنوي للعميل
+                const clientOptions = {
+                    chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent' },
+                    theme: chartThemeOptions,
+                    colors: ['#8b5cf6', '#3b82f6'],
+                    stroke: { width: 0 },
+                    series: [
+                        { name: 'الإنتاج الفعلي', data: [76, 85, 91, 88] },
+                        { name: 'الهدف المخطط', data: [80, 85, 90, 95] }
+                    ],
+                    xaxis: { categories: ['الربع الأول', 'الربع الثاني', 'الربع الثالث', 'الربع الرابع'] },
+                    grid: { borderColor: 'rgba(255,255,255,0.05)' }
+                };
+                if(clientMainChart) clientMainChart.destroy();
+                clientMainChart = new ApexCharts(document.getElementById('client-main-chart'), clientOptions);
+                clientMainChart.render();
             }
         }
 
-        // 5. دالة تسجيل الخروج
+        // 6. دالة تسجيل الخروج والعودة لشاشة الـ Auth
         function executeSaaSLogout() {
-            document.getElementById('saas-app-wrapper').style.display = 'none';
-            document.getElementById('saas-login-screen').style.display = 'flex';
-            document.getElementById('saas-login-form').reset();
-        }
-
-        // 6. رسم المخططات البيانية التفاعلية (ApexCharts)
-        function renderInitialCharts() {
-            // مخطط الإيرادات الخاص بالمدير
-            var revenueOptions = {
-                chart: { type: 'line', height: 250, theme: 'dark', foreColor: '#94a3b8' },
-                series: [{ name: 'MRR Growth', data: [10000, 12500, 11800, 14500] }],
-                xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr'] },
-                colors: ['#3b82f6'],
-                grid: { borderColor: 'rgba(255,255,255,0.05)' }
-            };
-            document.getElementById('chart-admin-revenue').innerHTML = "";
-            new ApexCharts(document.querySelector("#chart-admin-revenue"), revenueOptions).render();
-
-            // مخطط توزيع الخطط والباقات للمدير
-            var plansOptions = {
-                chart: { type: 'donut', height: 250, foreColor: '#94a3b8' },
-                series: [5, 5, 2],
-                labels: ['Basic', 'Professional', 'Enterprise'],
-                colors: ['#3b82f6', '#8b5cf6', '#f59e0b']
-            };
-            document.getElementById('chart-admin-plans').innerHTML = "";
-            new ApexCharts(document.querySelector("#chart-admin-plans"), plansOptions).render();
-
-            // مخطط الأداء الربع سنوي للعميل
-            var clientOptions = {
-                chart: { type: 'bar', height: 250, theme: 'dark', foreColor: '#94a3b8' },
-                series: [{ name: 'مستوى الأداء التشغيلي %', data: [82, 86, 89, 94.2] }],
-                xaxis: { categories: ['Q1', 'Q2', 'Q3', 'Q4'] },
-                colors: ['#8b5cf6'],
-                grid: { borderColor: 'rgba(255,255,255,0.05)' }
-            };
-            document.getElementById('client-main-chart').innerHTML = "";
-            new ApexCharts(document.querySelector("#client-main-chart"), clientOptions).render();
+            if(confirm('هل تود تسجيل الخروج من جلسة العمل الحالية؟')) {
+                document.getElementById('saas-app-wrapper').style.display = 'none';
+                document.getElementById('saas-login-screen').style.display = 'flex';
+                document.getElementById('saas-login-form').reset();
+            }
         }
     </script>
 </body>
