@@ -3,141 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة الوصول الموحدة | Apex Strategies</title>
+    <title>Apex Strategies - Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --text-color: #c9d1d9;
+            --input-bg: #21262d;
+            --border-color: #30363d;
+            --button-bg: #1f6feb;
+            --button-hover: #388bfd;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .login-card { background: var(--card-bg); padding: 40px; border-radius: 12px; border: 1px solid var(--border-color); width: 100%; max-width: 450px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        .login-card h2 { text-align: center; margin-bottom: 30px; color: #ffffff; font-weight: 700; letter-spacing: 1px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+        .form-group input { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 6px; color: white; text-align: center; font-size: 16px; }
+        .form-group input:focus { border-color: var(--button-hover); outline: none; }
+        .btn-submit { width: 100%; padding: 14px; background: var(--button-bg); border: none; border-radius: 6px; color: white; font-size: 18px; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 10px; }
+        .btn-submit:hover { background: var(--button-hover); }
+        .footer-link { text-align: center; margin-top: 20px; font-size: 14px; color: #8b949e; }
+        .footer-link a { color: var(--button-bg); text-decoration: none; }
+    </style>
 </head>
-<body class="auth-body">
-    <div class="auth-container">
-        <h2 id="form-title">تسجيل الدخول إلى المنصة</h2>
-        
-        <form id="signin-form">
-            <input type="email" id="login-email" placeholder="البريد الإلكتروني" required>
-            <input type="password" id="login-password" placeholder="كلمة المرور" required>
-            <button type="submit" class="btn-block">دخول</button>
-            <p class="toggle-text">ليس لديك حساب؟ <a href="#" id="show-signup">إنشاء حساب جديد</a></p>
-        </form>
+<body>
 
-        <form id="signup-form" style="display: none;">
-            <input type="text" id="reg-firstname" placeholder="الاسم الأول" required>
-            <input type="text" id="reg-lastname" placeholder="الكنية" required>
-            <input type="email" id="reg-email" placeholder="البريد الإلكتروني" required>
-            <input type="password" id="reg-password" placeholder="كلمة المرور" required>
-            <select id="reg-sector" required>
-                <option value="" disabled selected>اختر القطاع العملياتي للشركة</option>
-                <option value="production">قطاع الإنتاج والتصنيع</option>
-                <option value="medical">القطاع الطبي والعيادات</option>
-                <option value="financial">القطاع المالي والتجاري</option>
-            </select>
-            <button type="submit" class="btn-block">تفعيل الحساب واللوحة</button>
-            <p class="toggle-text">لديك حساب بالفعل؟ <a href="#" id="show-signin">تسجيل الدخول</a></p>
+    <div class="login-card">
+        <h2>تسجيل الدخول إلى المنصة</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <input type="email" id="email" placeholder="البريد الإلكتروني" required value="ali.albarry.404@gmail.com">
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" placeholder="كلمة المرور" required>
+            </div>
+            <button type="submit" class="btn-submit">دخول</button>
         </form>
+        <div class="footer-link">
+            ليس لديك حساب؟ <a href="#">إنشاء حساب جديد</a>
+        </div>
     </div>
 
     <script>
-        const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
-
-        // تنظيف التوكن القديم عند فتح الصفحة لضمان سلامة الجلسة
-        window.addEventListener('DOMContentLoaded', () => {
-            localStorage.removeItem('access_token');
-        });
-
-        // التحويل إلى واجهة إنشاء حساب جديد
-        document.getElementById('show-signup').addEventListener('click', (e) => {
-            e.preventDefault();
-            document.getElementById('signin-form').style.display = 'none';
-            document.getElementById('signup-form').style.display = 'flex';
-            document.getElementById('form-title').innerText = 'إنشاء حساب جديد';
-        });
-
-        // التحويل إلى واجهة تسجيل الدخول
-        document.getElementById('show-signin').addEventListener('click', (e) => {
-            e.preventDefault();
-            document.getElementById('signup-form').style.display = 'none';
-            document.getElementById('signin-form').style.display = 'flex';
-            document.getElementById('form-title').innerText = 'تسجيل الدخول إلى المنصة';
-        });
-
-        // 1. معالجة إرسال نموذج تسجيل الدخول (Sign In)
-        document.getElementById('signin-form').addEventListener('submit', async (e) => {
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
 
             try {
+                // إرسال طلب تسجيل الدخول مع الهيدر الحاسم لمنع حظر Ngrok
                 const response = await fetch(`${API_BASE_URL}/signin`, {
                     method: 'POST',
                     headers: { 
-                        'Content-Type': 'application/json' 
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true' // تخطي صفحة التحذير وحظر الـ CORS
                     },
-                    body: JSON.stringify({
-                        email: email, 
-                        password: password
-                    })
+                    body: JSON.stringify({ email: email, password: password })
                 });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.access_token) {
-                        localStorage.setItem('access_token', data.access_token);
-                        window.location.href = 'dashboard.html';
-                    } else {
-                        alert("تم تسجيل الدخول ولكن لم يتم استقبال توكن الجلسة الموثق.");
-                    }
+                const result = await response.json();
+
+                if (response.ok && result.access_token) {
+                    // حفظ الـ Token بنجاح وتحويل المستخدم إلى الداشبورد الحية
+                    localStorage.setItem('access_token', result.access_token);
+                    alert("تم تسجيل الدخول بنجاح!");
+                    window.location.href = 'dashboard.html';
                 } else {
-                    const errResult = await response.json();
-                    let errorText = errResult.detail ? (typeof errResult.detail === 'object' ? JSON.stringify(errResult.detail) : errResult.detail) : "البريد الإلكتروني أو كلمة المرور غير صحيحة";
-                    alert(`فشل الدخول: ${errorText}`);
+                    alert(`فشل الدخول: ${result.detail || "خطأ غير معروف"}`);
                 }
             } catch (error) {
-                console.error("Signin Error:", error);
-                alert("حدث خطأ في الاتصال بالخادم، تأكد من تشغيل الباكيند ورابط ngrok بشكل مستقر.");
-            }
-        });
-
-        // 2. معالجة إرسال نموذج إنشاء حساب جديد (Sign Up) - تم إضافته وتأمينه كاملاً
-        document.getElementById('signup-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const firstName = document.getElementById('reg-firstname').value;
-            const lastName = document.getElementById('reg-lastname').value;
-            const email = document.getElementById('reg-email').value;
-            const password = document.getElementById('reg-password').value;
-            const accountType = document.getElementById('reg-sector').value;
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/signup`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        first_name: firstName,
-                        last_name: lastName,
-                        email: email,
-                        password: password,
-                        account_type: accountType
-                    })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.access_token) {
-                        localStorage.setItem('access_token', data.access_token);
-                        alert("تم إنشاء حسابك وبناء لوحة تحكم قطاعك الافتراضية بنجاح!");
-                        window.location.href = 'dashboard.html';
-                    } else {
-                        alert("تم إنشاء الحساب، يرجى التوجه لصفحة تسجيل الدخول.");
-                    }
-                } else {
-                    const errResult = await response.json();
-                    let errorText = errResult.detail ? (typeof errResult.detail === 'object' ? JSON.stringify(errResult.detail) : errResult.detail) : "يرجى التحقق من صحة البيانات المدخلة وطول كلمة المرور.";
-                    alert(`فشل إنشاء الحساب: ${errorText}`);
-                }
-            } catch (error) {
-                console.error("Signup Error:", error);
-                alert("حدث خطأ في الاتصال، تأكد من أن السيرفر يعمل ونفق ngrok مفتوح.");
+                console.error("Login error:", error);
+                alert("حدث خطأ أثناء الاتصال بالسيرفر. تأكد من أن الباكيند ونفق Ngrok يعملان بنجاح.");
             }
         });
     </script>
