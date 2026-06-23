@@ -1,25 +1,185 @@
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-body { background: #0f172a; color: #f8fafc; }
+/* الإعدادات العامة للمنصة والتأكيد على خط القاهرة المعياري */
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: 'Cairo', sans-serif; 
+}
 
-/* صفحات الدخول */
-.auth-body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: radial-gradient(#1e293b, #0f172a); }
-.auth-container { background: #1e293b; padding: 40px; border-radius: 12px; width: 100%; max-width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-.auth-container h2 { text-align: center; margin-bottom: 25px; font-size: 22px; }
-.auth-container input, .auth-container select { width: 100%; padding: 12px; margin-bottom: 15px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white; }
-.btn-block { width: 100%; padding: 12px; background: #3b82f6; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
-.btn-block:hover { background: #2563eb; }
-.toggle-text { margin-top: 15px; text-align: center; font-size: 14px; color: #94a3b8; }
-.toggle-text a { color: #3b82f6; text-decoration: none; }
+body { 
+    background: #0f172a; 
+    color: #f8fafc; 
+    transition: background-color 0.3s ease;
+}
 
-/* لوحات التحكم والسمات المخصصة ديناميكياً */
-.dash-nav { display: flex; justify-content: space-between; padding: 15px 5%; background: #1e293b; border-bottom: 1px solid #334155; }
-.dashboard-wrapper { padding: 40px 5%; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+/* صفحات الدخول والمصادقة */
+.auth-body { 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh; 
+    background: radial-gradient(#1e293b, #0f172a); 
+}
 
-/* السيمات المخصصة المرجوعة من الباك إند (Dynamic Themes) */
-.theme-dark { background: #0f172a !important; color: white; }
-.theme-blue_gradient { background: linear-gradient(135deg, #020617, #1e1b4b) !important; color: #f1f5f9; }
+.auth-container { 
+    background: #1e293b; 
+    padding: 40px; 
+    border-radius: 12px; 
+    width: 100%; 
+    max-width: 450px; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+}
 
-.widget-card { background: #1e293b; border-radius: 12px; padding: 25px; border: 1px solid #334155; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-.widget-card h3 { font-size: 16px; color: #94a3b8; margin-bottom: 15px; }
-.kpi-value { font-size: 32px; font-weight: 700; color: #38bdf8; text-align: center; margin: 10px 0; }
-.btn-logout { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-right: 15px; }
+.auth-container h2 { 
+    text-align: center; 
+    margin-bottom: 25px; 
+    font-size: 22px; 
+    font-weight: 700;
+}
+
+/* إجبار النماذج البرمجية على الترتيب العمودي الصحيح ومنع تداخل الحقول */
+#signin-form, #signup-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-container input, .auth-container select { 
+    width: 100%; 
+    padding: 12px; 
+    margin-bottom: 15px; 
+    background: #0f172a; 
+    border: 1px solid #334155; 
+    border-radius: 6px; 
+    color: white; 
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+/* محاذاة السهم والنصوص داخل القوائم المنسدلة للقطاعات في بيئة RTL */
+.auth-container select {
+    padding-right: 10px;
+    cursor: pointer;
+}
+
+.auth-container input:focus, .auth-container select:focus {
+    border-color: #3b82f6;
+}
+
+.btn-block { 
+    width: 100%; 
+    padding: 12px; 
+    background: #3b82f6; 
+    border: none; 
+    border-radius: 6px; 
+    color: white; 
+    font-weight: bold; 
+    font-size: 16px;
+    cursor: pointer; 
+    transition: background 0.3s ease, transform 0.1s ease; 
+}
+
+.btn-block:hover { 
+    background: #2563eb; 
+}
+
+.btn-block:active {
+    transform: scale(0.98);
+}
+
+.toggle-text { 
+    margin-top: 15px; 
+    text-align: center; 
+    font-size: 14px; 
+    color: #94a3b8; 
+}
+
+.toggle-text a { 
+    color: #3b82f6; 
+    text-decoration: none; 
+    font-weight: 600;
+}
+
+.toggle-text a:hover {
+    text-decoration: underline;
+}
+
+/* لوحات التحكم والبار العلوي (Navigation Bar) */
+.dash-nav { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    padding: 15px 5%; 
+    background: #1e293b; 
+    border-bottom: 1px solid #334155; 
+}
+
+.dash-nav h1 {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.dashboard-wrapper { 
+    padding: 40px 5%; 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    gap: 25px; 
+}
+
+/* السمات والأنماط المخصصة الحية المرجوعة من الباك إند (Dynamic Themes) */
+.theme-dark { 
+    background: #0f172a !important; 
+    color: #f8fafc !important; 
+}
+
+.theme-blue_gradient { 
+    background: linear-gradient(135deg, #020617, #1e1b4b) !important; 
+    color: #f1f5f9 !important; 
+}
+
+/* تصميم بطاقات المؤشرات والـ Widgets التفاعلية */
+.widget-card { 
+    background: #1e293b; 
+    border-radius: 12px; 
+    padding: 25px; 
+    border: 1px solid #334155; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.widget-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.widget-card h3 { 
+    font-size: 16px; 
+    color: #94a3b8; 
+    margin-bottom: 15px; 
+    font-weight: 600;
+}
+
+.kpi-value { 
+    font-size: 32px; 
+    font-weight: 700; 
+    color: #38bdf8; 
+    text-align: center; 
+    margin: 10px 0; 
+}
+
+/* زر تسجيل الخروج والدخول */
+.btn-logout { 
+    background: #ef4444; 
+    color: white; 
+    border: none; 
+    padding: 8px 16px; 
+    border-radius: 6px; 
+    font-weight: 600;
+    cursor: pointer; 
+    transition: background 0.2s;
+    margin-right: 15px; 
+}
+
+.btn-logout:hover {
+    background: #dc2626;
+}
