@@ -148,7 +148,6 @@
             let revenueTrendChart = null;
             let leadSourceChart = null;
 
-            // دالة موحدة لجلب وعرض البيانات لمنع تجميد الأرقام عند الصفر
             async function loadDashboardData() {
                 try {
                     // 1. جلب اسم اللوحة
@@ -158,7 +157,7 @@
                     });
                     if (configResponse.ok) {
                         const configData = await configResponse.json();
-                        document.getElementById('dashboard-title').innerText = configData.dashboard_name || "APEX STRATEGIES";
+                        document.getElementById('dashboard-title').textContent = configData.dashboard_name || "APEX STRATEGIES";
                     }
 
                     // 2. جلب وتحليل البيانات الاحصائية والرسومية
@@ -170,20 +169,17 @@
                     if (!analyticsResponse.ok) return;
                     const rawData = await analyticsResponse.json();
 
-                    // معالجة مرنة: التحقق مما إذا كانت المصفوفة بداخل كائن فرعي أم مباشرة
                     const data = Array.isArray(rawData) ? rawData : (rawData.analytics || rawData.data || []);
                     if (data.length === 0) return;
 
-                    // البحث الديناميكي عن المؤشرات بحسب اسمها بدلاً من الترتيب الثابت العشوائي
                     const revenueObj = data.find(item => item.metric_name === 'Total Revenue' || item.indicator_name === 'Total Revenue') || data[0];
                     const appointmentObj = data.find(item => item.metric_name === 'Total Appointment' || item.indicator_name === 'Total Appointment') || data[1];
                     const rateObj = data.find(item => item.metric_name === 'No_Show Rate' || item.indicator_name === 'No_Show Rate') || data[2];
 
-                    if (revenueObj) document.getElementById('kpi-rev').innerText = revenueObj.calculated_value;
-                    if (appointmentObj) document.getElementById('kpi-app').innerText = appointmentObj.calculated_value;
-                    if (rateObj) document.getElementById('kpi-rate').innerText = rateObj.calculated_value;
+                    if (revenueObj) document.getElementById('kpi-rev').textContent = revenueObj.calculated_value;
+                    if (appointmentObj) document.getElementById('kpi-app').textContent = appointmentObj.calculated_value;
+                    if (rateObj) document.getElementById('kpi-rate').textContent = rateObj.calculated_value;
 
-                    // العثور على نقاط الرسوم البيانية ديناميكياً
                     const trendObj = data.find(item => item.metric_name === 'Monthly Revenue Trend' || item.indicator_name === 'Monthly Revenue Trend') || data[3];
                     const leadObj = data.find(item => item.metric_name === 'Sum of Revenue by Lead_Source' || item.indicator_name === 'Sum of Revenue by Lead_Source') || data[4];
 
@@ -192,7 +188,6 @@
                         const ctxLine = document.getElementById('revenueTrendChart').getContext('2d');
                         if (revenueTrendChart) revenueTrendChart.destroy();
                         
-                        // استخراج الأسماء والقيم من البيانات الحية إن وجدت، وإلا استخدام الافتراضي
                         const labels = trendObj.labels || ['January', 'February', 'March', 'April'];
                         
                         revenueTrendChart = new Chart(ctxLine, {
@@ -218,7 +213,14 @@
                                 labels: labels,
                                 datasets: [{ data: leadObj.data_points, backgroundColor: ['#3182CE', '#319795', '#805AD5', '#D53F8C'] }]
                             },
-                            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false }
+                            options: { 
+                                indexAxis: 'y', 
+                                responsive: true, 
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: { display: false } // إخفاء الأسطورة لتوفير المساحة المظهرية للرسم الأفقي
+                                }
+                            }
                         });
                     }
                 } catch (err) { console.error("Error rendering dashboard metrics:", err); }
@@ -230,7 +232,7 @@
                 if (!file) return;
 
                 const nameDisplay = document.getElementById('file-name-display');
-                if (nameDisplay) nameDisplay.innerText = `جاري معالجة: ${file.name}`;
+                if (nameDisplay) nameDisplay.textContent = `جاري معالجة: ${file.name}`;
 
                 const formData = new FormData();
                 formData.append('file', file); 
@@ -245,7 +247,6 @@
 
                     if (response.ok) {
                         alert("تم رفع ومعالجة ملف الإكسيل بنجاح!");
-                        // 🚀 أهم خطوة: إعادة تشغيل الاستدعاء لجلب الأرقام الحقيقية فوراً بدلاً من بقائها أصفاراً
                         setTimeout(async () => {
                             await loadDashboardData();
                         }, 800); 
@@ -253,10 +254,9 @@
                         alert("فشل رفع الملف. تأكد من تطابق الـ Token للجلسة الحالية.");
                     }
                 } catch (error) { alert("حدث خطأ أثناء الاتصال بالسيرفر لمعالجة البيانات."); }
-                finally { if (nameDisplay) nameDisplay.innerText = ""; }
+                finally { if (nameDisplay) nameDisplay.textContent = ""; }
             });
 
-            // التحميل الأولي عند فتح الصفحة
             await loadDashboardData();
         });
     </script>
