@@ -150,20 +150,26 @@
 
             async function loadDashboardData() {
                 try {
-                    // 1. جلب اسم اللوحة
+                    // 1. جلب اسم اللوحة (تم إضافة الـ ngrok header هنا لتخطي الحظر)
                     const configResponse = await fetch(`${API_BASE_URL}/dashboard`, {
                         method: 'GET',
-                        headers: { 'Authorization': `Bearer ${token}` }
+                        headers: { 
+                            'Authorization': `Bearer ${token}`,
+                            'ngrok-skip-browser-warning': 'true'
+                        }
                     });
                     if (configResponse.ok) {
                         const configData = await configResponse.json();
                         document.getElementById('dashboard-title').textContent = configData.dashboard_name || "APEX STRATEGIES";
                     }
 
-                    // 2. جلب وتحليل البيانات الاحصائية والرسومية
+                    // 2. جلب وتحليل البيانات الاحصائية (تم إضافة الـ ngrok header هنا لتخطي الحظر)
                     const analyticsResponse = await fetch(`${API_BASE_URL}/dashboard/analytics`, {
                         method: 'GET',
-                        headers: { 'Authorization': `Bearer ${token}` }
+                        headers: { 
+                            'Authorization': `Bearer ${token}`,
+                            'ngrok-skip-browser-warning': 'true'
+                        }
                     });
                     
                     if (!analyticsResponse.ok) return;
@@ -218,7 +224,7 @@
                                 responsive: true, 
                                 maintainAspectRatio: false,
                                 plugins: {
-                                    legend: { display: false } // إخفاء الأسطورة لتوفير المساحة المظهرية للرسم الأفقي
+                                    legend: { display: false }
                                 }
                             }
                         });
@@ -241,7 +247,10 @@
                     const uploadUrl = `${API_BASE_URL}/dashboard/upload-excel?token=${encodeURIComponent(token)}`;
                     const response = await fetch(uploadUrl, {
                         method: 'POST',
-                        headers: { 'Authorization': `Bearer ${token}` },
+                        headers: { 
+                            'Authorization': `Bearer ${token}`,
+                            'ngrok-skip-browser-warning': 'true' // تم إضافة الهيدر لتخطي الحظر أثناء الرفع أيضاً
+                        },
                         body: formData
                     });
 
