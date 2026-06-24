@@ -74,28 +74,28 @@
             </div>
             
             <div class="filter-group">
-                <label>تطاق التاريخ النشط</label>
+                <label>نطاق التاريخ النشط</label>
                 <input type="text" id="date-range-display" value="تحديث تلقائي من الملف" disabled>
             </div>
             
             <div class="filter-group">
                 <label>اسم الطبيب (Doctor Name)</label>
                 <div class="checkbox-list" id="doctor-filters-container">
-                    <span style="color:var(--text-muted); font-size:12px; padding:5px;">قم برفع ملف لبناء فلاتر الأطباء...</span>
+                    <span style="color:var(--text-muted); font-size:12px; padding:5px;">يرجى رفع ملف لبناء الفلاتر...</span>
                 </div>
             </div>
             
             <div class="filter-group">
                 <label>نوع الخدمة (Service Type)</label>
                 <div class="checkbox-list" id="service-filters-container">
-                    <span style="color:var(--text-muted); font-size:12px; padding:5px;">قم برفع ملف لبناء فلاتر الخدمات...</span>
+                    <span style="color:var(--text-muted); font-size:12px; padding:5px;">يرجى رفع ملف لبناء الفلاتر...</span>
                 </div>
             </div>
 
             <div class="filter-group">
                 <label>قنوات الاستقطاب (Lead Source)</label>
                 <div class="checkbox-list" id="lead-filters-container">
-                    <span style="color:var(--text-muted); font-size:12px; padding:5px;">قم برفع ملف لبناء فلاتر القنوات...</span>
+                    <span style="color:var(--text-muted); font-size:12px; padding:5px;">يرجى رفع ملف لبناء الفلاتر...</span>
                 </div>
             </div>
             
@@ -120,11 +120,11 @@
             <section class="charts-grid">
                 <div class="chart-box">
                     <h3>اتجاهات الإيرادات الشهرية (Monthly Revenue Trend)</h3>
-                    <div class="chart-container"><canvas id="revenueTrendChart"></canvas></div>
+                    <div class="chart-container"><canvas id="analyticsChart1"></canvas></div>
                 </div>
                 <div class="chart-box">
                     <h3>توزيع الإيرادات حسب القناة الإعلانية (Revenue by Lead_Source)</h3>
-                    <div class="chart-container"><canvas id="leadSourceChart"></canvas></div>
+                    <div class="chart-container"><canvas id="analyticsChart2"></canvas></div>
                 </div>
             </section>
         </main>
@@ -132,7 +132,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // التحقق وتأمين وجود الـ Token
             let token = localStorage.getItem('access_token');
             if (!token || token === "null" || token === "undefined") {
                 token = prompt(" 🔒 يرجى لصق الـ access_token الخاص بك للربط المباشر مع السيرفر المحلي:");
@@ -146,16 +145,12 @@
 
             const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
             
-            // متغيرات المخططات البيانية لمنع التداخل والتدمير الفوري
             let revenueTrendChart = null;
             let leadSourceChart = null;
-            
-            // المتغير العام الذهبي لتخزين كافة السجلات المرفوعة حياً ومنع التصفير والـ Refresh
             window.rawUploadedData = [];
 
-            // دالة معالجة وحساب ورسم البيانات على الواجهة وحساب الـ KPIs
+            // دالة معالجة وحساب ورسم البيانات وتحديث الـ KPIs
             function updateDashboardUI(records) {
-                // معالجة وحماية البيانات ضد القيم غير المعرفة أو الفارغة لمنع الـ Crash
                 if (!records || !Array.isArray(records) || records.length === 0) {
                     document.getElementById('kpi-rev').textContent = "$0";
                     document.getElementById('kpi-app').textContent = "0";
@@ -173,88 +168,87 @@
                 let leadData = {};
 
                 records.forEach(item => {
-                    // دعم الأعمدة البديلة وحمايتها رقمياً ضد حقول null و undefined و NaN
                     let rev = parseFloat(item.Revenue ?? item.revenue ?? item.Amount ?? item.amount ?? 0);
                     if (isNaN(rev)) rev = 0;
                     totalRevenue += rev;
 
-                    // جلب حالة الحضور ودعم اللغتين العربية والإنجليزية
                     let status = String(item.Status ?? item.status ?? '').trim().toLowerCase();
                     if (status === 'no_show' || status === 'no-show' || status === 'لم يحضر' || item.No_Show === true || item.no_show === true) {
                         noShowCount++;
                     }
 
-                    // تجميع بيانات المخطط الشهري
                     let month = String(item.Month ?? item.month ?? 'غير محدد').trim();
                     if (month) {
                         trendData[month] = (trendData[month] || 0) + rev;
                     }
 
-                    // تجميع بيانات قنوات الاستقطاب التسويقية
                     let source = String(item.Lead_Source ?? item.lead_source ?? 'أخرى').trim();
                     if (source) {
                         leadData[source] = (leadData[source] || 0) + rev;
                     }
                 });
 
-                // تحديث نصوص بطاقات الأداء بالأرقام الجديدة المفلترة
                 document.getElementById('kpi-rev').textContent = `$${Math.round(totalRevenue).toLocaleString()}`;
                 document.getElementById('kpi-app').textContent = totalAppointments;
                 
                 let noShowRate = totalAppointments > 0 ? ((noShowCount / totalAppointments) * 100).toFixed(1) : "0.0";
                 document.getElementById('kpi-rate').textContent = `${noShowRate}%`;
 
-                // --- 1. بناء وتحديث مخطط اتجاهات الإيرادات الشهرية ---
-                const ctxLine = document.getElementById('revenueTrendChart').getContext('2d');
-                if (revenueTrendChart) revenueTrendChart.destroy(); // تدمير المخطط القديم حتماً لمنع تداخل الرسوم
-                
-                revenueTrendChart = new Chart(ctxLine, {
-                    type: 'line',
-                    data: {
-                        labels: Object.keys(trendData),
-                        datasets: [{
-                            label: 'الأرباح الشهرية الحية',
-                            data: Object.values(trendData),
-                            borderColor: '#E040FB',
-                            backgroundColor: 'rgba(224, 64, 251, 0.08)',
-                            fill: true,
-                            tension: 0.3,
-                            borderWidth: 3
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { labels: { font: { family: 'Cairo' } } } }
-                    }
-                });
-
-                // --- 2. بناء وتحديث مخطط توزيع قنوات التسويق الأفقي ---
-                const ctxBar = document.getElementById('leadSourceChart').getContext('2d');
-                if (leadSourceChart) leadSourceChart.destroy(); // تدمير المخطط القديم حتماً لمنع تداخل الرسوم
-                
-                leadSourceChart = new Chart(ctxBar, {
-                    type: 'bar',
-                    data: {
-                        labels: Object.keys(leadData),
-                        datasets: [{
-                            data: Object.values(leadData),
-                            backgroundColor: ['#3182CE', '#00B67A', '#805AD5', '#D53F8C', '#4A5568', '#DD6B20']
-                        }]
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
+                // --- الربط الصحيح والمؤمن مع المخطط الأول analyticsChart1 ---
+                const canvas1 = document.getElementById('analyticsChart1');
+                if (canvas1) {
+                    const ctxLine = canvas1.getContext('2d');
+                    if (revenueTrendChart) revenueTrendChart.destroy();
+                    
+                    revenueTrendChart = new Chart(ctxLine, {
+                        type: 'line',
+                        data: {
+                            labels: Object.keys(trendData),
+                            datasets: [{
+                                label: 'الأرباح الشهرية الحية',
+                                data: Object.values(trendData),
+                                borderColor: '#E040FB',
+                                backgroundColor: 'rgba(224, 64, 251, 0.08)',
+                                fill: true,
+                                tension: 0.3,
+                                borderWidth: 3
+                            }]
                         },
-                        scales: { x: { beginAtZero: true } }
-                    }
-                });
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { labels: { font: { family: 'Cairo' } } } }
+                        }
+                    });
+                }
+
+                // ---  الربط الصحيح والمؤمن مع المخطط الثاني analyticsChart2 ---
+                const canvas2 = document.getElementById('analyticsChart2');
+                if (canvas2) {
+                    const ctxBar = canvas2.getContext('2d');
+                    if (leadSourceChart) leadSourceChart.destroy();
+                    
+                    leadSourceChart = new Chart(ctxBar, {
+                        type: 'bar',
+                        data: {
+                            labels: Object.keys(leadData),
+                            datasets: [{
+                                data: Object.values(leadData),
+                                backgroundColor: ['#3182CE', '#00B67A', '#805AD5', '#D53F8C', '#4A5568', '#DD6B20']
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: { x: { beginAtZero: true } }
+                        }
+                    });
+                }
             }
 
-            // دالة استخراج القيم وصناعة الفلاتر ديناميكياً من محتوى ملف الـ Excel المرفوع
+            // دالة استخراج القيم وصناعة الفلاتر ديناميكياً
             function generateDynamicFilters(records) {
                 const doctorContainer = document.getElementById('doctor-filters-container');
                 const serviceContainer = document.getElementById('service-filters-container');
@@ -279,46 +273,37 @@
                     if (d) dates.push(String(d));
                 });
 
-                // تحديث نطاق التاريخ النشط المعروض تلقائياً
                 if (dates.length > 0) {
                     document.getElementById('date-range-display').value = `${dates[0]} - ${dates[dates.length - 1]}`;
                 }
 
-                // تفريغ المحتوى القديم وبناء كتل الاختيار الحية
                 doctorContainer.innerHTML = '';
-                if(doctors.size === 0) doctorContainer.innerHTML = '<span style="color:var(--text-muted); font-size:12px;">لا يوجد أطباء</span>';
                 doctors.forEach(doc => {
                     doctorContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" class="doctor-filter" value="${doc}" checked> ${doc}</label>`;
                 });
 
                 serviceContainer.innerHTML = '';
-                if(services.size === 0) serviceContainer.innerHTML = '<span style="color:var(--text-muted); font-size:12px;">لا يوجد خدمات</span>';
                 services.forEach(svc => {
                     serviceContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" class="service-filter" value="${svc}" checked> ${svc}</label>`;
                 });
 
                 leadContainer.innerHTML = '';
-                if(leads.size === 0) leadContainer.innerHTML = '<span style="color:var(--text-muted); font-size:12px;">لا يوجد قنوات إعلانية</span>';
                 leads.forEach(ld => {
                     leadContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" class="lead-filter" value="${ld}" checked> ${ld}</label>`;
                 });
 
-                // إعادة تفعيل مستمعات الأحداث على الصناديق الجديدة التي تم إنشاؤها ديناميكياً فوراً
                 document.querySelectorAll('.doctor-filter, .service-filter, .lead-filter').forEach(checkbox => {
                     checkbox.addEventListener('change', applyLiveFilters);
                 });
             }
 
-            // دالة الفلترة اللحظية وتصفية مصفوفة rawUploadedData وإعادة الرسم حياً
             function applyLiveFilters() {
                 if (!window.rawUploadedData || window.rawUploadedData.length === 0) return;
 
-                // استخراج القيم المحددة والنشطة من الخيارات الجانبية في الـ DOM
                 const activeDoctors = Array.from(document.querySelectorAll('.doctor-filter:checked')).map(cb => cb.value.toLowerCase());
                 const activeServices = Array.from(document.querySelectorAll('.service-filter:checked')).map(cb => cb.value.toLowerCase());
                 const activeLeads = Array.from(document.querySelectorAll('.lead-filter:checked')).map(cb => cb.value.toLowerCase());
 
-                // تصفية المصفوفة العامة بناءً على اختيارات المستخدم الدقيقة
                 const filtered = window.rawUploadedData.filter(item => {
                     let docName = String(item.Doctor_Name ?? item.doctor_name ?? item.Doctor ?? '').toLowerCase();
                     let svcType = String(item.Service_Type ?? item.service_type ?? item.Service ?? '').toLowerCase();
@@ -331,11 +316,9 @@
                     return matchesDoctor && matchesService && matchesLead;
                 });
 
-                // إعادة رسم الواجهات بالبيانات المفلترة فوراً بدون Refresh للمتصفح
                 updateDashboardUI(filtered);
             }
 
-            // جلب البنية الأساسية وهوية العميل عند التحميل الأول للصفحة
             async function loadDashboardData() {
                 try {
                     const layoutRes = await fetch(`${API_BASE_URL}/dashboard`, {
@@ -361,11 +344,10 @@
                         }
                     }
                 } catch (err) {
-                    console.error("حدث خطأ أثناء تحميل التهيئة المبدئية للوحة التحكم:", err);
+                    console.error("Error initial load:", err);
                 }
             }
 
-            // إدارة حدث رفع ملف الـ Excel ومعالجته وتحديث شاشتك لحظياً دون أي حاجة لـ Refresh
             const fileInput = document.getElementById('excel-file-input');
             const nameDisplay = document.getElementById('file-name-display');
 
@@ -392,18 +374,14 @@
                         const result = await response.json();
                         nameDisplay.textContent = `✅ تم رفع وتحديث: ${file.name}`;
                         
-                        // تخزين مصفوفة السجلات الحية داخل المتغير العام لمنع فقدان البيانات
                         window.rawUploadedData = result.analytics || [];
                         
-                        // 1. بناء الفلاتر الجانبية ديناميكياً بناءً على محتوى الأطباء والخدمات في الملف الحالي
                         generateDynamicFilters(window.rawUploadedData);
-                        
-                        // 2. تحديث الرسوم والـ KPIs فوراً على الشاشة بدون إعادة تحميل الصفحة
                         updateDashboardUI(window.rawUploadedData);
                     } else {
                         nameDisplay.textContent = `❌ فشل الرفع`;
                         const errData = await response.json().catch(() => ({}));
-                        alert(`فشل معالجة الملف: ${errData.detail || "تأكد من صلاحية التوكن وتطابق محتوى حقول الملف"}`);
+                        alert(`فشل معالجة الملف: ${errData.detail || "تأكد من هيكلية الملف وصلاحية الجلسة"}`);
                     }
                 } catch (error) {
                     console.error("Upload error:", error);
