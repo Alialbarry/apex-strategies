@@ -147,10 +147,125 @@
             const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
             let revenueTrendChart = null;
             let leadSourceChart = null;
+            
+            // مصفوفة عامة للاحتفاظ بالبيانات الخام المرفوعة لتسهيل تصفيتها حياً
+            let rawUploadedData = []; 
 
+            // دالة رسم وتحديث اللوحة بناءً على البيانات النشطة والمفلترة
+            function updateDashboardUI(records) {
+                if (!records || records.length === 0) {
+                    document.getElementById('kpi-rev').textContent = "$0.0";
+                    document.getElementById('kpi-app').textContent = "0";
+                    document.getElementById('kpi-rate').textContent = "0.0%";
+                    if (revenueTrendChart) revenueTrendChart.destroy();
+                    if (leadSourceChart) leadSourceChart.destroy();
+                    return;
+                }
+
+                let totalRevenue = 0;
+                let totalAppointments = records.length;
+                let noShowCount = 0;
+                let trendData = {};
+                let leadData = {};
+
+                records.forEach(item => {
+                    // حساب الإيرادات مع دعم أسماء الأعمدة المختلفة المتوقعة من الباكيند
+                    let rev = parseFloat(item.Revenue || item.revenue || item.Amount || item.amount || 0);
+                    totalRevenue += rev;
+
+                    // حساب حالات عدم الحضور
+                    let status = (item.Status || item.status || '').toLowerCase();
+                    if (status === 'no_show' || item.no_show === true || item.No_Show === true) {
+                        noShowCount++;
+                    }
+
+                    // تجميع البيانات للمخطط الزمني (الشهري)
+                    let month = item.Month || item.month || 'أخرى';
+                    trendData[month] = (trendData[month] || 0) + rev;
+
+                    // تجميع البيانات لقنوات الاستقطاب
+                    let source = item.Lead_Source || item.lead_source || 'Unknown';
+                    leadData[source] = (leadData[source] || 0) + rev;
+                });
+
+                // تحديث الـ KPIs بالواجهة
+                document.getElementById('kpi-rev').textContent = `$${totalRevenue.toLocaleString()}`;
+                document.getElementById('kpi-app').textContent = totalAppointments;
+                let noShowRate = totalAppointments > 0 ? ((noShowCount / totalAppointments) * 100).toFixed(1) : 0;
+                document.getElementById('kpi-rate').textContent = `${noShowRate}%`;
+
+                // تحديث مخطط Monthly Revenue Trend
+                const ctxLine = document.getElementById('revenueTrendChart').getContext('2d');
+                if (revenueTrendChart) revenueTrendChart.destroy();
+                revenueTrendChart = new Chart(ctxLine, {
+                    type: 'line',
+                    data: {
+                        labels: Object.keys(trendData),
+                        datasets: [{ 
+                            label: 'Monthly Revenue', 
+                            data: Object.values(trendData), 
+                            borderColor: '#E040FB', 
+                            backgroundColor: 'rgba(224, 64, 251, 0.1)', 
+                            fill: true, 
+                            tension: 0.3 
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+
+                // تحديث مخطط Revenue by Lead_Source
+                const ctxBar = document.getElementById('leadSourceChart').getContext('2d');
+                if (leadSourceChart) leadSourceChart.destroy();
+                leadSourceChart = new Chart(ctxBar, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(leadData),
+                        datasets: [{ 
+                            data: Object.values(leadData), 
+                            backgroundColor: ['#3182CE', '#319795', '#805AD5', '#D53F8C', '#4A5568'] 
+                        }]
+                    },
+                    options: { 
+                        indexAxis: 'y', 
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            // دالة تصفية البيانات حياً بناءً على الخيارات النشطة في الجانب
+            function applyFilters() {
+                // جلب أسماء الأطباء المحددين
+                const selectedDoctors = Array.from(document.querySelectorAll('.filter-sidebar .filter-group:nth-of-type(2) input:checked'))
+                                             .map(cb => cb.parentElement.textContent.trim().toLowerCase());
+                
+                // جلب أنواع الخدمات المحددة
+                const selectedServices = Array.from(document.querySelectorAll('.filter-sidebar .filter-group:nth-of-type(3) input:checked'))
+                                              .map(cb => cb.parentElement.textContent.trim().toLowerCase());
+
+                const filtered = rawUploadedData.filter(item => {
+                    let docName = (item.Doctor_Name || item.doctor || '').toLowerCase();
+                    let serviceType = (item.Service_Type || item.service || '').toLowerCase();
+
+                    // التحقق من المطابقة (إذا لم يتم تحديد أي شيء، نعتبرها متطابقة لتجنب اختفاء كل البيانات)
+                    const matchDoc = selectedDoctors.length === 0 || selectedDoctors.some(d => docName.includes(d) || d.includes(docName));
+                    const matchService = selectedServices.length === 0 || selectedServices.some(s => serviceType.includes(s) || s.includes(serviceType));
+
+                    return matchDoc && matchService;
+                });
+
+                updateDashboardUI(filtered);
+            }
+
+            // ربط الـ Checkboxes بحدث التغيير لإعادة تصفية الرسوم فوراً
+            document.querySelectorAll('.filter-sidebar input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', applyFilters);
+            });
+
+            // دالة التحميل الأولي لاستدعاء الـ API عند دخول الصفحة
             async function loadDashboardData() {
                 try {
-                    // 1. جلب التكوين الأساسي للوحة واسمها مع تخطي تحذير Ngrok
                     const configResponse = await fetch(`${API_BASE_URL}/dashboard`, {
                         method: 'GET',
                         headers: { 
@@ -164,7 +279,6 @@
                         document.getElementById('dashboard-title').textContent = configData.dashboard_name || "APEX STRATEGIES";
                     }
 
-                    // 2. جلب وتحليل البيانات الإحصائية والرسومية مع تخطي تحذير Ngrok
                     const analyticsResponse = await fetch(`${API_BASE_URL}/dashboard/analytics`, {
                         method: 'GET',
                         headers: { 
@@ -175,68 +289,19 @@
                     });
                     
                     if (!analyticsResponse.ok) return;
-                    const rawData = await analyticsResponse.json();
-
-                    const data = Array.isArray(rawData) ? rawData : (rawData.analytics || rawData.data || []);
-                    if (data.length === 0) return;
-
-                    const revenueObj = data.find(item => item.metric_name === 'Total Revenue' || item.indicator_name === 'Total Revenue') || data[0];
-                    const appointmentObj = data.find(item => item.metric_name === 'Total Appointment' || item.indicator_name === 'Total Appointment') || data[1];
-                    const rateObj = data.find(item => item.metric_name === 'No_Show Rate' || item.indicator_name === 'No_Show Rate') || data[2];
-
-                    if (revenueObj) document.getElementById('kpi-rev').textContent = revenueObj.calculated_value;
-                    if (appointmentObj) document.getElementById('kpi-app').textContent = appointmentObj.calculated_value;
-                    if (rateObj) document.getElementById('kpi-rate').textContent = rateObj.calculated_value;
-
-                    const trendObj = data.find(item => item.metric_name === 'Monthly Revenue Trend' || item.indicator_name === 'Monthly Revenue Trend') || data[3];
-                    const leadObj = data.find(item => item.metric_name === 'Sum of Revenue by Lead_Source' || item.indicator_name === 'Sum of Revenue by Lead_Source') || data[4];
-
-                    // رسم وتحديث الخط الزمني للإيرادات
-                    if (trendObj && trendObj.data_points) {
-                        const ctxLine = document.getElementById('revenueTrendChart').getContext('2d');
-                        if (revenueTrendChart) revenueTrendChart.destroy();
-                        
-                        const labels = trendObj.labels || ['January', 'February', 'March', 'April'];
-                        
-                        revenueTrendChart = new Chart(ctxLine, {
-                            type: 'line',
-                            data: {
-                                labels: labels,
-                                datasets: [{ label: 'Monthly Revenue', data: trendObj.data_points, borderColor: '#E040FB', backgroundColor: 'rgba(224, 64, 251, 0.1)', fill: true, tension: 0.3 }]
-                            },
-                            options: { responsive: true, maintainAspectRatio: false }
-                        });
-                    }
-
-                    // رسم وتحديث قنوات الاستقطاب (Bar Chart)
-                    if (leadObj && leadObj.data_points) {
-                        const ctxBar = document.getElementById('leadSourceChart').getContext('2d');
-                        if (leadSourceChart) leadSourceChart.destroy();
-                        
-                        const labels = leadObj.labels || ['Friend Referral', 'TikTok', 'Google Maps', 'Instagram'];
-
-                        leadSourceChart = new Chart(ctxBar, {
-                            type: 'bar',
-                            data: {
-                                labels: labels,
-                                datasets: [{ data: leadObj.data_points, backgroundColor: ['#3182CE', '#319795', '#805AD5', '#D53F8C'] }]
-                            },
-                            options: { 
-                                indexAxis: 'y', 
-                                responsive: true, 
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: { display: false }
-                                }
-                            }
-                        });
+                    const resultData = await analyticsResponse.json();
+                    
+                    // استخراج المصفوفة وحفظها محلياً للبدء بالتصفية الحية
+                    rawUploadedData = Array.isArray(resultData) ? resultData : (resultData.data || resultData.analytics || []);
+                    if (rawUploadedData.length > 0) {
+                        updateDashboardUI(rawUploadedData);
                     }
                 } catch (err) { 
                     console.error("Error rendering dashboard metrics:", err); 
                 }
             }
 
-            // الاستماع لحدث رفع الإكسيل وإجبار الواجهة على طلب البيانات وتحديث الرسوم
+            // حدث رفع ملف الإكسيل الجديد للتحليل الفوري الفوري
             document.getElementById('excel-file-input').addEventListener('change', async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -248,26 +313,28 @@
                 formData.append('file', file); 
 
                 try {
-                    // تم تعديل المسار لتخطي المشاكل السابقة في النفق
                     const uploadUrl = `${API_BASE_URL}/dashboard/upload-excel`;
                     const response = await fetch(uploadUrl, {
                         method: 'POST',
                         headers: { 
                             'Authorization': `Bearer ${token}`,
-                            'ngrok-skip-browser-warning': 'true' // حاسم لتفادي الـ CORS Block أثناء الرفع
+                            'ngrok-skip-browser-warning': 'true'
                         },
                         body: formData
                     });
 
                     if (response.ok) {
-                        alert("تم رفع ومعالجة ملف الإكسيل بنجاح!");
-                        // مهلة صغيرة للتأكد من انتهاء الخادم من إدخال البيانات بجدول المستخدم ثم سحبها حية
-                        setTimeout(async () => {
-                            await loadDashboardData();
-                        }, 800); 
+                        const result = await response.json();
+                        alert("تم رفع ومعالجة ملف الإكسيل بنجاح وتحديث اللوحة!");
+                        
+                        // قراءة الـ Array القادمة مباشرة من السيرفر وحفظها في المتغير العام
+                        rawUploadedData = result.data || result.analytics || (Array.isArray(result) ? result : []);
+                        
+                        // تحديث الرسوم والـ KPIs فوراً بالبيانات المرفوعة حياً
+                        updateDashboardUI(rawUploadedData);
                     } else {
                         const errData = await response.json().catch(() => ({}));
-                        alert(`فشل رفع الملف: ${errData.detail || "تأكد من صلاحية الجلسة واستخدام ملف صحيح"}`);
+                        alert(`فشل رفع الملف: ${errData.detail || "تأكد من هيكلية الملف وصلاحية الجلسة"}`);
                     }
                 } catch (error) { 
                     console.error("Upload error:", error);
@@ -277,7 +344,6 @@
                 }
             });
 
-            // التشغيل الأولي لجلب البيانات فور دخول الصفحة
             await loadDashboardData();
         });
     </script>
