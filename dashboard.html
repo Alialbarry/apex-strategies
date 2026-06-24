@@ -244,7 +244,32 @@
             margin-top: auto;
         }
         
-        /* Responsive */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            max-width: 400px;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .toast.success { background: #00B67A; }
+        .toast.error { background: #E53E3E; }
+        .toast.info { background: var(--blue-accent); }
+        .toast.warning { background: #D69E2E; }
+        
         @media (max-width: 1024px) {
             .charts-grid {
                 grid-template-columns: 1fr;
@@ -279,30 +304,6 @@
                 flex-direction: column;
             }
         }
-        
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: #333;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            z-index: 1000;
-            opacity: 0;
-            transform: translateY(100px);
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow-md);
-        }
-        
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .toast.success { background: #00B67A; }
-        .toast.error { background: #E53E3E; }
-        .toast.info { background: var(--blue-accent); }
     </style>
 </head>
 <body>
@@ -316,7 +317,7 @@
             
             <div class="filter-group">
                 <label>📅 Data Range</label>
-                <input type="text" value="1/1/2026 - 4/11/2026" disabled>
+                <input type="text" id="data-range" value="1/1/2026 - 4/11/2026" disabled>
             </div>
             
             <div class="filter-group">
@@ -421,7 +422,7 @@
             };
             
             // ============== TOAST SYSTEM ==============
-            function showToast(message, type = 'info', duration = 3000) {
+            function showToast(message, type = 'info', duration = 4000) {
                 const toast = document.getElementById('toast');
                 toast.textContent = message;
                 toast.className = `toast ${type} show`;
@@ -443,8 +444,9 @@
                     
                     if (token && token.length > 10) {
                         localStorage.setItem('access_token', token);
+                        showToast('✅ Token saved successfully!', 'success');
                     } else {
-                        showToast('Authentication required to access dashboard', 'error', 5000);
+                        showToast('⚠️ Authentication required to access dashboard', 'warning', 5000);
                         return null;
                     }
                 }
@@ -456,7 +458,6 @@
             function safeGetValue(obj, key, defaultValue = '') {
                 if (!obj || typeof obj !== 'object') return defaultValue;
                 
-                // Try multiple key variations
                 const variations = [
                     key,
                     key.toLowerCase(),
@@ -472,7 +473,6 @@
                     }
                 }
                 
-                // Try searching case-insensitively
                 const lowerKey = key.toLowerCase();
                 for (const [objKey, objValue] of Object.entries(obj)) {
                     if (objKey.toLowerCase() === lowerKey) {
@@ -513,14 +513,12 @@
                 return data.filter(record => {
                     const processed = processRecord(record);
                     
-                    // Doctor filter
                     if (filters.doctors && filters.doctors.length > 0) {
                         if (!processed.doctor) return false;
                         const match = filters.doctors.some(d => processed.doctor.includes(normalizeString(d)));
                         if (!match) return false;
                     }
                     
-                    // Service filter
                     if (filters.services && filters.services.length > 0) {
                         if (!processed.service) return false;
                         const match = filters.services.some(s => processed.service.includes(normalizeString(s)));
@@ -550,7 +548,6 @@
                 const ctx = canvas.getContext('2d');
                 const processed = data.map(record => processRecord(record));
                 
-                // Aggregate by month
                 const monthlyData = {};
                 processed.forEach(record => {
                     const month = record.month || 'Other';
@@ -612,7 +609,6 @@
                 const ctx = canvas.getContext('2d');
                 const processed = data.map(record => processRecord(record));
                 
-                // Aggregate by lead source
                 const leadData = {};
                 processed.forEach(record => {
                     const source = record.leadSource || 'Unknown';
@@ -661,23 +657,21 @@
             
             // ============== DASHBOARD UPDATE ==============
             function updateDashboardUI(filteredRecords) {
-                // Check if we have data
+                console.log('🔄 تحديث الداشبورد مع:', filteredRecords.length, 'سجل');
+                
                 if (!filteredRecords || filteredRecords.length === 0) {
                     document.getElementById('kpi-rev').textContent = '$0.0';
                     document.getElementById('kpi-app').textContent = '0';
                     document.getElementById('kpi-rate').textContent = '0.0%';
                     document.getElementById('record-count').textContent = '0 records';
                     
-                    // Clear charts
                     state.charts.revenueTrend = destroyChart(state.charts.revenueTrend);
                     state.charts.leadSource = destroyChart(state.charts.leadSource);
                     return;
                 }
                 
-                // Process data
                 const processed = filteredRecords.map(record => processRecord(record));
                 
-                // Calculate KPIs
                 let totalRevenue = 0;
                 let noShowCount = 0;
                 
@@ -695,7 +689,6 @@
                 const totalAppointments = processed.length;
                 const noShowRate = totalAppointments > 0 ? (noShowCount / totalAppointments) * 100 : 0;
                 
-                // Update KPIs
                 document.getElementById('kpi-rev').textContent = 
                     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 })
                     .format(totalRevenue);
@@ -704,21 +697,20 @@
                 document.getElementById('record-count').textContent = 
                     `${filteredRecords.length} records${filteredRecords.length !== state.rawData.length ? ' (filtered)' : ''}`;
                 
-                // Update charts
                 state.charts.revenueTrend = destroyChart(state.charts.revenueTrend);
                 state.charts.leadSource = destroyChart(state.charts.leadSource);
                 
                 state.charts.revenueTrend = renderRevenueTrendChart(filteredRecords, 'revenueTrendChart');
                 state.charts.leadSource = renderLeadSourceChart(filteredRecords, 'leadSourceChart');
+                
+                console.log('✅ تم تحديث الداشبورد بنجاح');
             }
             
             // ============== FILTER APPLICATION ==============
             function applyFilters() {
-                // Get selected doctors
                 const doctorCheckboxes = document.querySelectorAll('.doctor-filter:checked');
                 const selectedDoctors = Array.from(doctorCheckboxes).map(cb => cb.value);
                 
-                // Get selected services
                 const serviceCheckboxes = document.querySelectorAll('.service-filter:checked');
                 const selectedServices = Array.from(serviceCheckboxes).map(cb => cb.value);
                 
@@ -727,7 +719,6 @@
                     services: selectedServices
                 };
                 
-                // Filter data
                 state.filteredData = filterData(state.rawData, filters);
                 updateDashboardUI(state.filteredData);
             }
@@ -735,7 +726,8 @@
             // ============== DATA LOADING ==============
             async function loadDashboardData() {
                 try {
-                    // Load layout
+                    console.log('🔄 جلب بيانات الداشبورد...');
+                    
                     const layoutRes = await fetch(`${API_BASE_URL}/dashboard`, {
                         headers: {
                             'Authorization': `Bearer ${state.token}`,
@@ -748,9 +740,9 @@
                         const title = layout.dashboard_name || 'APEX STRATEGIES';
                         document.getElementById('dashboard-title').textContent = title.toUpperCase();
                         document.getElementById('main-header-title').textContent = title.toUpperCase();
+                        console.log('✅ تم تحديث العنوان:', title);
                     }
                     
-                    // Load analytics
                     const analyticsRes = await fetch(`${API_BASE_URL}/dashboard/analytics`, {
                         headers: {
                             'Authorization': `Bearer ${state.token}`,
@@ -760,72 +752,64 @@
                     
                     if (analyticsRes.ok) {
                         const analyticsData = await analyticsRes.json();
+                        console.log('📊 البيانات المستلمة:', analyticsData);
                         
-                        // Process default data into records
                         if (Array.isArray(analyticsData) && analyticsData.length > 0) {
-                            // Check if it's card data or record data
-                            if (analyticsData[0].metric_name) {
-                                // Card data - extract values
-                                const records = [{}];
-                                analyticsData.forEach(item => {
-                                    if (item.metric_name === 'Total Revenue') {
-                                        const val = parseFloat(String(item.calculated_value).replace(/[$,]/g, ''));
-                                        records[0].Revenue = val || 0;
-                                    } else if (item.metric_name === 'Total Appointment') {
-                                        const val = parseInt(String(item.calculated_value).replace(/,/g, ''));
-                                        records[0].Appointments = val || 0;
-                                    } else if (item.metric_name === 'No_Show Rate') {
-                                        const val = parseFloat(String(item.calculated_value));
-                                        records[0].NoShowRate = val || 0;
-                                    } else if (item.metric_name === 'Monthly Revenue Trend' && item.data_points) {
-                                        records[0].RevenueTrend = item.data_points;
-                                    } else if (item.metric_name === 'Sum of Revenue by Lead_Source' && item.data_points) {
-                                        records[0].LeadSourceData = item.data_points;
-                                    }
-                                });
+                            // تحويل بيانات التحليلات إلى سجلات
+                            const records = [{}];
+                            
+                            analyticsData.forEach(item => {
+                                const metricName = item.metric_name || '';
                                 
-                                // Set initial data
-                                state.rawData = records;
-                                state.filteredData = records;
-                                
-                                // Update KPIs directly
-                                document.getElementById('kpi-rev').textContent = 
-                                    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 })
-                                    .format(records[0].Revenue || 0);
-                                document.getElementById('kpi-app').textContent = (records[0].Appointments || 0).toLocaleString();
-                                document.getElementById('kpi-rate').textContent = (records[0].NoShowRate || 0).toFixed(1) + '%';
-                                
-                                // Create charts from trend data
-                                if (records[0].RevenueTrend) {
-                                    const trendData = records[0].RevenueTrend.map((val, i) => ({
-                                        Month: `Month ${i + 1}`,
-                                        Revenue: val
-                                    }));
-                                    state.charts.revenueTrend = renderRevenueTrendChart(trendData, 'revenueTrendChart');
+                                if (metricName === 'Total Revenue') {
+                                    records[0].Revenue = safeNumber(item.calculated_value);
+                                    document.getElementById('kpi-rev').textContent = item.calculated_value || '$0.0';
                                 }
-                                
-                                if (records[0].LeadSourceData) {
-                                    const sourceData = ['Friend Referral', 'TikTok', 'Google Maps', 'Instagram'].map((label, i) => ({
-                                        Lead_Source: label,
-                                        Revenue: records[0].LeadSourceData[i] || 0
-                                    }));
-                                    state.charts.leadSource = renderLeadSourceChart(sourceData, 'leadSourceChart');
+                                if (metricName === 'Total Appointment') {
+                                    records[0].Appointments = safeNumber(item.calculated_value);
+                                    document.getElementById('kpi-app').textContent = item.calculated_value || '0';
                                 }
-                                
-                                state.isLoaded = true;
-                                return;
+                                if (metricName === 'No_Show Rate') {
+                                    records[0].NoShowRate = safeNumber(item.calculated_value);
+                                    document.getElementById('kpi-rate').textContent = item.calculated_value || '0.0%';
+                                }
+                                if (metricName === 'Monthly Revenue Trend' && item.data_points) {
+                                    records[0].RevenueTrend = item.data_points;
+                                }
+                                if (metricName === 'Sum of Revenue by Lead_Source' && item.data_points) {
+                                    records[0].LeadSourceData = item.data_points;
+                                }
+                            });
+                            
+                            state.rawData = records;
+                            state.filteredData = records;
+                            
+                            // رسم المخططات إذا كانت البيانات موجودة
+                            if (records[0].RevenueTrend) {
+                                const trendData = records[0].RevenueTrend.map((val, i) => ({
+                                    Month: `Month ${i + 1}`,
+                                    Revenue: val
+                                }));
+                                state.charts.revenueTrend = renderRevenueTrendChart(trendData, 'revenueTrendChart');
                             }
+                            
+                            if (records[0].LeadSourceData) {
+                                const sourceData = ['Friend Referral', 'TikTok', 'Google Maps', 'Instagram'].map((label, i) => ({
+                                    Lead_Source: label,
+                                    Revenue: records[0].LeadSourceData[i] || 0
+                                }));
+                                state.charts.leadSource = renderLeadSourceChart(sourceData, 'leadSourceChart');
+                            }
+                            
+                            state.isLoaded = true;
+                            console.log('✅ تم تحميل البيانات بنجاح!');
                         }
+                    } else {
+                        console.warn('⚠️ فشل جلب البيانات:', analyticsRes.status);
                     }
-                    
-                    // If no data, show empty state
-                    state.rawData = [];
-                    state.filteredData = [];
-                    updateDashboardUI([]);
-                    
                 } catch (err) {
-                    console.error('Error loading dashboard data:', err);
-                    showToast('Error loading dashboard data. Please try again.', 'error');
+                    console.error('❌ خطأ في تحميل البيانات:', err);
+                    showToast('خطأ في تحميل بيانات الداشبورد', 'error');
                 }
             }
             
@@ -834,10 +818,15 @@
                 const nameDisplay = document.getElementById('file-name-display');
                 nameDisplay.textContent = `📄 ${file.name}`;
                 
+                console.log('📤 بدء رفع الملف...');
+                console.log('📄 اسم الملف:', file.name, 'الحجم:', file.size, 'بايت');
+                
                 const formData = new FormData();
                 formData.append('file', file);
                 
                 try {
+                    showToast('⏳ جاري رفع الملف...', 'info');
+                    
                     const response = await fetch(`${API_BASE_URL}/dashboard/upload-excel`, {
                         method: 'POST',
                         headers: {
@@ -847,63 +836,208 @@
                         body: formData
                     });
                     
+                    console.log('📥 حالة الاستجابة:', response.status);
+                    
+                    const responseText = await response.text();
+                    console.log('📥 نص الاستجابة:', responseText.substring(0, 500));
+                    
                     if (response.ok) {
-                        const result = await response.json();
-                        showToast('Excel file processed successfully!', 'success');
+                        let result;
+                        try {
+                            result = JSON.parse(responseText);
+                        } catch (e) {
+                            console.error('❌ فشل تحليل JSON:', e);
+                            showToast('خطأ في تنسيق استجابة السيرفر', 'error');
+                            return;
+                        }
                         
-                        // Store raw data from upload
-                        state.rawData = result.analytics || result.data || [];
-                        state.filteredData = state.rawData;
+                        console.log('✅ تم الرفع بنجاح:', result);
                         
-                        // Apply current filters and update dashboard
-                        applyFilters();
-                        
+                        if (result.analytics && Array.isArray(result.analytics)) {
+                            state.rawData = result.analytics;
+                            state.filteredData = state.rawData;
+                            
+                            console.log('📊 عدد السجلات:', state.rawData.length);
+                            if (state.rawData.length > 0) {
+                                console.log('📊 أول سجل:', state.rawData[0]);
+                            }
+                            
+                            showToast(`✅ تم رفع ${state.rawData.length} سجل بنجاح!`, 'success');
+                            applyFilters();
+                        } else if (Array.isArray(result)) {
+                            state.rawData = result;
+                            state.filteredData = state.rawData;
+                            showToast(`✅ تم رفع ${state.rawData.length} سجل بنجاح!`, 'success');
+                            applyFilters();
+                        } else {
+                            console.error('❌ لا توجد بيانات في الاستجابة:', result);
+                            showToast('⚠️ لم يتم العثور على بيانات في الاستجابة', 'warning');
+                        }
                     } else {
-                        const errData = await response.json().catch(() => ({}));
-                        showToast(`Upload failed: ${errData.detail || 'Please check file format'}`, 'error');
+                        console.error('❌ فشل الرفع:', responseText);
+                        showToast(`❌ فشل الرفع: ${responseText.substring(0, 100)}`, 'error');
                     }
                 } catch (error) {
-                    console.error('Upload error:', error);
-                    showToast('Error connecting to server. Please try again.', 'error');
+                    console.error('❌ خطأ في الرفع:', error);
+                    showToast('❌ خطأ في الاتصال بالسيرفر', 'error');
                 }
             }
             
+            // ============== DEMO DATA (للاختبار) ==============
+            function loadDemoData() {
+                const demoData = [
+                    { 
+                        Revenue: 12500, 
+                        Doctor_Name: 'Dr. Ahmad', 
+                        Status: 'Completed', 
+                        Service_Type: 'Cleaning', 
+                        Lead_Source: 'Google Maps', 
+                        Month: 'January 2026' 
+                    },
+                    { 
+                        Revenue: 8300, 
+                        Doctor_Name: 'Dr. Layla', 
+                        Status: 'No-Show', 
+                        Service_Type: 'Filling', 
+                        Lead_Source: 'TikTok', 
+                        Month: 'January 2026' 
+                    },
+                    { 
+                        Revenue: 15200, 
+                        Doctor_Name: 'Dr. Sarah', 
+                        Status: 'Completed', 
+                        Service_Type: 'Implant', 
+                        Lead_Source: 'Instagram', 
+                        Month: 'February 2026' 
+                    },
+                    { 
+                        Revenue: 9800, 
+                        Doctor_Name: 'Dr. Ahmad', 
+                        Status: 'Completed', 
+                        Service_Type: 'Cleaning', 
+                        Lead_Source: 'Friend Referral', 
+                        Month: 'February 2026' 
+                    },
+                    { 
+                        Revenue: 6700, 
+                        Doctor_Name: 'Dr. Layla', 
+                        Status: 'Completed', 
+                        Service_Type: 'Filling', 
+                        Lead_Source: 'Google Maps', 
+                        Month: 'March 2026' 
+                    },
+                    { 
+                        Revenue: 14100, 
+                        Doctor_Name: 'Dr. Sarah', 
+                        Status: 'No-Show', 
+                        Service_Type: 'Implant', 
+                        Lead_Source: 'TikTok', 
+                        Month: 'March 2026' 
+                    },
+                    { 
+                        Revenue: 11200, 
+                        Doctor_Name: 'Dr. Ahmad', 
+                        Status: 'Completed', 
+                        Service_Type: 'Cleaning', 
+                        Lead_Source: 'Instagram', 
+                        Month: 'April 2026' 
+                    },
+                    { 
+                        Revenue: 9500, 
+                        Doctor_Name: 'Dr. Sarah', 
+                        Status: 'Completed', 
+                        Service_Type: 'Implant', 
+                        Lead_Source: 'Friend Referral', 
+                        Month: 'April 2026' 
+                    }
+                ];
+                
+                console.log('📊 تحميل بيانات تجريبية...');
+                state.rawData = demoData;
+                state.filteredData = demoData;
+                applyFilters();
+                showToast(`✅ تم تحميل ${demoData.length} سجل تجريبي`, 'success');
+            }
+            
+            // ============== DEBUGGING TOOLS ==============
+            function debugAPI() {
+                console.log('🔍 ===== تشخيص API =====');
+                console.log('📍 API URL:', API_BASE_URL);
+                console.log('🔑 Token:', state.token ? `${state.token.substring(0, 20)}...` : '❌ مفقود');
+                console.log('📊 عدد السجلات الخام:', state.rawData.length);
+                console.log('📊 عدد السجلات المفلترة:', state.filteredData.length);
+                console.log('📊 هل تم التحميل؟', state.isLoaded);
+            }
+            
+            function testAPI() {
+                console.log('🧪 اختبار الاتصال بالسيرفر...');
+                fetch(`${API_BASE_URL}/dashboard/analytics`, {
+                    headers: {
+                        'Authorization': `Bearer ${state.token}`,
+                        'ngrok-skip-browser-warning': 'true'
+                    }
+                })
+                .then(response => {
+                    console.log('📥 الحالة:', response.status);
+                    console.log('📥 نجاح؟', response.ok);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('📊 البيانات:', data);
+                    console.log('📊 عدد العناصر:', data.length);
+                    if (data.length > 0) {
+                        console.log('📊 أول عنصر:', data[0]);
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ فشل الاختبار:', error);
+                });
+            }
+            
+            // إضافة دوال التصحيح إلى window للاستخدام في Console
+            window.debugAPI = debugAPI;
+            window.testAPI = testAPI;
+            window.loadDemoData = loadDemoData;
+            
             // ============== INITIALIZATION ==============
             function init() {
-                // Get token
+                console.log('🚀 Apex Strategies Dashboard initialized');
+                console.log('📍 API:', API_BASE_URL);
+                
                 state.token = getToken();
                 if (!state.token) {
                     document.getElementById('main-header-title').textContent = '⚠️ Authentication Required';
-                    showToast('Please authenticate to access the dashboard', 'error', 5000);
+                    showToast('⚠️ يرجى تسجيل الدخول للوصول إلى الداشبورد', 'warning', 5000);
                     return;
                 }
                 
-                // Setup file upload
+                console.log('🔑 Token:', state.token.substring(0, 20) + '...');
+                
+                // إعداد رفع الملف
                 const fileInput = document.getElementById('excel-file-input');
                 fileInput.addEventListener('change', (e) => {
                     const file = e.target.files[0];
                     if (file) {
                         handleFileUpload(file);
                     }
+                    // إعادة تعيين الإدخال للسماح برفع نفس الملف مرة أخرى
+                    fileInput.value = '';
                 });
                 
-                // Setup filter listeners
+                // إعداد الفلاتر
                 const filterCheckboxes = document.querySelectorAll('.doctor-filter, .service-filter');
                 filterCheckboxes.forEach(checkbox => {
                     checkbox.addEventListener('change', applyFilters);
                 });
                 
-                // Load initial data
+                // تحميل البيانات
                 loadDashboardData().then(() => {
                     state.isLoaded = true;
+                    console.log('✅ تم تهيئة الداشبورد بالكامل');
                 });
-                
-                console.log('🚀 Apex Strategies Dashboard initialized');
-                console.log(`📊 API: ${API_BASE_URL}`);
-                console.log(`🔐 Token: ${state.token ? 'Present' : 'Missing'}`);
             }
             
-            // Start the application
+            // بدء التطبيق
             init();
         });
     </script>
