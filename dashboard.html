@@ -25,40 +25,44 @@
         
         .filter-sidebar {
             width: 280px; background: var(--sidebar-bg); border-left: 1px solid var(--border-color);
-            padding: 24px; display: flex; flex-direction: column; gap: 24px;
+            padding: 24px; display: flex; flex-direction: column; gap: 24px; overflow-y: auto;
         }
         .brand-area { text-align: center; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
         .brand-area h2 { font-size: 22px; color: var(--blue-accent); font-weight: 700; }
         
         .filter-group { display: flex; flex-direction: column; gap: 10px; }
-        .filter-group label { font-weight: 600; font-size: 14px; }
+        .filter-group label { font-weight: 600; font-size: 14px; color: var(--text-color); }
         .filter-group input[type="text"] {
-            width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; text-align: center;
+            width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; text-align: center; background: #EDF2F7;
         }
-        .checkbox-list { display: flex; flex-direction: column; gap: 8px; }
+        .checkbox-list { display: flex; flex-direction: column; gap: 8px; max-height: 150px; overflow-y: auto; padding: 5px; border: 1px dashed var(--border-color); border-radius: 6px; }
         .checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 13px; cursor: pointer; }
+        
         .custom-file-upload {
             display: block; background: linear-gradient(135deg, var(--blue-accent), #2B6CB0);
             color: white; text-align: center; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.2s; margin-top: 10px;
         }
         .custom-file-upload:hover { transform: translateY(-2px); }
-        .main-content { flex: 1; padding: 32px; display: flex; flex-direction: column; gap: 32px; }
-        .dashboard-header { background: #FFFFFF; padding: 20px; border-radius: 12px; text-align: center; }
-        .dashboard-header h1 { font-size: 24px; color: var(--purple-accent); font-weight: 700; }
+        
+        .main-content { flex: 1; padding: 32px; display: flex; flex-direction: column; gap: 32px; overflow-y: auto; }
+        .dashboard-header { background: #FFFFFF; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .dashboard-header h1 { font-size: 24px; color: var(--blue-accent); font-weight: 700; }
+        
         .kpi-section { display: flex; gap: 24px; }
         .kpi-card {
             flex: 1; background: var(--card-bg); border-radius: 12px; padding: 24px;
-            border: 1px solid var(--border-color); text-align: center;
+            border: 1px solid var(--border-color); text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.02);
         }
         .kpi-card span { font-size: 14px; color: var(--text-muted); font-weight: 600; }
-        .kpi-card h2 { font-size: 32px; font-weight: 700; }
+        .kpi-card h2 { font-size: 32px; font-weight: 700; margin-top: 8px; }
         .kpi-card.revenue h2 { color: var(--green-accent); }
         .kpi-card.appointments h2 { color: var(--purple-accent); }
         .kpi-card.rate h2 { color: #319795; }
-        .charts-grid { display: grid; grid-template-columns: 1.6fr 1.4fr; gap: 24px; min-height: 380px; }
-        .chart-box { background: var(--card-bg); padding: 24px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 16px; }
-        .chart-container { position: relative; flex: 1; width: 100%; height: 100%; }
+        
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; min-height: 400px; }
+        .chart-box { background: var(--card-bg); padding: 24px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .chart-container { position: relative; flex: 1; width: 100%; height: 100%; min-height: 300px; }
     </style>
 </head>
 <body>
@@ -70,53 +74,56 @@
             </div>
             
             <div class="filter-group">
-                <label>Data Range</label>
-                <input type="text" value="1/1/2026  -  4/11/2026" disabled>
+                <label>تطاق التاريخ النشط</label>
+                <input type="text" id="date-range-display" value="تحديث تلقائي من الملف" disabled>
             </div>
             
             <div class="filter-group">
-                <label>Doctor Name</label>
-                <div class="checkbox-list">
-                    <label class="checkbox-item"><input type="checkbox" class="doctor-filter" value="Dr. Ahmad" checked> Dr. Ahmad</label>
-                    <label class="checkbox-item"><input type="checkbox" class="doctor-filter" value="Dr. Layla" checked> Dr. Layla</label>
-                    <label class="checkbox-item"><input type="checkbox" class="doctor-filter" value="Dr. Sarah" checked> Dr. Sarah</label>
+                <label>اسم الطبيب (Doctor Name)</label>
+                <div class="checkbox-list" id="doctor-filters-container">
+                    <span style="color:var(--text-muted); font-size:12px; padding:5px;">قم برفع ملف لبناء فلاتر الأطباء...</span>
                 </div>
             </div>
             
             <div class="filter-group">
-                <label>Service Type</label>
-                <div class="checkbox-list">
-                    <label class="checkbox-item"><input type="checkbox" class="service-filter" value="Cleaning" checked> Cleaning</label>
-                    <label class="checkbox-item"><input type="checkbox" class="service-filter" value="Filling" checked> Filling</label>
-                    <label class="checkbox-item"><input type="checkbox" class="service-filter" value="Implant" checked> Implant</label>
+                <label>نوع الخدمة (Service Type)</label>
+                <div class="checkbox-list" id="service-filters-container">
+                    <span style="color:var(--text-muted); font-size:12px; padding:5px;">قم برفع ملف لبناء فلاتر الخدمات...</span>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label>قنوات الاستقطاب (Lead Source)</label>
+                <div class="checkbox-list" id="lead-filters-container">
+                    <span style="color:var(--text-muted); font-size:12px; padding:5px;">قم برفع ملف لبناء فلاتر القنوات...</span>
                 </div>
             </div>
             
             <div class="filter-group upload-box">
-                <label for="excel-file-input" class="custom-file-upload"> 📁  رفع ملف البيانات (Excel)</label>
+                <label for="excel-file-input" class="custom-file-upload"> 📁 رفع ملف البيانات (Excel)</label>
                 <input type="file" id="excel-file-input" accept=".xlsx, .xls" style="display:none;">
-                <span id="file-name-display" style="font-size: 11px; color: var(--text-muted); text-align: center; display: block; margin-top: 5px;"></span>
+                <span id="file-name-display" style="font-size: 12px; color: var(--blue-accent); text-align: center; display: block; margin-top: 5px; font-weight:600;"></span>
             </div>
         </aside>
         
         <main class="main-content">
             <header class="dashboard-header">
-                <h1 id="main-header-title">APEX STRATEGIES : CLINIC DATA ANALYSIS</h1>
+                <h1 id="main-header-title">لوحة تحكم مستشاري التحليلات الاستراتيجية</h1>
             </header>
             
             <section class="kpi-section" id="kpi-container">
-                <div class="kpi-card revenue"><span>Total Revenue</span><h2 id="kpi-rev">$0.0</h2></div>
-                <div class="kpi-card appointments"><span>Total Appointment</span><h2 id="kpi-app">0</h2></div>
-                <div class="kpi-card rate"><span>No_Show Rate</span><h2 id="kpi-rate">0.0%</h2></div>
+                <div class="kpi-card revenue"><span>إجمالي الإيرادات (Total Revenue)</span><h2 id="kpi-rev">$0</h2></div>
+                <div class="kpi-card appointments"><span>إجمالي الحجوزات (Total Appointment)</span><h2 id="kpi-app">0</h2></div>
+                <div class="kpi-card rate"><span>نسبة عدم الحضور (No_Show Rate)</span><h2 id="kpi-rate">0.0%</h2></div>
             </section>
             
             <section class="charts-grid">
                 <div class="chart-box">
-                    <h3>Monthly Revenue Trend</h3>
+                    <h3>اتجاهات الإيرادات الشهرية (Monthly Revenue Trend)</h3>
                     <div class="chart-container"><canvas id="revenueTrendChart"></canvas></div>
                 </div>
                 <div class="chart-box">
-                    <h3>Sum of Revenue by Lead_Source</h3>
+                    <h3>توزيع الإيرادات حسب القناة الإعلانية (Revenue by Lead_Source)</h3>
                     <div class="chart-container"><canvas id="leadSourceChart"></canvas></div>
                 </div>
             </section>
@@ -125,130 +132,210 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
+            // التحقق وتأمين وجود الـ Token
             let token = localStorage.getItem('access_token');
-            if (!token || token === "null" || token === "undefined" || token.length < 10) {
-                token = prompt(" 🔒  لم يتم استيراد رمز الجلسة تلقائياً. إذا كنت تملك الـ Token، يرجى لصقه هنا لتشغيل اللوحة الحية:");
+            if (!token || token === "null" || token === "undefined") {
+                token = prompt(" 🔒 يرجى لصق الـ access_token الخاص بك للربط المباشر مع السيرفر المحلي:");
                 if (token && token.length > 10) {
                     localStorage.setItem('access_token', token);
                 } else {
-                    alert("تنبيه: لا يمكن جلب البيانات دون وجود Token صالح.");
+                    alert("لا يمكن تشغيل اللوحة دون التحقق من صلاحية المستخدم.");
                     return;
                 }
             }
 
             const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
+            
+            // متغيرات المخططات البيانية لمنع التداخل والتدمير الفوري
             let revenueTrendChart = null;
             let leadSourceChart = null;
-            let rawUploadedData = []; // المصفوفة العامة للاحتفاظ بالبيانات النشطة
+            
+            // المتغير العام الذهبي لتخزين كافة السجلات المرفوعة حياً ومنع التصفير والـ Refresh
+            window.rawUploadedData = [];
 
-            // دالة رسم وتحديث اللوحة بناءً على البيانات النشطة والمفلترة
+            // دالة معالجة وحساب ورسم البيانات على الواجهة وحساب الـ KPIs
             function updateDashboardUI(records) {
-                if (!records || records.length === 0) {
-                    document.getElementById('kpi-rev').textContent = "$0.0";
+                // معالجة وحماية البيانات ضد القيم غير المعرفة أو الفارغة لمنع الـ Crash
+                if (!records || !Array.isArray(records) || records.length === 0) {
+                    document.getElementById('kpi-rev').textContent = "$0";
                     document.getElementById('kpi-app').textContent = "0";
                     document.getElementById('kpi-rate').textContent = "0.0%";
-                    if (revenueTrendChart) revenueTrendChart.destroy();
-                    if (leadSourceChart) leadSourceChart.destroy();
+                    if (revenueTrendChart) { revenueTrendChart.destroy(); revenueTrendChart = null; }
+                    if (leadSourceChart) { leadSourceChart.destroy(); leadSourceChart = null; }
                     return;
                 }
 
                 let totalRevenue = 0;
                 let totalAppointments = records.length;
                 let noShowCount = 0;
+                
                 let trendData = {};
                 let leadData = {};
 
                 records.forEach(item => {
-                    let rev = parseFloat(item.Revenue || item.revenue || item.Amount || item.amount || 0);
+                    // دعم الأعمدة البديلة وحمايتها رقمياً ضد حقول null و undefined و NaN
+                    let rev = parseFloat(item.Revenue ?? item.revenue ?? item.Amount ?? item.amount ?? 0);
+                    if (isNaN(rev)) rev = 0;
                     totalRevenue += rev;
 
-                    let status = (item.Status || item.status || '').toLowerCase();
-                    if (status === 'no_show' || status === 'no-show' || item.no_show === true || item.No_Show === true) {
+                    // جلب حالة الحضور ودعم اللغتين العربية والإنجليزية
+                    let status = String(item.Status ?? item.status ?? '').trim().toLowerCase();
+                    if (status === 'no_show' || status === 'no-show' || status === 'لم يحضر' || item.No_Show === true || item.no_show === true) {
                         noShowCount++;
                     }
 
-                    let month = item.Month || item.month || 'أخرى';
-                    trendData[month] = (trendData[month] || 0) + rev;
+                    // تجميع بيانات المخطط الشهري
+                    let month = String(item.Month ?? item.month ?? 'غير محدد').trim();
+                    if (month) {
+                        trendData[month] = (trendData[month] || 0) + rev;
+                    }
 
-                    let source = item.Lead_Source || item.lead_source || 'Unknown';
-                    leadData[source] = (leadData[source] || 0) + rev;
+                    // تجميع بيانات قنوات الاستقطاب التسويقية
+                    let source = String(item.Lead_Source ?? item.lead_source ?? 'أخرى').trim();
+                    if (source) {
+                        leadData[source] = (leadData[source] || 0) + rev;
+                    }
                 });
 
-                document.getElementById('kpi-rev').textContent = `$${totalRevenue.toLocaleString()}`;
+                // تحديث نصوص بطاقات الأداء بالأرقام الجديدة المفلترة
+                document.getElementById('kpi-rev').textContent = `$${Math.round(totalRevenue).toLocaleString()}`;
                 document.getElementById('kpi-app').textContent = totalAppointments;
-                let noShowRate = totalAppointments > 0 ? ((noShowCount / totalAppointments) * 100).toFixed(1) : 0;
+                
+                let noShowRate = totalAppointments > 0 ? ((noShowCount / totalAppointments) * 100).toFixed(1) : "0.0";
                 document.getElementById('kpi-rate').textContent = `${noShowRate}%`;
 
-                // تحديث مخطط Monthly Revenue Trend
+                // --- 1. بناء وتحديث مخطط اتجاهات الإيرادات الشهرية ---
                 const ctxLine = document.getElementById('revenueTrendChart').getContext('2d');
-                if (revenueTrendChart) revenueTrendChart.destroy();
+                if (revenueTrendChart) revenueTrendChart.destroy(); // تدمير المخطط القديم حتماً لمنع تداخل الرسوم
+                
                 revenueTrendChart = new Chart(ctxLine, {
                     type: 'line',
                     data: {
                         labels: Object.keys(trendData),
                         datasets: [{
-                            label: 'Monthly Revenue',
+                            label: 'الأرباح الشهرية الحية',
                             data: Object.values(trendData),
                             borderColor: '#E040FB',
-                            backgroundColor: 'rgba(224, 64, 251, 0.1)',
+                            backgroundColor: 'rgba(224, 64, 251, 0.08)',
                             fill: true,
-                            tension: 0.3
+                            tension: 0.3,
+                            borderWidth: 3
                         }]
                     },
-                    options: { responsive: true, maintainAspectRatio: false }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { labels: { font: { family: 'Cairo' } } } }
+                    }
                 });
 
-                // تحديث مخطط Revenue by Lead_Source
+                // --- 2. بناء وتحديث مخطط توزيع قنوات التسويق الأفقي ---
                 const ctxBar = document.getElementById('leadSourceChart').getContext('2d');
-                if (leadSourceChart) leadSourceChart.destroy();
+                if (leadSourceChart) leadSourceChart.destroy(); // تدمير المخطط القديم حتماً لمنع تداخل الرسوم
+                
                 leadSourceChart = new Chart(ctxBar, {
                     type: 'bar',
                     data: {
                         labels: Object.keys(leadData),
                         datasets: [{
                             data: Object.values(leadData),
-                            backgroundColor: ['#3182CE', '#319795', '#805AD5', '#D53F8C', '#4A5568']
+                            backgroundColor: ['#3182CE', '#00B67A', '#805AD5', '#D53F8C', '#4A5568', '#DD6B20']
                         }]
                     },
                     options: {
                         indexAxis: 'y',
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false } }
+                        plugins: {
+                            legend: { display: false },
+                        },
+                        scales: { x: { beginAtZero: true } }
                     }
                 });
             }
 
-            // دالة تطبيق الفلاتر حياً على البيانات المرفوعة
-            function applyLiveFilters() {
-                if (!rawUploadedData || rawUploadedData.length === 0) return;
+            // دالة استخراج القيم وصناعة الفلاتر ديناميكياً من محتوى ملف الـ Excel المرفوع
+            function generateDynamicFilters(records) {
+                const doctorContainer = document.getElementById('doctor-filters-container');
+                const serviceContainer = document.getElementById('service-filters-container');
+                const leadContainer = document.getElementById('lead-filters-container');
 
-                // جلب القيم المحددة من الفلاتر الجانبية
-                const selectedDoctors = Array.from(document.querySelectorAll('.doctor-filter:checked')).map(cb => cb.value.toLowerCase());
-                const selectedServices = Array.from(document.querySelectorAll('.service-filter:checked')).map(cb => cb.value.toLowerCase());
+                let doctors = new Set();
+                let services = new Set();
+                let leads = new Set();
+                let dates = [];
 
-                // تصفية المصفوفة
-                const filteredRecords = rawUploadedData.filter(item => {
-                    const docName = (item.Doctor_Name || item.doctor_name || item.Doctor || '').toLowerCase();
-                    const svcType = (item.Service_Type || item.service_type || item.Service || '').toLowerCase();
+                records.forEach(item => {
+                    let doc = String(item.Doctor_Name ?? item.doctor_name ?? item.Doctor ?? '').trim();
+                    if (doc) doctors.add(doc);
 
-                    // التحقق من المطابقة (إذا كانت حقول الملف فارغة، نعتبرها متطابقة لتجنب الاختفاء)
-                    const matchesDoctor = selectedDoctors.length === 0 || selectedDoctors.some(doc => docName.includes(doc) || doc.includes(docName));
-                    const matchesService = selectedServices.length === 0 || selectedServices.some(svc => svcType.includes(svc) || svc.includes(svcType));
+                    let svc = String(item.Service_Type ?? item.service_type ?? item.Service ?? '').trim();
+                    if (svc) services.add(svc);
 
-                    return matchesDoctor && matchesService;
+                    let lead = String(item.Lead_Source ?? item.lead_source ?? '').trim();
+                    if (lead) leads.add(lead);
+
+                    let d = item.Date ?? item.date;
+                    if (d) dates.push(String(d));
                 });
 
-                // إعادة رسم اللوحة بالبيانات المفلترة
-                updateDashboardUI(filteredRecords);
+                // تحديث نطاق التاريخ النشط المعروض تلقائياً
+                if (dates.length > 0) {
+                    document.getElementById('date-range-display').value = `${dates[0]} - ${dates[dates.length - 1]}`;
+                }
+
+                // تفريغ المحتوى القديم وبناء كتل الاختيار الحية
+                doctorContainer.innerHTML = '';
+                if(doctors.size === 0) doctorContainer.innerHTML = '<span style="color:var(--text-muted); font-size:12px;">لا يوجد أطباء</span>';
+                doctors.forEach(doc => {
+                    doctorContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" class="doctor-filter" value="${doc}" checked> ${doc}</label>`;
+                });
+
+                serviceContainer.innerHTML = '';
+                if(services.size === 0) serviceContainer.innerHTML = '<span style="color:var(--text-muted); font-size:12px;">لا يوجد خدمات</span>';
+                services.forEach(svc => {
+                    serviceContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" class="service-filter" value="${svc}" checked> ${svc}</label>`;
+                });
+
+                leadContainer.innerHTML = '';
+                if(leads.size === 0) leadContainer.innerHTML = '<span style="color:var(--text-muted); font-size:12px;">لا يوجد قنوات إعلانية</span>';
+                leads.forEach(ld => {
+                    leadContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" class="lead-filter" value="${ld}" checked> ${ld}</label>`;
+                });
+
+                // إعادة تفعيل مستمعات الأحداث على الصناديق الجديدة التي تم إنشاؤها ديناميكياً فوراً
+                document.querySelectorAll('.doctor-filter, .service-filter, .lead-filter').forEach(checkbox => {
+                    checkbox.addEventListener('change', applyLiveFilters);
+                });
             }
 
-            // ربط مستمعات الأحداث للفلاتر لتحديث اللوحة فوراً عند التغيير
-            document.querySelectorAll('.doctor-filter, .service-filter').forEach(checkbox => {
-                checkbox.addEventListener('change', applyLiveFilters);
-            });
+            // دالة الفلترة اللحظية وتصفية مصفوفة rawUploadedData وإعادة الرسم حياً
+            function applyLiveFilters() {
+                if (!window.rawUploadedData || window.rawUploadedData.length === 0) return;
 
-            // جلب الإعدادات والبيانات الافتراضية للوحة عند بداية الدخول
+                // استخراج القيم المحددة والنشطة من الخيارات الجانبية في الـ DOM
+                const activeDoctors = Array.from(document.querySelectorAll('.doctor-filter:checked')).map(cb => cb.value.toLowerCase());
+                const activeServices = Array.from(document.querySelectorAll('.service-filter:checked')).map(cb => cb.value.toLowerCase());
+                const activeLeads = Array.from(document.querySelectorAll('.lead-filter:checked')).map(cb => cb.value.toLowerCase());
+
+                // تصفية المصفوفة العامة بناءً على اختيارات المستخدم الدقيقة
+                const filtered = window.rawUploadedData.filter(item => {
+                    let docName = String(item.Doctor_Name ?? item.doctor_name ?? item.Doctor ?? '').toLowerCase();
+                    let svcType = String(item.Service_Type ?? item.service_type ?? item.Service ?? '').toLowerCase();
+                    let leadSrc = String(item.Lead_Source ?? item.lead_source ?? '').toLowerCase();
+
+                    const matchesDoctor = activeDoctors.length === 0 || activeDoctors.includes(docName);
+                    const matchesService = activeServices.length === 0 || activeServices.includes(svcType);
+                    const matchesLead = activeLeads.length === 0 || activeLeads.includes(leadSrc);
+
+                    return matchesDoctor && matchesService && matchesLead;
+                });
+
+                // إعادة رسم الواجهات بالبيانات المفلترة فوراً بدون Refresh للمتصفح
+                updateDashboardUI(filtered);
+            }
+
+            // جلب البنية الأساسية وهوية العميل عند التحميل الأول للصفحة
             async function loadDashboardData() {
                 try {
                     const layoutRes = await fetch(`${API_BASE_URL}/dashboard`, {
@@ -264,13 +351,9 @@
                         headers: { 'Authorization': `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' }
                     });
                     if (analyticsRes.ok) {
-                        const defaultData = await analyticsRes.json();
-                        // إذا كانت البيانات القادمة من الباكيند هي الهيكل الافتراضي للبطاقات
-                        if (defaultData && defaultData.length > 0 && defaultData[0].metric_name) {
-                            // تحويل الهيكل الافتراضي ليعمل على المخططات بشكل طبيعي
-                            let mockRecords = [];
-                            // عرض القيم المباشرة إن وجدت
-                            defaultData.forEach(m => {
+                        const savedData = await analyticsRes.json();
+                        if (savedData && savedData.length > 0 && savedData[0].metric_name) {
+                            savedData.forEach(m => {
                                 if(m.metric_name === "Total Revenue") document.getElementById('kpi-rev').textContent = m.calculated_value;
                                 if(m.metric_name === "Total Appointment") document.getElementById('kpi-app').textContent = m.calculated_value;
                                 if(m.metric_name === "No_Show Rate") document.getElementById('kpi-rate').textContent = m.calculated_value;
@@ -278,18 +361,19 @@
                         }
                     }
                 } catch (err) {
-                    console.error("Error loading initial data:", err);
+                    console.error("حدث خطأ أثناء تحميل التهيئة المبدئية للوحة التحكم:", err);
                 }
             }
 
-            // معالجة رفع ملف الإكسيل وتحديث اللوحة بالبيانات الحية فوراً
+            // إدارة حدث رفع ملف الـ Excel ومعالجته وتحديث شاشتك لحظياً دون أي حاجة لـ Refresh
             const fileInput = document.getElementById('excel-file-input');
             const nameDisplay = document.getElementById('file-name-display');
 
             fileInput.addEventListener('change', async (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
-                nameDisplay.textContent = `📄 ${file.name}`;
+                
+                nameDisplay.textContent = `⏳ جاري معالجة: ${file.name}...`;
 
                 const formData = new FormData();
                 formData.append('file', file);
@@ -306,20 +390,25 @@
 
                     if (response.ok) {
                         const result = await response.json();
-                        alert("تم رفع ومعالجة ملف الإكسيل بنجاح وتحديث اللوحة حياً!");
+                        nameDisplay.textContent = `✅ تم رفع وتحديث: ${file.name}`;
                         
-                        // تخزين السجلات المرفوعة حياً بالمتغير العام لتسهيل الفلترة اللحظية
-                        rawUploadedData = result.analytics || result.data || (Array.isArray(result) ? result : []);
+                        // تخزين مصفوفة السجلات الحية داخل المتغير العام لمنع فقدان البيانات
+                        window.rawUploadedData = result.analytics || [];
                         
-                        // تحديث الرسوم والبطاقات فوراً بالبيانات الحية المرفوعة
-                        updateDashboardUI(rawUploadedData);
+                        // 1. بناء الفلاتر الجانبية ديناميكياً بناءً على محتوى الأطباء والخدمات في الملف الحالي
+                        generateDynamicFilters(window.rawUploadedData);
+                        
+                        // 2. تحديث الرسوم والـ KPIs فوراً على الشاشة بدون إعادة تحميل الصفحة
+                        updateDashboardUI(window.rawUploadedData);
                     } else {
+                        nameDisplay.textContent = `❌ فشل الرفع`;
                         const errData = await response.json().catch(() => ({}));
-                        alert(`فشل رفع الملف: ${errData.detail || "تأكد من هيكلية الملف وصلاحية الجلسة"}`);
+                        alert(`فشل معالجة الملف: ${errData.detail || "تأكد من صلاحية التوكن وتطابق محتوى حقول الملف"}`);
                     }
                 } catch (error) {
                     console.error("Upload error:", error);
-                    alert("حدث خطأ أثناء الاتصال بالسيرفر لمعالجة البيانات.");
+                    nameDisplay.textContent = `❌ خطأ اتصال بالخادم`;
+                    alert("تعذر الاتصال بالخادم، تأكد من تشغيل الباكيند ومسار الـ Ngrok بنجاح.");
                 }
             });
 
