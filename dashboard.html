@@ -132,6 +132,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
+            // التحقق وتأمين وجود الـ Token وتخزينه
             let token = localStorage.getItem('access_token');
             if (!token || token === "null" || token === "undefined") {
                 token = prompt(" 🔒 يرجى لصق الـ access_token الخاص بك للربط المباشر مع السيرفر المحلي:");
@@ -145,8 +146,11 @@
 
             const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
             
+            // متغيرات لتخزين كائنات Chart.js للتحكم في التدمير وإعادة الرسم
             let revenueTrendChart = null;
             let leadSourceChart = null;
+            
+            // المتغير العام لتخزين البيانات الخام ومنع الـ Refresh
             window.rawUploadedData = [];
 
             // دالة معالجة وحساب ورسم البيانات وتحديث الـ KPIs
@@ -168,37 +172,42 @@
                 let leadData = {};
 
                 records.forEach(item => {
-                    let rev = parseFloat(item.Revenue ?? item.revenue ?? item.Amount ?? item.amount ?? 0);
+                    // دعم قراءة حقل الإيرادات بكل مسمياته المحتملة وتأمين تحويله رقمياً ضد حقول null و NaN
+                    let rev = parseFloat(item.Revenue ?? item.revenue ?? item.Amount ?? item.amount ?? item.Price ?? item.price ?? 0);
                     if (isNaN(rev)) rev = 0;
                     totalRevenue += rev;
 
+                    // جلب حالة الحضور لعدم الحضور ودعم اللغتين
                     let status = String(item.Status ?? item.status ?? '').trim().toLowerCase();
                     if (status === 'no_show' || status === 'no-show' || status === 'لم يحضر' || item.No_Show === true || item.no_show === true) {
                         noShowCount++;
                     }
 
+                    // تجميع بيانات مخطط الاتجاهات الشهري
                     let month = String(item.Month ?? item.month ?? 'غير محدد').trim();
                     if (month) {
                         trendData[month] = (trendData[month] || 0) + rev;
                     }
 
+                    // تجميع بيانات مخطط قنوات الاستقطاب التسويقية
                     let source = String(item.Lead_Source ?? item.lead_source ?? 'أخرى').trim();
                     if (source) {
                         leadData[source] = (leadData[source] || 0) + rev;
                     }
                 });
 
+                // تحديث بطاقات الـ KPI الرقمية
                 document.getElementById('kpi-rev').textContent = `$${Math.round(totalRevenue).toLocaleString()}`;
                 document.getElementById('kpi-app').textContent = totalAppointments;
                 
                 let noShowRate = totalAppointments > 0 ? ((noShowCount / totalAppointments) * 100).toFixed(1) : "0.0";
                 document.getElementById('kpi-rate').textContent = `${noShowRate}%`;
 
-                // --- الربط الصحيح والمؤمن مع المخطط الأول analyticsChart1 ---
+                // --- رسم وتحديث مخطط اتجاهات الإيرادات الشهرية (analyticsChart1) ---
                 const canvas1 = document.getElementById('analyticsChart1');
                 if (canvas1) {
                     const ctxLine = canvas1.getContext('2d');
-                    if (revenueTrendChart) revenueTrendChart.destroy();
+                    if (revenueTrendChart) revenueTrendChart.destroy(); // تدمير المخطط القديم لمنع التداخل والجمود
                     
                     revenueTrendChart = new Chart(ctxLine, {
                         type: 'line',
@@ -222,11 +231,11 @@
                     });
                 }
 
-                // ---  الربط الصحيح والمؤمن مع المخطط الثاني analyticsChart2 ---
+                // --- رسم وتحديث مخطط توزيع قنوات التسويق (analyticsChart2) ---
                 const canvas2 = document.getElementById('analyticsChart2');
                 if (canvas2) {
                     const ctxBar = canvas2.getContext('2d');
-                    if (leadSourceChart) leadSourceChart.destroy();
+                    if (leadSourceChart) leadSourceChart.destroy(); // تدمير المخطط القديم لمنع التداخل والجمود
                     
                     leadSourceChart = new Chart(ctxBar, {
                         type: 'bar',
@@ -248,7 +257,7 @@
                 }
             }
 
-            // دالة استخراج القيم وصناعة الفلاتر ديناميكياً
+            // دالة استخراج القيم وصناعة الفلاتر ديناميكياً بناءً على البيانات المستلمة
             function generateDynamicFilters(records) {
                 const doctorContainer = document.getElementById('doctor-filters-container');
                 const serviceContainer = document.getElementById('service-filters-container');
@@ -277,37 +286,40 @@
                     document.getElementById('date-range-display').value = `${dates[0]} - ${dates[dates.length - 1]}`;
                 }
 
+                // بناء كتل الاختيار الحية بالقيم المكتشفة
                 doctorContainer.innerHTML = '';
                 doctors.forEach(doc => {
-                    doctorContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" class="doctor-filter" value="${doc}" checked> ${doc}</label>`;
+                    doctorContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" class="doctor-filter" value="${doc.toLowerCase()}" checked> ${doc}</label>`;
                 });
 
                 serviceContainer.innerHTML = '';
                 services.forEach(svc => {
-                    serviceContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" class="service-filter" value="${svc}" checked> ${svc}</label>`;
+                    serviceContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" class="service-filter" value="${svc.toLowerCase()}" checked> ${svc}</label>`;
                 });
 
                 leadContainer.innerHTML = '';
                 leads.forEach(ld => {
-                    leadContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" class="lead-filter" value="${ld}" checked> ${ld}</label>`;
+                    leadContainer.innerHTML += `<label class="checkbox-item"><input type="checkbox" class="lead-filter" value="${ld.toLowerCase()}" checked> ${ld}</label>`;
                 });
 
+                // تفعيل مستمعات الأحداث فوراً على الصناديق المنشأة حديثاً
                 document.querySelectorAll('.doctor-filter, .service-filter, .lead-filter').forEach(checkbox => {
                     checkbox.addEventListener('change', applyLiveFilters);
                 });
             }
 
+            // دالة التصفية الحية المنيعة ضد حساسية حالة الأحرف (Case Insensitive)
             function applyLiveFilters() {
                 if (!window.rawUploadedData || window.rawUploadedData.length === 0) return;
 
-                const activeDoctors = Array.from(document.querySelectorAll('.doctor-filter:checked')).map(cb => cb.value.toLowerCase());
-                const activeServices = Array.from(document.querySelectorAll('.service-filter:checked')).map(cb => cb.value.toLowerCase());
-                const activeLeads = Array.from(document.querySelectorAll('.lead-filter:checked')).map(cb => cb.value.toLowerCase());
+                const activeDoctors = Array.from(document.querySelectorAll('.doctor-filter:checked')).map(cb => cb.value.trim().toLowerCase());
+                const activeServices = Array.from(document.querySelectorAll('.service-filter:checked')).map(cb => cb.value.trim().toLowerCase());
+                const activeLeads = Array.from(document.querySelectorAll('.lead-filter:checked')).map(cb => cb.value.trim().toLowerCase());
 
                 const filtered = window.rawUploadedData.filter(item => {
-                    let docName = String(item.Doctor_Name ?? item.doctor_name ?? item.Doctor ?? '').toLowerCase();
-                    let svcType = String(item.Service_Type ?? item.service_type ?? item.Service ?? '').toLowerCase();
-                    let leadSrc = String(item.Lead_Source ?? item.lead_source ?? '').toLowerCase();
+                    let docName = String(item.Doctor_Name ?? item.doctor_name ?? item.Doctor ?? '').trim().toLowerCase();
+                    let svcType = String(item.Service_Type ?? item.service_type ?? item.Service ?? '').trim().toLowerCase();
+                    let leadSrc = String(item.Lead_Source ?? item.lead_source ?? '').trim().toLowerCase();
 
                     const matchesDoctor = activeDoctors.length === 0 || activeDoctors.includes(docName);
                     const matchesService = activeServices.length === 0 || activeServices.includes(svcType);
@@ -316,9 +328,11 @@
                     return matchesDoctor && matchesService && matchesLead;
                 });
 
+                // تحديث الواجهة حياً بالمصفوفة المفلترة
                 updateDashboardUI(filtered);
             }
 
+            // جلب البيانات والهوية الأساسية عند التحميل الأول
             async function loadDashboardData() {
                 try {
                     const layoutRes = await fetch(`${API_BASE_URL}/dashboard`, {
@@ -348,6 +362,7 @@
                 }
             }
 
+            // معالجة حدث رفع ملف الـ Excel حياً وبدون Refresh للمتصفح
             const fileInput = document.getElementById('excel-file-input');
             const nameDisplay = document.getElementById('file-name-display');
 
@@ -376,7 +391,9 @@
                         
                         window.rawUploadedData = result.analytics || [];
                         
+                        // 1. إنشاء الفلاتر ديناميكياً
                         generateDynamicFilters(window.rawUploadedData);
+                        // 2. تحديث الرسوم والـ KPIs فوراً
                         updateDashboardUI(window.rawUploadedData);
                     } else {
                         nameDisplay.textContent = `❌ فشل الرفع`;
