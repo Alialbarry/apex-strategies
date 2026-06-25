@@ -8,7 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
-        /* نفس الـ Styles السابقة */
         :root {
             --primary-bg: #0f172a;
             --sidebar-bg: #1a233a;
@@ -487,22 +486,18 @@
         }
 
         function redirectToLogin() {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-            localStorage.removeItem('token_expiry');
-            localStorage.removeItem('user_data');
-            localStorage.removeItem('user_id');
+            localStorage.clear();
             window.location.href = 'login.html';
         }
 
         // ==============================================
-        // AUTHENTICATED FETCH - مع تحسين الأمان
+        // AUTHENTICATED FETCH
         // ==============================================
         async function fetchWithAuth(url, options = {}, retryCount = 0) {
             let token = localStorage.getItem('access_token');
             
             if (!token || isTokenExpired()) {
-                console.log('🔄 Token expired or missing, refreshing...');
+                console.log('🔄 Token expired, refreshing...');
                 
                 const refreshToken = localStorage.getItem('refresh_token');
                 if (refreshToken) {
@@ -521,19 +516,16 @@
                             if (data.expires_in) {
                                 localStorage.setItem('token_expiry', (Date.now() + data.expires_in * 1000).toString());
                             }
-                            console.log('✅ Token refreshed successfully');
+                            console.log('✅ Token refreshed');
                         } else {
-                            console.log('❌ Refresh failed, redirecting to login');
                             redirectToLogin();
                             throw new Error('Session expired');
                         }
                     } catch (error) {
-                        console.log('❌ Refresh error, redirecting to login');
                         redirectToLogin();
                         throw new Error('Session expired');
                     }
                 } else {
-                    console.log('❌ No refresh token, redirecting to login');
                     redirectToLogin();
                     throw new Error('No refresh token');
                 }
@@ -541,7 +533,7 @@
             
             if (!token) {
                 redirectToLogin();
-                throw new Error('No token available');
+                throw new Error('No token');
             }
             
             try {
@@ -555,7 +547,7 @@
                 });
                 
                 if (response.status === 401 && retryCount < 1) {
-                    console.log('🔄 401 Unauthorized, retrying with new token...');
+                    console.log('🔄 401 Unauthorized, retrying...');
                     
                     const refreshToken = localStorage.getItem('refresh_token');
                     if (refreshToken) {
@@ -575,9 +567,7 @@
                                 }
                                 return fetchWithAuth(url, options, retryCount + 1);
                             }
-                        } catch (error) {
-                            console.log('❌ Refresh failed');
-                        }
+                        } catch (error) {}
                     }
                     
                     redirectToLogin();
@@ -592,7 +582,7 @@
         }
 
         // ==============================================
-        // CHART MANAGEMENT
+        // CHART MANAGEMENT - محسّن
         // ==============================================
         function destroyCharts() {
             if (state.charts.revenueTrend) {
@@ -606,23 +596,54 @@
         }
 
         function renderCharts(records) {
+            // تدمير المخططات القديمة
             destroyCharts();
 
             const ctx1 = document.getElementById('revenueTrendChart')?.getContext('2d');
             const ctx2 = document.getElementById('leadSourceChart')?.getContext('2d');
 
-            if (!ctx1 || !ctx2) return;
+            if (!ctx1 || !ctx2) {
+                console.warn('⚠️ Chart canvases not found');
+                return;
+            }
 
-            // Monthly Revenue
+            if (!records || records.length === 0) {
+                console.log('📊 No data for charts');
+                return;
+            }
+
+            // ==========================================
+            // 1. Monthly Revenue Trend (Line Chart)
+            // ==========================================
             const monthlyData = {};
             records.forEach(record => {
-                const month = record.Month || record.month || 'Other';
+                // دعم عدة تنسيقات للشهر
+                let month = record.Month || record.month || record.Appointment_Month || 
+                           record.appointment_month || record.Date || record.date || 'Other';
+                
+                // إذا كان التاريخ بصيغة مختلفة، حاول استخراج الشهر
+                if (month && month.includes('/')) {
+                    try {
+                        const dateParts = month.split('/');
+                        if (dateParts.length === 3) {
+                            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                                               'July', 'August', 'September', 'October', 'November', 'December'];
+                            const monthIndex = parseInt(dateParts[0]) - 1;
+                            if (monthIndex >= 0 && monthIndex < 12) {
+                                month = `${monthNames[monthIndex]} ${dateParts[2]}`;
+                            }
+                        }
+                    } catch (e) {}
+                }
+                
                 const revenue = parseFloat(record.Revenue || record.revenue || 0);
                 monthlyData[month] = (monthlyData[month] || 0) + revenue;
             });
 
+            // ترتيب الأشهر
             const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June',
                                'July', 'August', 'September', 'October', 'November', 'December'];
+            
             const sortedMonths = Object.keys(monthlyData).sort((a, b) => {
                 const idxA = monthOrder.indexOf(a);
                 const idxB = monthOrder.indexOf(b);
@@ -634,6 +655,7 @@
 
             const revenueValues = sortedMonths.map(m => monthlyData[m] || 0);
 
+            // رسم المخطط الخطي
             if (revenueValues.length > 0 && revenueValues.some(v => v > 0)) {
                 state.charts.revenueTrend = new Chart(ctx1, {
                     type: 'line',
@@ -643,14 +665,15 @@
                             label: 'Monthly Revenue',
                             data: revenueValues.length > 0 ? revenueValues : [0, 0, 0, 0],
                             borderColor: '#8b5cf6',
-                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            backgroundColor: 'rgba(139, 92, 246, 0.15)',
                             fill: true,
                             borderWidth: 3,
                             tension: 0.3,
                             pointBackgroundColor: '#8b5cf6',
                             pointBorderColor: '#fff',
                             pointBorderWidth: 2,
-                            pointRadius: 4,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
                         }]
                     },
                     options: {
@@ -660,7 +683,7 @@
                             legend: {
                                 labels: {
                                     color: '#94a3b8',
-                                    font: { family: 'Cairo' }
+                                    font: { family: 'Cairo', size: 12 }
                                 }
                             }
                         },
@@ -670,31 +693,47 @@
                                 ticks: {
                                     color: '#94a3b8',
                                     callback: function(value) {
+                                        if (value >= 1000000) {
+                                            return '$' + (value / 1000000).toFixed(1) + 'M';
+                                        } else if (value >= 1000) {
+                                            return '$' + (value / 1000).toFixed(0) + 'K';
+                                        }
                                         return '$' + value.toLocaleString();
                                     }
                                 },
                                 grid: { color: 'rgba(255,255,255,0.05)' }
                             },
                             x: {
-                                ticks: { color: '#94a3b8' },
+                                ticks: { 
+                                    color: '#94a3b8',
+                                    maxRotation: 45,
+                                    minRotation: 0,
+                                    font: { size: 10 }
+                                },
                                 grid: { display: false }
                             }
                         }
                     }
                 });
+                console.log('✅ Line chart rendered with', revenueValues.length, 'data points');
+            } else {
+                console.log('⚠️ No data for line chart');
             }
 
-            // Lead Source
+            // ==========================================
+            // 2. Revenue by Lead Source (Bar Chart)
+            // ==========================================
             const leadData = {};
             records.forEach(record => {
-                const source = record.Lead_Source || record.lead_source || record.LeadSource || 'Unknown';
+                const source = record.Lead_Source || record.lead_source || 
+                              record.LeadSource || record.Lead_Source || 'Unknown';
                 const revenue = parseFloat(record.Revenue || record.revenue || 0);
                 leadData[source] = (leadData[source] || 0) + revenue;
             });
 
             const leadSources = Object.keys(leadData);
             const leadValues = leadSources.map(s => leadData[s] || 0);
-            const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899'];
+            const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#14b8a6'];
 
             if (leadValues.length > 0 && leadValues.some(v => v > 0)) {
                 state.charts.leadSource = new Chart(ctx2, {
@@ -706,7 +745,7 @@
                             data: leadValues.length > 0 ? leadValues : [0, 0, 0, 0],
                             backgroundColor: leadSources.map((_, i) => colors[i % colors.length]),
                             borderWidth: 0,
-                            borderRadius: 4,
+                            borderRadius: 6,
                         }]
                     },
                     options: {
@@ -714,13 +753,22 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: { display: false }
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return '$' + context.parsed.x.toLocaleString();
+                                    }
+                                }
+                            }
                         },
                         scales: {
                             y: {
                                 ticks: {
                                     color: '#94a3b8',
-                                    font: { family: 'Cairo' }
+                                    font: { family: 'Cairo', size: 11 }
                                 },
                                 grid: { display: false }
                             },
@@ -729,6 +777,11 @@
                                 ticks: {
                                     color: '#94a3b8',
                                     callback: function(value) {
+                                        if (value >= 1000000) {
+                                            return '$' + (value / 1000000).toFixed(1) + 'M';
+                                        } else if (value >= 1000) {
+                                            return '$' + (value / 1000).toFixed(0) + 'K';
+                                        }
                                         return '$' + value.toLocaleString();
                                     }
                                 },
@@ -737,17 +790,23 @@
                         }
                     }
                 });
+                console.log('✅ Bar chart rendered with', leadValues.length, 'data points');
+            } else {
+                console.log('⚠️ No data for bar chart');
             }
         }
 
         // ==============================================
-        // DASHBOARD UPDATE
+        // DASHBOARD UPDATE - محسّن
         // ==============================================
         function updateDashboardUI(records) {
+            console.log('📊 Updating dashboard with', records?.length || 0, 'records');
+            
             const kpiContainer = document.getElementById('kpi-container');
             const recordCount = document.getElementById('record-count');
 
             if (!records || records.length === 0) {
+                console.log('📊 No records to display');
                 if (kpiContainer) {
                     kpiContainer.innerHTML = `
                         <div class="kpi-card revenue">
@@ -769,19 +828,31 @@
                 return;
             }
 
+            // حساب الإحصائيات
             let totalRevenue = 0;
             let noShowCount = 0;
+            let completedCount = 0;
 
             records.forEach(record => {
-                totalRevenue += parseFloat(record.Revenue || record.revenue || 0);
-                const status = (record.Status || record.status || '').toLowerCase();
+                const revenue = parseFloat(record.Revenue || record.revenue || 0);
+                totalRevenue += revenue;
+                
+                const status = (record.Status || record.status || '').toLowerCase().trim();
                 if (status.includes('no-show') || status.includes('no_show') || 
                     status.includes('canceled') || status.includes('cancelled') ||
-                    status.includes('missed') || status.includes('complated')) {
+                    status.includes('missed')) {
                     noShowCount++;
+                } else if (status.includes('completed') || status.includes('complete') || 
+                           status.includes('done') || status.includes('finished')) {
+                    completedCount++;
                 }
             });
 
+            const noShowRate = records.length > 0 ? (noShowCount / records.length) * 100 : 0;
+
+            console.log(`📊 Stats: Revenue=${totalRevenue}, Records=${records.length}, No-Show=${noShowCount}, Rate=${noShowRate.toFixed(1)}%`);
+
+            // تحديث بطاقات KPI
             if (kpiContainer) {
                 kpiContainer.innerHTML = `
                     <div class="kpi-card revenue">
@@ -794,20 +865,26 @@
                     </div>
                     <div class="kpi-card rate">
                         <span>📊 No-Show Rate</span>
-                        <h2>${((noShowCount / records.length) * 100).toFixed(1)}%</h2>
+                        <h2>${noShowRate.toFixed(1)}%</h2>
                     </div>
                 `;
+                console.log('✅ KPI cards updated');
             }
 
-            if (recordCount) recordCount.textContent = records.length + ' records';
+            if (recordCount) {
+                recordCount.textContent = records.length + ' records';
+            }
 
+            // تحديث الرسوم البيانية
             renderCharts(records);
+            console.log('✅ Dashboard update complete');
         }
 
         // ==============================================
         // LOAD DEMO DATA
         // ==============================================
         function loadDemoData() {
+            console.log('📊 Loading demo data...');
             const demoData = [
                 { Revenue: 12500, Doctor_Name: 'Dr. Ahmad', Status: 'Completed', 
                   Service_Type: 'Cleaning', Lead_Source: 'Google Maps', Month: 'January 2026' },
@@ -834,7 +911,7 @@
         }
 
         // ==============================================
-        // FILE UPLOAD
+        // FILE UPLOAD - مع إعادة تحميل كامل
         // ==============================================
         async function handleFileUpload(file) {
             const nameDisplay = document.getElementById('file-name-display');
@@ -854,15 +931,28 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    if (result.analytics && Array.isArray(result.analytics)) {
+                    if (result.analytics && Array.isArray(result.analytics) && result.analytics.length > 0) {
+                        console.log('📊 Received', result.analytics.length, 'records from backend');
+                        
+                        // تحديث البيانات
                         state.rawData = result.analytics;
                         state.filteredData = result.analytics;
+                        
+                        // تحديث الواجهة
                         updateDashboardUI(result.analytics);
+                        
+                        // تحديث ملخص
+                        if (result.summary) {
+                            console.log('📊 Summary:', result.summary);
+                        }
+                        
                         showToast(`✅ تم رفع ${result.analytics.length} سجل بنجاح!`, 'success');
                     } else {
+                        console.warn('⚠️ No analytics data in response:', result);
                         showToast('⚠️ لم يتم العثور على بيانات في الملف', 'warning');
                     }
                 } else {
+                    console.error('❌ Upload failed:', result);
                     showToast(`❌ ${result.detail || 'فشل رفع الملف'}`, 'error');
                 }
             } catch (error) {
@@ -939,8 +1029,10 @@
 
             console.log(`✅ User ID: ${userId}`);
 
+            // تحميل البيانات التجريبية أولاً
             loadDemoData();
 
+            // إعداد الفلاتر
             document.querySelectorAll('.doctor-filter, .service-filter').forEach(cb => {
                 cb.addEventListener('change', () => {
                     const label = cb.closest('.checkbox-item');
@@ -953,24 +1045,37 @@
                 });
             });
 
+            // إعداد رفع الملف
             const fileInput = document.getElementById('excel-file-input');
             if (fileInput) {
                 fileInput.addEventListener('change', (e) => {
                     const file = e.target.files[0];
-                    if (file) handleFileUpload(file);
+                    if (file) {
+                        console.log('📁 File selected:', file.name);
+                        handleFileUpload(file);
+                    }
                     fileInput.value = '';
                 });
             }
 
+            // تطبيق الفلاتر
             applyFilters();
 
             console.log('✅ Dashboard initialized successfully!');
             state.isLoaded = true;
         }
 
+        // ==============================================
+        // EXPOSE TO CONSOLE
+        // ==============================================
         window.logout = logout;
         window.loadDemoData = loadDemoData;
+        window.updateDashboardUI = updateDashboardUI;
+        window.renderCharts = renderCharts;
 
+        // ==============================================
+        // START
+        // ==============================================
         document.addEventListener('DOMContentLoaded', initDashboard);
     </script>
 </body>
