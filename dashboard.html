@@ -21,294 +21,92 @@
             --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
         }
         
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            font-family: 'Cairo', sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--primary-bg); color: var(--text-color); display: flex; min-height: 100vh; }
         
-        body { 
-            background-color: var(--primary-bg); 
-            color: var(--text-color); 
-            display: flex; 
-            min-height: 100vh;
-        }
-        
-        .dashboard-wrapper { 
-            display: flex; 
-            width: 100%;
-        }
+        .dashboard-wrapper { display: flex; width: 100%; }
         
         .filter-sidebar {
-            width: 280px; 
-            min-height: 100vh;
-            background: var(--sidebar-bg); 
-            border-left: 1px solid var(--border-color);
-            padding: 24px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 24px;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
+            width: 280px; min-height: 100vh; background: var(--sidebar-bg); 
+            border-left: 1px solid var(--border-color); padding: 24px; 
+            display: flex; flex-direction: column; gap: 24px;
+            position: sticky; top: 0; height: 100vh; overflow-y: auto;
             box-shadow: var(--shadow-sm);
         }
         
-        .brand-area { 
-            text-align: center; 
-            padding-bottom: 20px; 
-            border-bottom: 1px solid var(--border-color);
-        }
+        .brand-area { text-align: center; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+        .brand-area h2 { font-size: 22px; color: var(--blue-accent); font-weight: 700; }
         
-        .brand-area h2 { 
-            font-size: 22px; 
-            color: var(--blue-accent); 
-            font-weight: 700; 
-        }
-        
-        .filter-group { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px; 
-        }
-        
-        .filter-group label { 
-            font-weight: 600; 
-            font-size: 14px; 
-        }
-        
+        .filter-group { display: flex; flex-direction: column; gap: 10px; }
+        .filter-group label { font-weight: 600; font-size: 14px; }
         .filter-group input[type="text"] {
-            width: 100%; 
-            padding: 8px 12px; 
-            border: 1px solid var(--border-color); 
-            border-radius: 6px; 
-            text-align: center;
-            background: #f8f9fa;
+            width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); 
+            border-radius: 6px; text-align: center; background: #f8f9fa;
         }
         
-        .checkbox-list { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 8px; 
-        }
-        
-        .checkbox-item { 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            font-size: 13px; 
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-        
-        .checkbox-item:hover {
-            background: #f0f4f8;
-        }
-        
-        .checkbox-item input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-        }
+        .checkbox-list { display: flex; flex-direction: column; gap: 8px; }
+        .checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 13px; cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: background 0.2s; }
+        .checkbox-item:hover { background: #f0f4f8; }
+        .checkbox-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
         
         .custom-file-upload {
-            display: block; 
-            background: linear-gradient(135deg, var(--blue-accent), #2B6CB0);
-            color: white; 
-            text-align: center; 
-            padding: 12px; 
-            border-radius: 8px; 
-            font-weight: 600; 
-            cursor: pointer;
-            transition: all 0.3s ease;
+            display: block; background: linear-gradient(135deg, var(--blue-accent), #2B6CB0);
+            color: white; text-align: center; padding: 12px; border-radius: 8px; 
+            font-weight: 600; cursor: pointer; transition: all 0.3s ease;
         }
+        .custom-file-upload:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3); }
         
-        .custom-file-upload:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
-        }
+        .main-content { flex: 1; padding: 32px; display: flex; flex-direction: column; gap: 32px; max-width: calc(100% - 280px); }
         
-        .main-content { 
-            flex: 1; 
-            padding: 32px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 32px;
-            max-width: calc(100% - 280px);
-        }
+        .dashboard-header { background: #FFFFFF; padding: 20px 24px; border-radius: 12px; text-align: center; box-shadow: var(--shadow-sm); }
+        .dashboard-header h1 { font-size: 24px; color: var(--purple-accent); font-weight: 700; }
         
-        .dashboard-header { 
-            background: #FFFFFF; 
-            padding: 20px 24px; 
-            border-radius: 12px; 
-            text-align: center;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .dashboard-header h1 { 
-            font-size: 24px; 
-            color: var(--purple-accent); 
-            font-weight: 700; 
-        }
-        
-        .kpi-section { 
-            display: flex; 
-            gap: 24px;
-            flex-wrap: wrap;
-        }
-        
+        .kpi-section { display: flex; gap: 24px; flex-wrap: wrap; }
         .kpi-card {
-            flex: 1; 
-            min-width: 180px;
-            background: var(--card-bg); 
-            border-radius: 12px; 
-            padding: 24px;
-            border: 1px solid var(--border-color); 
-            text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow-sm);
+            flex: 1; min-width: 180px; background: var(--card-bg); border-radius: 12px; 
+            padding: 24px; border: 1px solid var(--border-color); text-align: center;
+            transition: all 0.3s ease; box-shadow: var(--shadow-sm);
         }
+        .kpi-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .kpi-card span { font-size: 14px; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 8px; }
+        .kpi-card h2 { font-size: 32px; font-weight: 700; }
+        .kpi-card.revenue h2 { color: var(--green-accent); }
+        .kpi-card.appointments h2 { color: var(--purple-accent); }
+        .kpi-card.rate h2 { color: #319795; }
         
-        .kpi-card:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-        }
+        .charts-grid { display: grid; grid-template-columns: 1.6fr 1.4fr; gap: 24px; min-height: 380px; }
+        .chart-box { background: var(--card-bg); padding: 24px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 16px; box-shadow: var(--shadow-sm); }
+        .chart-box h3 { font-size: 16px; color: var(--text-color); font-weight: 600; }
+        .chart-container { position: relative; flex: 1; width: 100%; height: 100%; min-height: 250px; }
         
-        .kpi-card span { 
-            font-size: 14px; 
-            color: var(--text-muted); 
-            font-weight: 600; 
-            display: block;
-            margin-bottom: 8px;
-        }
-        
-        .kpi-card h2 { 
-            font-size: 32px; 
-            font-weight: 700; 
-        }
-        
-        .kpi-card.revenue h2 { 
-            color: var(--green-accent); 
-        }
-        
-        .kpi-card.appointments h2 { 
-            color: var(--purple-accent); 
-        }
-        
-        .kpi-card.rate h2 { 
-            color: #319795; 
-        }
-        
-        .charts-grid { 
-            display: grid; 
-            grid-template-columns: 1.6fr 1.4fr; 
-            gap: 24px; 
-            min-height: 380px;
-        }
-        
-        .chart-box { 
-            background: var(--card-bg); 
-            padding: 24px; 
-            border-radius: 12px; 
-            border: 1px solid var(--border-color); 
-            display: flex; 
-            flex-direction: column; 
-            gap: 16px;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .chart-box h3 {
-            font-size: 16px;
-            color: var(--text-color);
-            font-weight: 600;
-        }
-        
-        .chart-container { 
-            position: relative; 
-            flex: 1; 
-            width: 100%; 
-            height: 100%;
-            min-height: 250px;
-        }
-        
-        .filter-count {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-align: center;
-            padding: 4px;
-            border-top: 1px solid var(--border-color);
-            margin-top: auto;
-        }
+        .filter-count { font-size: 12px; color: var(--text-muted); text-align: center; padding: 4px; border-top: 1px solid var(--border-color); margin-top: auto; }
         
         .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: #333;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            z-index: 1000;
-            opacity: 0;
-            transform: translateY(100px);
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow-md);
-            max-width: 400px;
+            position: fixed; bottom: 20px; left: 20px; background: #333; color: white;
+            padding: 12px 24px; border-radius: 8px; z-index: 1000; opacity: 0;
+            transform: translateY(100px); transition: all 0.3s ease; box-shadow: var(--shadow-md); max-width: 400px;
         }
-        
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
+        .toast.show { opacity: 1; transform: translateY(0); }
         .toast.success { background: #00B67A; }
         .toast.error { background: #E53E3E; }
         .toast.info { background: var(--blue-accent); }
         .toast.warning { background: #D69E2E; }
         
         @media (max-width: 1024px) {
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-            .filter-sidebar {
-                width: 240px;
-            }
-            .main-content {
-                max-width: calc(100% - 240px);
-                padding: 20px;
-            }
+            .charts-grid { grid-template-columns: 1fr; }
+            .filter-sidebar { width: 240px; }
+            .main-content { max-width: calc(100% - 240px); padding: 20px; }
         }
-        
         @media (max-width: 768px) {
-            .dashboard-wrapper {
-                flex-direction: column;
-            }
-            .filter-sidebar {
-                width: 100%;
-                height: auto;
-                min-height: auto;
-                position: relative;
-                border-left: none;
-                border-bottom: 1px solid var(--border-color);
-                padding: 16px;
-            }
-            .main-content {
-                max-width: 100%;
-                padding: 16px;
-            }
-            .kpi-section {
-                flex-direction: column;
-            }
+            .dashboard-wrapper { flex-direction: column; }
+            .filter-sidebar { width: 100%; height: auto; min-height: auto; position: relative; border-left: none; border-bottom: 1px solid var(--border-color); padding: 16px; }
+            .main-content { max-width: 100%; padding: 16px; }
+            .kpi-section { flex-direction: column; }
         }
     </style>
 </head>
 <body>
     <div class="dashboard-wrapper">
-        <!-- Sidebar -->
         <aside class="filter-sidebar">
             <div class="brand-area">
                 <h2 id="dashboard-title">APEX STRATEGIES</h2>
@@ -323,503 +121,370 @@
             <div class="filter-group">
                 <label>👨‍⚕️ Doctor Name</label>
                 <div class="checkbox-list" id="doctor-filters">
-                    <label class="checkbox-item">
-                        <input type="checkbox" class="doctor-filter" value="Dr. Ahmad" checked> Dr. Ahmad
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" class="doctor-filter" value="Dr. Layla" checked> Dr. Layla
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" class="doctor-filter" value="Dr. Sarah" checked> Dr. Sarah
-                    </label>
+                    <label class="checkbox-item"><input type="checkbox" class="doctor-filter" value="Dr. Ahmad" checked> Dr. Ahmad</label>
+                    <label class="checkbox-item"><input type="checkbox" class="doctor-filter" value="Dr. Layla" checked> Dr. Layla</label>
+                    <label class="checkbox-item"><input type="checkbox" class="doctor-filter" value="Dr. Sarah" checked> Dr. Sarah</label>
                 </div>
             </div>
             
             <div class="filter-group">
                 <label>🛠️ Service Type</label>
                 <div class="checkbox-list" id="service-filters">
-                    <label class="checkbox-item">
-                        <input type="checkbox" class="service-filter" value="Cleaning" checked> Cleaning
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" class="service-filter" value="Filling" checked> Filling
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" class="service-filter" value="Implant" checked> Implant
-                    </label>
+                    <label class="checkbox-item"><input type="checkbox" class="service-filter" value="Cleaning" checked> Cleaning</label>
+                    <label class="checkbox-item"><input type="checkbox" class="service-filter" value="Filling" checked> Filling</label>
+                    <label class="checkbox-item"><input type="checkbox" class="service-filter" value="Implant" checked> Implant</label>
                 </div>
             </div>
             
             <div class="filter-group upload-box">
-                <label for="excel-file-input" class="custom-file-upload">
-                    📁 Upload Excel Data
-                </label>
+                <label for="excel-file-input" class="custom-file-upload">📁 Upload Excel Data</label>
                 <input type="file" id="excel-file-input" accept=".xlsx, .xls" style="display:none;">
                 <span id="file-name-display" style="font-size: 11px; color: var(--text-muted); text-align: center; display: block; margin-top: 5px;"></span>
             </div>
             
             <div class="filter-count">
                 <span id="record-count">0 records</span>
+                <button onclick="logout()" style="margin-top: 10px; padding: 5px 15px; background: #E53E3E; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;">🚪 Logout</button>
             </div>
         </aside>
         
-        <!-- Main Content -->
         <main class="main-content">
             <header class="dashboard-header">
                 <h1 id="main-header-title">APEX STRATEGIES : CLINIC DATA ANALYSIS</h1>
             </header>
             
             <section class="kpi-section" id="kpi-container">
-                <div class="kpi-card revenue">
-                    <span>💰 Total Revenue</span>
-                    <h2 id="kpi-rev">$0.0</h2>
-                </div>
-                <div class="kpi-card appointments">
-                    <span>📋 Total Appointments</span>
-                    <h2 id="kpi-app">0</h2>
-                </div>
-                <div class="kpi-card rate">
-                    <span>📊 No-Show Rate</span>
-                    <h2 id="kpi-rate">0.0%</h2>
-                </div>
+                <div class="kpi-card revenue"><span>💰 Total Revenue</span><h2 id="kpi-rev">$0.0</h2></div>
+                <div class="kpi-card appointments"><span>📋 Total Appointments</span><h2 id="kpi-app">0</h2></div>
+                <div class="kpi-card rate"><span>📊 No-Show Rate</span><h2 id="kpi-rate">0.0%</h2></div>
             </section>
             
             <section class="charts-grid">
                 <div class="chart-box">
                     <h3>📈 Monthly Revenue Trend</h3>
-                    <div class="chart-container">
-                        <canvas id="revenueTrendChart"></canvas>
-                    </div>
+                    <div class="chart-container"><canvas id="revenueTrendChart"></canvas></div>
                 </div>
                 <div class="chart-box">
                     <h3>📊 Revenue by Lead Source</h3>
-                    <div class="chart-container">
-                        <canvas id="leadSourceChart"></canvas>
-                    </div>
+                    <div class="chart-container"><canvas id="leadSourceChart"></canvas></div>
                 </div>
             </section>
         </main>
     </div>
     
-    <!-- Toast notifications -->
     <div id="toast" class="toast"></div>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // ============== CONFIGURATION ==============
-            const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
+            const API_BASE_URL = 'http://127.0.0.1:8000/api';
             
-            // ============== STATE MANAGEMENT ==============
+            // ============== STATE ==============
             let state = {
                 token: null,
+                refreshToken: null,
+                tokenExpiry: null,
                 rawData: [],
                 filteredData: [],
-                charts: {
-                    revenueTrend: null,
-                    leadSource: null
-                },
+                charts: { revenueTrend: null, leadSource: null },
                 isLoaded: false
             };
             
-            // ============== TOAST SYSTEM ==============
+            // ============== TOAST ==============
             function showToast(message, type = 'info', duration = 4000) {
                 const toast = document.getElementById('toast');
                 toast.textContent = message;
                 toast.className = `toast ${type} show`;
                 clearTimeout(toast._timeout);
-                toast._timeout = setTimeout(() => {
-                    toast.classList.remove('show');
-                }, duration);
+                toast._timeout = setTimeout(() => toast.classList.remove('show'), duration);
             }
             
             // ============== TOKEN MANAGEMENT ==============
             function getToken() {
-                let token = localStorage.getItem('access_token');
-                
-                if (!token || token === 'null' || token === 'undefined' || token.length < 10) {
-                    token = prompt(
-                        '🔒 Authentication Required\n\n' +
-                        'Please enter your access token to continue:'
-                    );
+                return localStorage.getItem('access_token');
+            }
+            
+            function getRefreshToken() {
+                return localStorage.getItem('refresh_token');
+            }
+            
+            function getTokenExpiry() {
+                const expiry = localStorage.getItem('token_expiry');
+                return expiry ? parseInt(expiry) : null;
+            }
+            
+            function saveTokens(data) {
+                if (data.access_token) {
+                    localStorage.setItem('access_token', data.access_token);
+                    state.token = data.access_token;
+                }
+                if (data.refresh_token) {
+                    localStorage.setItem('refresh_token', data.refresh_token);
+                    state.refreshToken = data.refresh_token;
+                }
+                if (data.expires_in) {
+                    const expiry = Date.now() + (data.expires_in * 1000);
+                    localStorage.setItem('token_expiry', expiry.toString());
+                    state.tokenExpiry = expiry;
+                }
+            }
+            
+            function clearTokens() {
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                localStorage.removeItem('token_expiry');
+                localStorage.removeItem('user_data');
+                state.token = null;
+                state.refreshToken = null;
+                state.tokenExpiry = null;
+            }
+            
+            function isTokenExpired() {
+                const expiry = getTokenExpiry();
+                if (!expiry) return true;
+                const bufferTime = 5 * 60 * 1000; // 5 minutes buffer
+                return Date.now() > (expiry - bufferTime);
+            }
+            
+            // ==============================================
+            // تسجيل الدخول
+            // ==============================================
+            async function login(email, password) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/signin`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
                     
-                    if (token && token.length > 10) {
-                        localStorage.setItem('access_token', token);
-                        showToast('✅ Token saved successfully!', 'success');
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        saveTokens(data);
+                        localStorage.setItem('user_data', JSON.stringify(data));
+                        console.log('✅ تم تسجيل الدخول بنجاح!');
+                        showToast('✅ تم تسجيل الدخول بنجاح!', 'success');
+                        return true;
                     } else {
-                        showToast('⚠️ Authentication required to access dashboard', 'warning', 5000);
-                        return null;
+                        showToast(`❌ ${data.detail || 'فشل تسجيل الدخول'}`, 'error');
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('❌ خطأ في تسجيل الدخول:', error);
+                    showToast('❌ خطأ في الاتصال بالسيرفر', 'error');
+                    return false;
+                }
+            }
+            
+            // ==============================================
+            // تجديد التوكن
+            // ==============================================
+            async function refreshAccessToken() {
+                const refreshToken = getRefreshToken();
+                
+                if (!refreshToken) {
+                    console.log('⚠️ لا يوجد Refresh Token');
+                    return false;
+                }
+                
+                try {
+                    const response = await fetch(`${API_BASE_URL}/refresh`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ refresh_token: refreshToken })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        saveTokens(data);
+                        console.log('✅ تم تجديد التوكن بنجاح!');
+                        showToast('✅ تم تجديد الجلسة', 'info', 2000);
+                        return true;
+                    } else {
+                        console.warn('⚠️ فشل تجديد التوكن');
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('❌ خطأ في تجديد التوكن:', error);
+                    return false;
+                }
+            }
+            
+            // ==============================================
+            // طلب مع إدارة التوكن تلقائياً
+            // ==============================================
+            async function fetchWithAuth(url, options = {}, retryCount = 0) {
+                // التحقق من صلاحية التوكن
+                if (isTokenExpired()) {
+                    console.log('🔄 التوكن منتهي، جاري التجديد...');
+                    const refreshed = await refreshAccessToken();
+                    
+                    if (!refreshed && retryCount < 2) {
+                        // طلب تسجيل الدخول
+                        const email = prompt('🔒 انتهت صلاحية الجلسة، الرجاء إدخال البريد الإلكتروني:');
+                        if (!email) throw new Error('تم الإلغاء');
+                        
+                        const password = prompt('🔑 الرجاء إدخال كلمة المرور:');
+                        if (!password) throw new Error('تم الإلغاء');
+                        
+                        const loggedIn = await login(email, password);
+                        if (!loggedIn) throw new Error('فشل تسجيل الدخول');
+                    } else if (!refreshed) {
+                        throw new Error('فشل تجديد التوكن');
                     }
                 }
                 
-                return token;
+                const token = getToken();
+                if (!token) throw new Error('لا يوجد توكن');
+                
+                try {
+                    const response = await fetch(url, {
+                        ...options,
+                        headers: {
+                            ...options.headers,
+                            'Authorization': `Bearer ${token}`,
+                            'ngrok-skip-browser-warning': 'true',
+                            'Content-Type': options.body instanceof FormData ? undefined : 'application/json'
+                        }
+                    });
+                    
+                    // إذا كان 401، حاول تجديد التوكن مرة واحدة
+                    if (response.status === 401 && retryCount < 2) {
+                        console.log('🔄 401 Unauthorized - محاولة التجديد...');
+                        const refreshed = await refreshAccessToken();
+                        
+                        if (refreshed) {
+                            return fetchWithAuth(url, options, retryCount + 1);
+                        } else {
+                            // طلب تسجيل الدخول مجدداً
+                            const email = prompt('🔒 انتهت صلاحية الجلسة، الرجاء إدخال البريد الإلكتروني:');
+                            if (!email) throw new Error('تم الإلغاء');
+                            
+                            const password = prompt('🔑 الرجاء إدخال كلمة المرور:');
+                            if (!password) throw new Error('تم الإلغاء');
+                            
+                            const loggedIn = await login(email, password);
+                            if (loggedIn) {
+                                return fetchWithAuth(url, options, retryCount + 1);
+                            }
+                        }
+                        throw new Error('فشل تجديد الجلسة');
+                    }
+                    
+                    return response;
+                } catch (error) {
+                    console.error('❌ خطأ في الطلب:', error);
+                    throw error;
+                }
             }
             
-            // ============== DATA UTILITY FUNCTIONS ==============
-            function safeGetValue(obj, key, defaultValue = '') {
-                if (!obj || typeof obj !== 'object') return defaultValue;
-                
-                const variations = [
-                    key,
-                    key.toLowerCase(),
-                    key.toUpperCase(),
-                    key.charAt(0).toUpperCase() + key.slice(1).toLowerCase(),
-                    key.replace(/_/g, ' ').toLowerCase(),
-                    key.replace(/ /g, '_').toLowerCase()
+            // ==============================================
+            // تسجيل الخروج
+            // ==============================================
+            function logout() {
+                clearTokens();
+                showToast('✅ تم تسجيل الخروج', 'info', 3000);
+                setTimeout(() => location.reload(), 1000);
+            }
+            
+            // ==============================================
+            // تحميل البيانات التجريبية
+            // ==============================================
+            function loadDemoData() {
+                const demoData = [
+                    { Revenue: 12500, Doctor_Name: 'Dr. Ahmad', Status: 'Completed', Service_Type: 'Cleaning', Lead_Source: 'Google Maps', Month: 'January 2026' },
+                    { Revenue: 8300, Doctor_Name: 'Dr. Layla', Status: 'No-Show', Service_Type: 'Filling', Lead_Source: 'TikTok', Month: 'January 2026' },
+                    { Revenue: 15200, Doctor_Name: 'Dr. Sarah', Status: 'Completed', Service_Type: 'Implant', Lead_Source: 'Instagram', Month: 'February 2026' },
+                    { Revenue: 9800, Doctor_Name: 'Dr. Ahmad', Status: 'Completed', Service_Type: 'Cleaning', Lead_Source: 'Friend Referral', Month: 'February 2026' },
+                    { Revenue: 6700, Doctor_Name: 'Dr. Layla', Status: 'Completed', Service_Type: 'Filling', Lead_Source: 'Google Maps', Month: 'March 2026' },
+                    { Revenue: 14100, Doctor_Name: 'Dr. Sarah', Status: 'No-Show', Service_Type: 'Implant', Lead_Source: 'TikTok', Month: 'March 2026' },
+                    { Revenue: 11200, Doctor_Name: 'Dr. Ahmad', Status: 'Completed', Service_Type: 'Cleaning', Lead_Source: 'Instagram', Month: 'April 2026' },
+                    { Revenue: 9500, Doctor_Name: 'Dr. Sarah', Status: 'Completed', Service_Type: 'Implant', Lead_Source: 'Friend Referral', Month: 'April 2026' }
                 ];
                 
-                for (const variation of variations) {
-                    if (obj[variation] !== undefined && obj[variation] !== null) {
-                        return obj[variation];
-                    }
-                }
-                
-                const lowerKey = key.toLowerCase();
-                for (const [objKey, objValue] of Object.entries(obj)) {
-                    if (objKey.toLowerCase() === lowerKey) {
-                        return objValue;
-                    }
-                }
-                
-                return defaultValue;
+                state.rawData = demoData;
+                state.filteredData = demoData;
+                updateDashboardUI(demoData);
+                showToast(`✅ تم تحميل ${demoData.length} سجل تجريبي`, 'success');
             }
             
-            function safeNumber(value, fallback = 0) {
-                if (value === undefined || value === null || value === '') return fallback;
-                const num = parseFloat(String(value).replace(/[$,]/g, ''));
-                return isNaN(num) ? fallback : num;
-            }
-            
-            function normalizeString(value) {
-                if (!value) return '';
-                return String(value).trim().toLowerCase();
-            }
-            
-            // ============== DATA PROCESSING ==============
-            function processRecord(record) {
-                return {
-                    revenue: safeNumber(safeGetValue(record, 'Revenue')),
-                    doctor: normalizeString(safeGetValue(record, 'Doctor_Name')),
-                    status: normalizeString(safeGetValue(record, 'Status')),
-                    service: normalizeString(safeGetValue(record, 'Service_Type')),
-                    leadSource: normalizeString(safeGetValue(record, 'Lead_Source')),
-                    month: normalizeString(safeGetValue(record, 'Month')) || 'Other',
-                    patient: normalizeString(safeGetValue(record, 'Patient_Name'))
-                };
-            }
-            
-            function filterData(data, filters) {
-                if (!data || !Array.isArray(data)) return [];
-                
-                return data.filter(record => {
-                    const processed = processRecord(record);
-                    
-                    if (filters.doctors && filters.doctors.length > 0) {
-                        if (!processed.doctor) return false;
-                        const match = filters.doctors.some(d => processed.doctor.includes(normalizeString(d)));
-                        if (!match) return false;
-                    }
-                    
-                    if (filters.services && filters.services.length > 0) {
-                        if (!processed.service) return false;
-                        const match = filters.services.some(s => processed.service.includes(normalizeString(s)));
-                        if (!match) return false;
-                    }
-                    
-                    return true;
-                });
-            }
-            
-            // ============== CHART MANAGEMENT ==============
-            function destroyChart(chartInstance) {
-                if (chartInstance && typeof chartInstance.destroy === 'function') {
-                    try {
-                        chartInstance.destroy();
-                    } catch (e) {
-                        console.warn('Error destroying chart:', e);
-                    }
-                }
-                return null;
-            }
-            
-            function renderRevenueTrendChart(data, containerId) {
-                const canvas = document.getElementById(containerId);
-                if (!canvas) return null;
-                
-                const ctx = canvas.getContext('2d');
-                const processed = data.map(record => processRecord(record));
-                
-                const monthlyData = {};
-                processed.forEach(record => {
-                    const month = record.month || 'Other';
-                    monthlyData[month] = (monthlyData[month] || 0) + record.revenue;
-                });
-                
-                const labels = Object.keys(monthlyData);
-                const values = Object.values(monthlyData);
-                
-                if (labels.length === 0) {
-                    labels.push('No Data');
-                    values.push(0);
-                }
-                
-                return new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Monthly Revenue',
-                            data: values,
-                            borderColor: '#E040FB',
-                            backgroundColor: 'rgba(224, 64, 251, 0.1)',
-                            fill: true,
-                            tension: 0.3,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#E040FB'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top',
-                                labels: {
-                                    usePointStyle: true,
-                                    boxWidth: 8
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: value => '$' + value.toLocaleString()
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-            
-            function renderLeadSourceChart(data, containerId) {
-                const canvas = document.getElementById(containerId);
-                if (!canvas) return null;
-                
-                const ctx = canvas.getContext('2d');
-                const processed = data.map(record => processRecord(record));
-                
-                const leadData = {};
-                processed.forEach(record => {
-                    const source = record.leadSource || 'Unknown';
-                    leadData[source] = (leadData[source] || 0) + record.revenue;
-                });
-                
-                const labels = Object.keys(leadData);
-                const values = Object.values(leadData);
-                
-                if (labels.length === 0) {
-                    labels.push('No Data');
-                    values.push(0);
-                }
-                
-                const colors = ['#3182CE', '#319795', '#805AD5', '#D53F8C', '#4A5568', '#E53E3E'];
-                
-                return new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            data: values,
-                            backgroundColor: labels.map((_, i) => colors[i % colors.length]),
-                            borderColor: labels.map((_, i) => colors[i % colors.length]),
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false }
-                        },
-                        scales: {
-                            x: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: value => '$' + value.toLocaleString()
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-            
-            // ============== DASHBOARD UPDATE ==============
-            function updateDashboardUI(filteredRecords) {
-                console.log('🔄 تحديث الداشبورد مع:', filteredRecords.length, 'سجل');
-                
-                if (!filteredRecords || filteredRecords.length === 0) {
+            // ==============================================
+            // تحديث الداشبورد
+            // ==============================================
+            function updateDashboardUI(records) {
+                if (!records || records.length === 0) {
                     document.getElementById('kpi-rev').textContent = '$0.0';
                     document.getElementById('kpi-app').textContent = '0';
                     document.getElementById('kpi-rate').textContent = '0.0%';
                     document.getElementById('record-count').textContent = '0 records';
-                    
-                    state.charts.revenueTrend = destroyChart(state.charts.revenueTrend);
-                    state.charts.leadSource = destroyChart(state.charts.leadSource);
                     return;
                 }
-                
-                const processed = filteredRecords.map(record => processRecord(record));
                 
                 let totalRevenue = 0;
                 let noShowCount = 0;
                 
-                processed.forEach(record => {
-                    totalRevenue += record.revenue;
-                    
-                    const status = record.status || '';
-                    if (status.includes('no-show') || status.includes('no_show') || 
-                        status.includes('no show') || status.includes('noshow') ||
-                        status.includes('cancelled') || status.includes('canceled')) {
+                records.forEach(record => {
+                    totalRevenue += record.Revenue || record.revenue || 0;
+                    const status = (record.Status || record.status || '').toLowerCase();
+                    if (status.includes('no-show') || status.includes('no_show') || status.includes('canceled') || status.includes('cancelled')) {
                         noShowCount++;
                     }
                 });
                 
-                const totalAppointments = processed.length;
-                const noShowRate = totalAppointments > 0 ? (noShowCount / totalAppointments) * 100 : 0;
-                
-                document.getElementById('kpi-rev').textContent = 
-                    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 })
-                    .format(totalRevenue);
-                document.getElementById('kpi-app').textContent = totalAppointments.toLocaleString();
-                document.getElementById('kpi-rate').textContent = noShowRate.toFixed(1) + '%';
-                document.getElementById('record-count').textContent = 
-                    `${filteredRecords.length} records${filteredRecords.length !== state.rawData.length ? ' (filtered)' : ''}`;
-                
-                state.charts.revenueTrend = destroyChart(state.charts.revenueTrend);
-                state.charts.leadSource = destroyChart(state.charts.leadSource);
-                
-                state.charts.revenueTrend = renderRevenueTrendChart(filteredRecords, 'revenueTrendChart');
-                state.charts.leadSource = renderLeadSourceChart(filteredRecords, 'leadSourceChart');
-                
-                console.log('✅ تم تحديث الداشبورد بنجاح');
+                document.getElementById('kpi-rev').textContent = '$' + totalRevenue.toLocaleString();
+                document.getElementById('kpi-app').textContent = records.length;
+                document.getElementById('kpi-rate').textContent = ((noShowCount / records.length) * 100).toFixed(1) + '%';
+                document.getElementById('record-count').textContent = records.length + ' records';
             }
             
-            // ============== FILTER APPLICATION ==============
-            function applyFilters() {
-                const doctorCheckboxes = document.querySelectorAll('.doctor-filter:checked');
-                const selectedDoctors = Array.from(doctorCheckboxes).map(cb => cb.value);
+            // ==============================================
+            // تهيئة الداشبورد
+            // ==============================================
+            async function initDashboard() {
+                console.log('🚀 تهيئة الداشبورد...');
                 
-                const serviceCheckboxes = document.querySelectorAll('.service-filter:checked');
-                const selectedServices = Array.from(serviceCheckboxes).map(cb => cb.value);
-                
-                const filters = {
-                    doctors: selectedDoctors,
-                    services: selectedServices
-                };
-                
-                state.filteredData = filterData(state.rawData, filters);
-                updateDashboardUI(state.filteredData);
-            }
-            
-            // ============== DATA LOADING ==============
-            async function loadDashboardData() {
-                try {
-                    console.log('🔄 جلب بيانات الداشبورد...');
+                // التحقق من التوكن
+                const token = getToken();
+                if (!token) {
+                    const email = prompt('🔑 الرجاء إدخال البريد الإلكتروني:');
+                    if (!email) return;
                     
-                    const layoutRes = await fetch(`${API_BASE_URL}/dashboard`, {
-                        headers: {
-                            'Authorization': `Bearer ${state.token}`,
-                            'ngrok-skip-browser-warning': 'true'
-                        }
-                    });
+                    const password = prompt('🔑 الرجاء إدخال كلمة المرور:');
+                    if (!password) return;
                     
-                    if (layoutRes.ok) {
-                        const layout = await layoutRes.json();
-                        const title = layout.dashboard_name || 'APEX STRATEGIES';
-                        document.getElementById('dashboard-title').textContent = title.toUpperCase();
-                        document.getElementById('main-header-title').textContent = title.toUpperCase();
-                        console.log('✅ تم تحديث العنوان:', title);
-                    }
-                    
-                    const analyticsRes = await fetch(`${API_BASE_URL}/dashboard/analytics`, {
-                        headers: {
-                            'Authorization': `Bearer ${state.token}`,
-                            'ngrok-skip-browser-warning': 'true'
-                        }
-                    });
-                    
-                    if (analyticsRes.ok) {
-                        const analyticsData = await analyticsRes.json();
-                        console.log('📊 البيانات المستلمة:', analyticsData);
-                        
-                        if (Array.isArray(analyticsData) && analyticsData.length > 0) {
-                            // تحويل بيانات التحليلات إلى سجلات
-                            const records = [{}];
-                            
-                            analyticsData.forEach(item => {
-                                const metricName = item.metric_name || '';
-                                
-                                if (metricName === 'Total Revenue') {
-                                    records[0].Revenue = safeNumber(item.calculated_value);
-                                    document.getElementById('kpi-rev').textContent = item.calculated_value || '$0.0';
-                                }
-                                if (metricName === 'Total Appointment') {
-                                    records[0].Appointments = safeNumber(item.calculated_value);
-                                    document.getElementById('kpi-app').textContent = item.calculated_value || '0';
-                                }
-                                if (metricName === 'No_Show Rate') {
-                                    records[0].NoShowRate = safeNumber(item.calculated_value);
-                                    document.getElementById('kpi-rate').textContent = item.calculated_value || '0.0%';
-                                }
-                                if (metricName === 'Monthly Revenue Trend' && item.data_points) {
-                                    records[0].RevenueTrend = item.data_points;
-                                }
-                                if (metricName === 'Sum of Revenue by Lead_Source' && item.data_points) {
-                                    records[0].LeadSourceData = item.data_points;
-                                }
-                            });
-                            
-                            state.rawData = records;
-                            state.filteredData = records;
-                            
-                            // رسم المخططات إذا كانت البيانات موجودة
-                            if (records[0].RevenueTrend) {
-                                const trendData = records[0].RevenueTrend.map((val, i) => ({
-                                    Month: `Month ${i + 1}`,
-                                    Revenue: val
-                                }));
-                                state.charts.revenueTrend = renderRevenueTrendChart(trendData, 'revenueTrendChart');
-                            }
-                            
-                            if (records[0].LeadSourceData) {
-                                const sourceData = ['Friend Referral', 'TikTok', 'Google Maps', 'Instagram'].map((label, i) => ({
-                                    Lead_Source: label,
-                                    Revenue: records[0].LeadSourceData[i] || 0
-                                }));
-                                state.charts.leadSource = renderLeadSourceChart(sourceData, 'leadSourceChart');
-                            }
-                            
-                            state.isLoaded = true;
-                            console.log('✅ تم تحميل البيانات بنجاح!');
-                        }
-                    } else {
-                        console.warn('⚠️ فشل جلب البيانات:', analyticsRes.status);
-                    }
-                } catch (err) {
-                    console.error('❌ خطأ في تحميل البيانات:', err);
-                    showToast('خطأ في تحميل بيانات الداشبورد', 'error');
+                    const loggedIn = await login(email, password);
+                    if (!loggedIn) return;
                 }
+                
+                // تجديد التوكن إذا كان منتهياً
+                if (isTokenExpired()) {
+                    await refreshAccessToken();
+                }
+                
+                // تحميل البيانات
+                try {
+                    const response = await fetchWithAuth(`${API_BASE_URL}/dashboard/analytics`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('📊 بيانات الداشبورد:', data);
+                    }
+                } catch (error) {
+                    console.error('❌ خطأ في تحميل البيانات:', error);
+                }
+                
+                // تحميل بيانات تجريبية للاختبار
+                loadDemoData();
+                
+                console.log('✅ تم تهيئة الداشبورد بالكامل!');
             }
             
-            // ============== FILE UPLOAD ==============
+            // ==============================================
+            // رفع ملف Excel
+            // ==============================================
             async function handleFileUpload(file) {
                 const nameDisplay = document.getElementById('file-name-display');
                 nameDisplay.textContent = `📄 ${file.name}`;
-                
-                console.log('📤 بدء رفع الملف...');
-                console.log('📄 اسم الملف:', file.name, 'الحجم:', file.size, 'بايت');
                 
                 const formData = new FormData();
                 formData.append('file', file);
@@ -827,218 +492,65 @@
                 try {
                     showToast('⏳ جاري رفع الملف...', 'info');
                     
-                    const response = await fetch(`${API_BASE_URL}/dashboard/upload-excel`, {
+                    const response = await fetchWithAuth(`${API_BASE_URL}/dashboard/upload-excel`, {
                         method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${state.token}`,
-                            'ngrok-skip-browser-warning': 'true'
-                        },
                         body: formData
                     });
                     
-                    console.log('📥 حالة الاستجابة:', response.status);
-                    
-                    const responseText = await response.text();
-                    console.log('📥 نص الاستجابة:', responseText.substring(0, 500));
+                    const result = await response.json();
                     
                     if (response.ok) {
-                        let result;
-                        try {
-                            result = JSON.parse(responseText);
-                        } catch (e) {
-                            console.error('❌ فشل تحليل JSON:', e);
-                            showToast('خطأ في تنسيق استجابة السيرفر', 'error');
-                            return;
-                        }
-                        
-                        console.log('✅ تم الرفع بنجاح:', result);
-                        
                         if (result.analytics && Array.isArray(result.analytics)) {
                             state.rawData = result.analytics;
-                            state.filteredData = state.rawData;
-                            
-                            console.log('📊 عدد السجلات:', state.rawData.length);
-                            if (state.rawData.length > 0) {
-                                console.log('📊 أول سجل:', state.rawData[0]);
-                            }
-                            
-                            showToast(`✅ تم رفع ${state.rawData.length} سجل بنجاح!`, 'success');
-                            applyFilters();
-                        } else if (Array.isArray(result)) {
-                            state.rawData = result;
-                            state.filteredData = state.rawData;
-                            showToast(`✅ تم رفع ${state.rawData.length} سجل بنجاح!`, 'success');
-                            applyFilters();
+                            state.filteredData = state.analytics;
+                            updateDashboardUI(result.analytics);
+                            showToast(`✅ تم رفع ${result.analytics.length} سجل بنجاح!`, 'success');
                         } else {
-                            console.error('❌ لا توجد بيانات في الاستجابة:', result);
-                            showToast('⚠️ لم يتم العثور على بيانات في الاستجابة', 'warning');
+                            showToast('⚠️ لم يتم العثور على بيانات في الملف', 'warning');
                         }
                     } else {
-                        console.error('❌ فشل الرفع:', responseText);
-                        showToast(`❌ فشل الرفع: ${responseText.substring(0, 100)}`, 'error');
+                        showToast(`❌ ${result.detail || 'فشل رفع الملف'}`, 'error');
                     }
                 } catch (error) {
                     console.error('❌ خطأ في الرفع:', error);
-                    showToast('❌ خطأ في الاتصال بالسيرفر', 'error');
+                    showToast('❌ خطأ في رفع الملف', 'error');
                 }
             }
             
-            // ============== DEMO DATA (للاختبار) ==============
-            function loadDemoData() {
-                const demoData = [
-                    { 
-                        Revenue: 12500, 
-                        Doctor_Name: 'Dr. Ahmad', 
-                        Status: 'Completed', 
-                        Service_Type: 'Cleaning', 
-                        Lead_Source: 'Google Maps', 
-                        Month: 'January 2026' 
-                    },
-                    { 
-                        Revenue: 8300, 
-                        Doctor_Name: 'Dr. Layla', 
-                        Status: 'No-Show', 
-                        Service_Type: 'Filling', 
-                        Lead_Source: 'TikTok', 
-                        Month: 'January 2026' 
-                    },
-                    { 
-                        Revenue: 15200, 
-                        Doctor_Name: 'Dr. Sarah', 
-                        Status: 'Completed', 
-                        Service_Type: 'Implant', 
-                        Lead_Source: 'Instagram', 
-                        Month: 'February 2026' 
-                    },
-                    { 
-                        Revenue: 9800, 
-                        Doctor_Name: 'Dr. Ahmad', 
-                        Status: 'Completed', 
-                        Service_Type: 'Cleaning', 
-                        Lead_Source: 'Friend Referral', 
-                        Month: 'February 2026' 
-                    },
-                    { 
-                        Revenue: 6700, 
-                        Doctor_Name: 'Dr. Layla', 
-                        Status: 'Completed', 
-                        Service_Type: 'Filling', 
-                        Lead_Source: 'Google Maps', 
-                        Month: 'March 2026' 
-                    },
-                    { 
-                        Revenue: 14100, 
-                        Doctor_Name: 'Dr. Sarah', 
-                        Status: 'No-Show', 
-                        Service_Type: 'Implant', 
-                        Lead_Source: 'TikTok', 
-                        Month: 'March 2026' 
-                    },
-                    { 
-                        Revenue: 11200, 
-                        Doctor_Name: 'Dr. Ahmad', 
-                        Status: 'Completed', 
-                        Service_Type: 'Cleaning', 
-                        Lead_Source: 'Instagram', 
-                        Month: 'April 2026' 
-                    },
-                    { 
-                        Revenue: 9500, 
-                        Doctor_Name: 'Dr. Sarah', 
-                        Status: 'Completed', 
-                        Service_Type: 'Implant', 
-                        Lead_Source: 'Friend Referral', 
-                        Month: 'April 2026' 
-                    }
-                ];
-                
-                console.log('📊 تحميل بيانات تجريبية...');
-                state.rawData = demoData;
-                state.filteredData = demoData;
-                applyFilters();
-                showToast(`✅ تم تحميل ${demoData.length} سجل تجريبي`, 'success');
-            }
-            
-            // ============== DEBUGGING TOOLS ==============
-            function debugAPI() {
-                console.log('🔍 ===== تشخيص API =====');
-                console.log('📍 API URL:', API_BASE_URL);
-                console.log('🔑 Token:', state.token ? `${state.token.substring(0, 20)}...` : '❌ مفقود');
-                console.log('📊 عدد السجلات الخام:', state.rawData.length);
-                console.log('📊 عدد السجلات المفلترة:', state.filteredData.length);
-                console.log('📊 هل تم التحميل؟', state.isLoaded);
-            }
-            
-            function testAPI() {
-                console.log('🧪 اختبار الاتصال بالسيرفر...');
-                fetch(`${API_BASE_URL}/dashboard/analytics`, {
-                    headers: {
-                        'Authorization': `Bearer ${state.token}`,
-                        'ngrok-skip-browser-warning': 'true'
-                    }
-                })
-                .then(response => {
-                    console.log('📥 الحالة:', response.status);
-                    console.log('📥 نجاح؟', response.ok);
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('📊 البيانات:', data);
-                    console.log('📊 عدد العناصر:', data.length);
-                    if (data.length > 0) {
-                        console.log('📊 أول عنصر:', data[0]);
-                    }
-                })
-                .catch(error => {
-                    console.error('❌ فشل الاختبار:', error);
-                });
-            }
-            
-            // إضافة دوال التصحيح إلى window للاستخدام في Console
-            window.debugAPI = debugAPI;
-            window.testAPI = testAPI;
-            window.loadDemoData = loadDemoData;
-            
-            // ============== INITIALIZATION ==============
-            function init() {
-                console.log('🚀 Apex Strategies Dashboard initialized');
-                console.log('📍 API:', API_BASE_URL);
-                
-                state.token = getToken();
-                if (!state.token) {
-                    document.getElementById('main-header-title').textContent = '⚠️ Authentication Required';
-                    showToast('⚠️ يرجى تسجيل الدخول للوصول إلى الداشبورد', 'warning', 5000);
-                    return;
-                }
-                
-                console.log('🔑 Token:', state.token.substring(0, 20) + '...');
-                
-                // إعداد رفع الملف
+            // ==============================================
+            // إعداد المستمعات
+            // ==============================================
+            function setupListeners() {
+                // رفع الملف
                 const fileInput = document.getElementById('excel-file-input');
                 fileInput.addEventListener('change', (e) => {
                     const file = e.target.files[0];
-                    if (file) {
-                        handleFileUpload(file);
-                    }
-                    // إعادة تعيين الإدخال للسماح برفع نفس الملف مرة أخرى
+                    if (file) handleFileUpload(file);
                     fileInput.value = '';
                 });
                 
-                // إعداد الفلاتر
-                const filterCheckboxes = document.querySelectorAll('.doctor-filter, .service-filter');
-                filterCheckboxes.forEach(checkbox => {
-                    checkbox.addEventListener('change', applyFilters);
-                });
-                
-                // تحميل البيانات
-                loadDashboardData().then(() => {
-                    state.isLoaded = true;
-                    console.log('✅ تم تهيئة الداشبورد بالكامل');
+                // الفلاتر
+                document.querySelectorAll('.doctor-filter, .service-filter').forEach(cb => {
+                    cb.addEventListener('change', () => {
+                        // تطبيق الفلاتر هنا
+                        console.log('🔄 تغيير الفلاتر');
+                    });
                 });
             }
             
-            // بدء التطبيق
-            init();
+            // ==============================================
+            // تشغيل التطبيق
+            // ==============================================
+            // إضافة دوال للـ Console
+            window.login = login;
+            window.logout = logout;
+            window.loadDemoData = loadDemoData;
+            window.refreshAccessToken = refreshAccessToken;
+            window.fetchWithAuth = fetchWithAuth;
+            
+            // تهيئة
+            setupListeners();
+            initDashboard();
         });
     </script>
 </body>
