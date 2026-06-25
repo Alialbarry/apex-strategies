@@ -14,73 +14,501 @@
             --border-color: #30363d;
             --button-bg: #1f6feb;
             --button-hover: #388bfd;
+            --success-color: #2ea043;
+            --error-color: #f85149;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .login-card { background: var(--card-bg); padding: 40px; border-radius: 12px; border: 1px solid var(--border-color); width: 100%; max-width: 450px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-        .login-card h2 { text-align: center; margin-bottom: 30px; color: #ffffff; font-weight: 700; letter-spacing: 1px; }
-        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-        .form-group input { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 6px; color: white; text-align: center; font-size: 16px; }
-        .form-group input:focus { border-color: var(--button-hover); outline: none; }
-        .btn-submit { width: 100%; padding: 14px; background: var(--button-bg); border: none; border-radius: 6px; color: white; font-size: 18px; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 10px; }
-        .btn-submit:hover { background: var(--button-hover); }
-        .footer-link { text-align: center; margin-top: 20px; font-size: 14px; color: #8b949e; }
-        .footer-link a { color: var(--button-bg); text-decoration: none; }
+        body { background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .login-card { 
+            background: var(--card-bg); 
+            padding: 40px; 
+            border-radius: 12px; 
+            border: 1px solid var(--border-color); 
+            width: 100%; 
+            max-width: 450px; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        
+        .login-card h2 { 
+            text-align: center; 
+            margin-bottom: 5px; 
+            color: #ffffff; 
+            font-weight: 700; 
+            letter-spacing: 1px; 
+        }
+        
+        .login-card .subtitle {
+            text-align: center;
+            color: #8b949e;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+            margin-bottom: 18px; 
+        }
+        
+        .form-group label {
+            font-size: 14px;
+            color: #8b949e;
+        }
+        
+        .form-group input, 
+        .form-group select {
+            width: 100%; 
+            padding: 12px; 
+            background: var(--input-bg); 
+            border: 1px solid var(--border-color); 
+            border-radius: 6px; 
+            color: white; 
+            font-size: 16px;
+            text-align: center;
+        }
+        
+        .form-group input:focus, 
+        .form-group select:focus { 
+            border-color: var(--button-hover); 
+            outline: none; 
+        }
+        
+        .form-group select option {
+            background: var(--card-bg);
+            color: white;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .btn-submit { 
+            width: 100%; 
+            padding: 14px; 
+            background: var(--button-bg); 
+            border: none; 
+            border-radius: 6px; 
+            color: white; 
+            font-size: 18px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            margin-top: 10px; 
+        }
+        
+        .btn-submit:hover { 
+            background: var(--button-hover); 
+            transform: translateY(-2px);
+        }
+        
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            color: var(--button-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--input-bg);
+            border-color: var(--button-bg);
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #8b949e;
+            font-size: 14px;
+            position: relative;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 35%;
+            height: 1px;
+            background: var(--border-color);
+        }
+        
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+        
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+            font-size: 14px;
+        }
+        
+        .message.error {
+            display: block;
+            background: rgba(248, 81, 73, 0.1);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+        }
+        
+        .message.success {
+            display: block;
+            background: rgba(46, 160, 67, 0.1);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+        
+        .loading {
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+            color: var(--button-bg);
+        }
+        
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        
+        @keyframes dots {
+            0% { content: ''; }
+            25% { content: '.'; }
+            50% { content: '..'; }
+            75% { content: '...'; }
+        }
+        
+        .toggle-link {
+            color: var(--button-bg);
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .toggle-link:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 25px;
+            }
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
     </style>
 </head>
 <body>
 
     <div class="login-card">
-        <h2>تسجيل الدخول إلى المنصة</h2>
-        <form id="login-form">
+        <h2 id="form-title">🔐 تسجيل الدخول</h2>
+        <p class="subtitle" id="form-subtitle">مرحباً بك في منصة Apex Strategies</p>
+        
+        <!-- ========================================== -->
+        <!-- نموذج تسجيل الدخول -->
+        <!-- ========================================== -->
+        <div id="login-form">
             <div class="form-group">
-                <input type="email" id="email" placeholder="البريد الإلكتروني" required value="ali.albarry.404@gmail.com">
+                <label>📧 البريد الإلكتروني</label>
+                <input type="email" id="login-email" placeholder="example@email.com" value="ali.albarry.404@gmail.com">
             </div>
             <div class="form-group">
-                <input type="password" id="password" placeholder="كلمة المرور" required>
+                <label>🔑 كلمة المرور</label>
+                <input type="password" id="login-password" placeholder="أدخل كلمة المرور">
             </div>
-            <button type="submit" class="btn-submit">دخول</button>
-        </form>
-        <div class="footer-link">
-            ليس لديك حساب؟ <a href="#">إنشاء حساب جديد</a>
+            
+            <button class="btn-submit" id="login-btn">🔓 تسجيل الدخول</button>
+            
+            <div class="divider">أو</div>
+            
+            <button class="btn-secondary" id="show-signup-btn">📝 إنشاء حساب جديد</button>
         </div>
+        
+        <!-- ========================================== -->
+        <!-- نموذج إنشاء حساب -->
+        <!-- ========================================== -->
+        <div id="signup-form" style="display: none;">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>👤 الاسم الأول</label>
+                    <input type="text" id="signup-firstname" placeholder="Ali" value="Ali">
+                </div>
+                <div class="form-group">
+                    <label>👤 اسم العائلة</label>
+                    <input type="text" id="signup-lastname" placeholder="Albarry" value="Albarry">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>📧 البريد الإلكتروني</label>
+                <input type="email" id="signup-email" placeholder="example@email.com" value="ali.albarry.404@gmail.com">
+            </div>
+            
+            <div class="form-group">
+                <label>🔑 كلمة المرور</label>
+                <input type="password" id="signup-password" placeholder="6 أحرف على الأقل">
+                <span style="font-size: 12px; color: #8b949e;">كلمة المرور يجب أن تكون 6 أحرف على الأقل</span>
+            </div>
+            
+            <div class="form-group">
+                <label>📋 نوع الحساب</label>
+                <select id="signup-account-type">
+                    <option value="production">🏭 Production</option>
+                    <option value="medical">🏥 Medical</option>
+                    <option value="financial">💰 Financial</option>
+                </select>
+            </div>
+            
+            <button class="btn-submit" id="signup-btn">✅ إنشاء حساب</button>
+            
+            <div class="divider">أو</div>
+            
+            <button class="btn-secondary" id="show-login-btn">🔓 لدي حساب بالفعل</button>
+        </div>
+        
+        <!-- ========================================== -->
+        <!-- الرسائل -->
+        <!-- ========================================== -->
+        <div id="message" class="message"></div>
+        <div id="loading" class="loading">⏳ جاري المعالجة</div>
     </div>
 
     <script>
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // ==============================================
+        // عناصر DOM
+        // ==============================================
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const showSignupBtn = document.getElementById('show-signup-btn');
+        const showLoginBtn = document.getElementById('show-login-btn');
+        const loginBtn = document.getElementById('login-btn');
+        const signupBtn = document.getElementById('signup-btn');
+        const messageEl = document.getElementById('message');
+        const loadingEl = document.getElementById('loading');
+        const formTitle = document.getElementById('form-title');
+        const formSubtitle = document.getElementById('form-subtitle');
+        
+        // ==============================================
+        // الإعدادات
+        // ==============================================
+        const API_BASE_URL = 'http://127.0.0.1:8000/api';
+        // إذا كنت تستخدم ngrok، استخدم هذا:
+        // const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
+        
+        // ==============================================
+        // دوال مساعدة
+        // ==============================================
+        function showMessage(text, type = 'error') {
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+        }
+        
+        function hideMessage() {
+            messageEl.className = 'message';
+            messageEl.textContent = '';
+        }
+        
+        function setLoading(loading) {
+            loadingEl.style.display = loading ? 'block' : 'none';
+            loginBtn.disabled = loading;
+            signupBtn.disabled = loading;
+        }
+        
+        // ==============================================
+        // تبديل النماذج
+        // ==============================================
+        function showLogin() {
+            loginForm.style.display = 'block';
+            signupForm.style.display = 'none';
+            formTitle.textContent = '🔐 تسجيل الدخول';
+            formSubtitle.textContent = 'مرحباً بك في منصة Apex Strategies';
+            hideMessage();
+        }
+        
+        function showSignup() {
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+            formTitle.textContent = '📝 إنشاء حساب جديد';
+            formSubtitle.textContent = 'انضم إلى منصة Apex Strategies';
+            hideMessage();
+        }
+        
+        showSignupBtn.addEventListener('click', showSignup);
+        showLoginBtn.addEventListener('click', showLogin);
+        
+        // ==============================================
+        // تسجيل الدخول
+        // ==============================================
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
             
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            if (!email || !password) {
+                showMessage('⚠️ الرجاء إدخال البريد الإلكتروني وكلمة المرور', 'error');
+                return;
+            }
             
-            const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
-
+            hideMessage();
+            setLoading(true);
+            
             try {
-                // إرسال طلب تسجيل الدخول مع الهيدر الحاسم لمنع حظر Ngrok
                 const response = await fetch(`${API_BASE_URL}/signin`, {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
-                        'ngrok-skip-browser-warning': 'true' // تخطي صفحة التحذير وحظر الـ CORS
+                        'ngrok-skip-browser-warning': 'true'
                     },
-                    body: JSON.stringify({ email: email, password: password })
+                    body: JSON.stringify({ email, password })
                 });
-
-                const result = await response.json();
-
-                if (response.ok && result.access_token) {
-                    // حفظ الـ Token بنجاح وتحويل المستخدم إلى الداشبورد الحية
-                    localStorage.setItem('access_token', result.access_token);
-                    alert("تم تسجيل الدخول بنجاح!");
-                    window.location.href = 'dashboard.html';
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // حفظ التوكنات
+                    localStorage.setItem('access_token', data.access_token);
+                    if (data.refresh_token) {
+                        localStorage.setItem('refresh_token', data.refresh_token);
+                    }
+                    if (data.expires_in) {
+                        localStorage.setItem('token_expiry', (Date.now() + data.expires_in * 1000).toString());
+                    }
+                    localStorage.setItem('user_data', JSON.stringify(data));
+                    
+                    showMessage('✅ تم تسجيل الدخول بنجاح! جاري التوجيه...', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
                 } else {
-                    alert(`فشل الدخول: ${result.detail || "خطأ غير معروف"}`);
+                    showMessage(`❌ ${data.detail || 'فشل تسجيل الدخول'}`, 'error');
                 }
             } catch (error) {
-                console.error("Login error:", error);
-                alert("حدث خطأ أثناء الاتصال بالسيرفر. تأكد من أن الباكيند ونفق Ngrok يعملان بنجاح.");
+                console.error('❌ خطأ:', error);
+                showMessage('❌ خطأ في الاتصال بالسيرفر. تأكد من تشغيل السيرفر.', 'error');
+            } finally {
+                setLoading(false);
             }
+        }
+        
+        // ==============================================
+        // إنشاء حساب جديد
+        // ==============================================
+        async function handleSignup() {
+            const firstName = document.getElementById('signup-firstname').value.trim();
+            const lastName = document.getElementById('signup-lastname').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value;
+            const accountType = document.getElementById('signup-account-type').value;
+            
+            if (!firstName || !lastName) {
+                showMessage('⚠️ الرجاء إدخال الاسم الأول واسم العائلة', 'error');
+                return;
+            }
+            
+            if (!email) {
+                showMessage('⚠️ الرجاء إدخال البريد الإلكتروني', 'error');
+                return;
+            }
+            
+            if (!password || password.length < 6) {
+                showMessage('⚠️ كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+                return;
+            }
+            
+            hideMessage();
+            setLoading(true);
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/signup`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
+                    },
+                    body: JSON.stringify({
+                        first_name: firstName,
+                        last_name: lastName,
+                        email: email,
+                        password: password,
+                        account_type: accountType
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // حفظ التوكنات
+                    localStorage.setItem('access_token', data.access_token);
+                    if (data.refresh_token) {
+                        localStorage.setItem('refresh_token', data.refresh_token);
+                    }
+                    if (data.expires_in) {
+                        localStorage.setItem('token_expiry', (Date.now() + data.expires_in * 1000).toString());
+                    }
+                    localStorage.setItem('user_data', JSON.stringify(data));
+                    
+                    showMessage('✅ تم إنشاء الحساب وتسجيل الدخول بنجاح! جاري التوجيه...', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                } else {
+                    showMessage(`❌ ${data.detail || 'فشل إنشاء الحساب'}`, 'error');
+                }
+            } catch (error) {
+                console.error('❌ خطأ:', error);
+                showMessage('❌ خطأ في الاتصال بالسيرفر. تأكد من تشغيل السيرفر.', 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+        
+        // ==============================================
+        // ربط الأحداث
+        // ==============================================
+        loginBtn.addEventListener('click', handleLogin);
+        signupBtn.addEventListener('click', handleSignup);
+        
+        // الضغط على Enter
+        document.getElementById('login-password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleLogin();
         });
+        
+        document.getElementById('signup-password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSignup();
+        });
+        
+        // ==============================================
+        // التحقق من وجود توكن
+        // ==============================================
+        const token = localStorage.getItem('access_token');
+        if (token && token.length > 20) {
+            // إذا كان هناك توكن، انتقل مباشرة للداشبورد
+            window.location.href = 'dashboard.html';
+        }
+        
+        console.log('🔐 صفحة تسجيل الدخول جاهزة');
+        console.log('📍 API:', API_BASE_URL);
+        console.log('💡 استخدم "إنشاء حساب جديد" لإنشاء حساب');
     </script>
 </body>
 </html>
