@@ -3,555 +3,1066 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex Strategies - Clinic Data Analysis</title>
+    <title>Apex Strategies - Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
-            --primary-bg: #F4F7F6;
-            --sidebar-bg: #FFFFFF;
-            --card-bg: #FFFFFF;
-            --text-color: #2D3748;
-            --text-muted: #718096;
-            --green-accent: #00B67A;
-            --purple-accent: #E040FB;
-            --blue-accent: #3182CE;
-            --border-color: #E2E8F0;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --primary-bg: #0f172a;
+            --sidebar-bg: #1a233a;
+            --card-bg: #1e293b;
+            --text-color: #f1f5f9;
+            --text-muted: #94a3b8;
+            --green-accent: #10b981;
+            --purple-accent: #8b5cf6;
+            --blue-accent: #3b82f6;
+            --border-color: #334155;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
+            --danger: #ef4444;
         }
-        
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
-        body { background-color: var(--primary-bg); color: var(--text-color); display: flex; min-height: 100vh; }
         
-        .dashboard-wrapper { display: flex; width: 100%; }
-        
+        body { 
+            background-color: var(--primary-bg); 
+            color: var(--text-color); 
+            display: flex; 
+            min-height: 100vh;
+        }
+
+        .dashboard-wrapper { 
+            display: flex; 
+            width: 100%; 
+        }
+
+        /* ==============================================
+           SIDEBAR
+           ============================================== */
         .filter-sidebar {
-            width: 280px; min-height: 100vh; background: var(--sidebar-bg); 
-            border-left: 1px solid var(--border-color); padding: 24px; 
-            display: flex; flex-direction: column; gap: 24px;
-            position: sticky; top: 0; height: 100vh; overflow-y: auto;
+            width: 280px;
+            min-height: 100vh;
+            background: var(--sidebar-bg);
+            border-left: 1px solid var(--border-color);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
             box-shadow: var(--shadow-sm);
+            z-index: 10;
         }
-        
-        .brand-area { text-align: center; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
-        .brand-area h2 { font-size: 22px; color: var(--blue-accent); font-weight: 700; }
-        
-        .filter-group { display: flex; flex-direction: column; gap: 10px; }
-        .filter-group label { font-weight: 600; font-size: 14px; }
+
+        .brand-area {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .brand-area h2 {
+            font-size: 22px;
+            color: var(--blue-accent);
+            font-weight: 700;
+        }
+
+        .brand-area .subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
         .filter-group input[type="text"] {
-            width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); 
-            border-radius: 6px; text-align: center; background: #f8f9fa;
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--primary-bg);
+            color: var(--text-color);
+            text-align: center;
         }
-        
-        .checkbox-list { display: flex; flex-direction: column; gap: 8px; }
-        .checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 13px; cursor: pointer; padding: 4px 8px; border-radius: 4px; transition: background 0.2s; }
-        .checkbox-item:hover { background: #f0f4f8; }
-        .checkbox-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
-        
+
+        .checkbox-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            color: var(--text-muted);
+        }
+
+        .checkbox-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-color);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: var(--blue-accent);
+        }
+
+        .checkbox-item.checked {
+            color: var(--text-color);
+        }
+
         .custom-file-upload {
-            display: block; background: linear-gradient(135deg, var(--blue-accent), #2B6CB0);
-            color: white; text-align: center; padding: 12px; border-radius: 8px; 
-            font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+            display: block;
+            background: linear-gradient(135deg, var(--blue-accent), #2563eb);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 14px;
         }
-        .custom-file-upload:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3); }
-        
-        .main-content { flex: 1; padding: 32px; display: flex; flex-direction: column; gap: 32px; max-width: calc(100% - 280px); }
-        
-        .dashboard-header { background: #FFFFFF; padding: 20px 24px; border-radius: 12px; text-align: center; box-shadow: var(--shadow-sm); }
-        .dashboard-header h1 { font-size: 24px; color: var(--purple-accent); font-weight: 700; }
-        
-        .kpi-section { display: flex; gap: 24px; flex-wrap: wrap; }
+
+        .custom-file-upload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .file-name-display {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            display: block;
+            margin-top: 5px;
+            min-height: 20px;
+        }
+
+        .filter-count {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 12px;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+
+        .btn-logout {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        /* ==============================================
+           MAIN CONTENT
+           ============================================== */
+        .main-content {
+            flex: 1;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            max-width: calc(100% - 280px);
+            overflow-x: hidden;
+        }
+
+        .dashboard-header {
+            background: var(--card-bg);
+            padding: 20px 24px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .dashboard-header h1 {
+            font-size: 24px;
+            color: var(--purple-accent);
+            font-weight: 700;
+        }
+
+        /* ==============================================
+           KPI SECTION
+           ============================================== */
+        .kpi-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
         .kpi-card {
-            flex: 1; min-width: 180px; background: var(--card-bg); border-radius: 12px; 
-            padding: 24px; border: 1px solid var(--border-color); text-align: center;
-            transition: all 0.3s ease; box-shadow: var(--shadow-sm);
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
         }
-        .kpi-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-        .kpi-card span { font-size: 14px; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 8px; }
-        .kpi-card h2 { font-size: 32px; font-weight: 700; }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--blue-accent);
+        }
+
+        .kpi-card.revenue::before { background: var(--green-accent); }
+        .kpi-card.appointments::before { background: var(--purple-accent); }
+        .kpi-card.rate::before { background: var(--blue-accent); }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .kpi-card span {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .kpi-card h2 {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
         .kpi-card.revenue h2 { color: var(--green-accent); }
         .kpi-card.appointments h2 { color: var(--purple-accent); }
-        .kpi-card.rate h2 { color: #319795; }
-        
-        .charts-grid { display: grid; grid-template-columns: 1.6fr 1.4fr; gap: 24px; min-height: 380px; }
-        .chart-box { background: var(--card-bg); padding: 24px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 16px; box-shadow: var(--shadow-sm); }
-        .chart-box h3 { font-size: 16px; color: var(--text-color); font-weight: 600; }
-        .chart-container { position: relative; flex: 1; width: 100%; height: 100%; min-height: 250px; }
-        
-        .filter-count { font-size: 12px; color: var(--text-muted); text-align: center; padding: 4px; border-top: 1px solid var(--border-color); margin-top: auto; }
-        
-        .toast {
-            position: fixed; bottom: 20px; left: 20px; background: #333; color: white;
-            padding: 12px 24px; border-radius: 8px; z-index: 1000; opacity: 0;
-            transform: translateY(100px); transition: all 0.3s ease; box-shadow: var(--shadow-md); max-width: 400px;
+        .kpi-card.rate h2 { color: var(--blue-accent); }
+
+        /* ==============================================
+           CHARTS GRID
+           ============================================== */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1.6fr 1.4fr;
+            gap: 24px;
+            min-height: 380px;
         }
-        .toast.show { opacity: 1; transform: translateY(0); }
-        .toast.success { background: #00B67A; }
-        .toast.error { background: #E53E3E; }
-        .toast.info { background: var(--blue-accent); }
-        .toast.warning { background: #D69E2E; }
-        
+
+        .chart-box {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chart-box h3 {
+            font-size: 16px;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        .chart-container {
+            position: relative;
+            flex: 1;
+            width: 100%;
+            min-height: 280px;
+        }
+
+        /* ==============================================
+           TOAST NOTIFICATIONS
+           ============================================== */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #1e293b;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 8px;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.4s ease;
+            box-shadow: var(--shadow-md);
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+            font-weight: 600;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.success { border-right: 4px solid var(--green-accent); }
+        .toast.error { border-right: 4px solid var(--danger); }
+        .toast.info { border-right: 4px solid var(--blue-accent); }
+        .toast.warning { border-right: 4px solid #f59e0b; }
+
+        /* ==============================================
+           RESPONSIVE
+           ============================================== */
         @media (max-width: 1024px) {
             .charts-grid { grid-template-columns: 1fr; }
             .filter-sidebar { width: 240px; }
             .main-content { max-width: calc(100% - 240px); padding: 20px; }
         }
+
         @media (max-width: 768px) {
             .dashboard-wrapper { flex-direction: column; }
-            .filter-sidebar { width: 100%; height: auto; min-height: auto; position: relative; border-left: none; border-bottom: 1px solid var(--border-color); padding: 16px; }
-            .main-content { max-width: 100%; padding: 16px; }
-            .kpi-section { flex-direction: column; }
+            .filter-sidebar {
+                width: 100%;
+                height: auto;
+                min-height: auto;
+                position: relative;
+                border-left: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 16px;
+            }
+            .main-content { 
+                max-width: 100%; 
+                padding: 16px; 
+            }
+            .kpi-section { 
+                grid-template-columns: 1fr; 
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+                min-height: 300px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="dashboard-wrapper">
+        <!-- SIDEBAR -->
         <aside class="filter-sidebar">
             <div class="brand-area">
                 <h2 id="dashboard-title">APEX STRATEGIES</h2>
-                <span style="font-size: 12px; color: var(--text-muted);">CLINIC ANALYSIS</span>
+                <span class="subtitle">CLINIC ANALYSIS</span>
             </div>
-            
+
             <div class="filter-group">
                 <label>📅 Data Range</label>
                 <input type="text" id="data-range" value="1/1/2026 - 4/11/2026" disabled>
             </div>
-            
+
             <div class="filter-group">
                 <label>👨‍⚕️ Doctor Name</label>
                 <div class="checkbox-list" id="doctor-filters">
-                    <label class="checkbox-item"><input type="checkbox" class="doctor-filter" value="Dr. Ahmad" checked> Dr. Ahmad</label>
-                    <label class="checkbox-item"><input type="checkbox" class="doctor-filter" value="Dr. Layla" checked> Dr. Layla</label>
-                    <label class="checkbox-item"><input type="checkbox" class="doctor-filter" value="Dr. Sarah" checked> Dr. Sarah</label>
+                    <label class="checkbox-item checked"><input type="checkbox" class="doctor-filter" value="Dr. Ahmad" checked> Dr. Ahmad</label>
+                    <label class="checkbox-item checked"><input type="checkbox" class="doctor-filter" value="Dr. Layla" checked> Dr. Layla</label>
+                    <label class="checkbox-item checked"><input type="checkbox" class="doctor-filter" value="Dr. Sarah" checked> Dr. Sarah</label>
                 </div>
             </div>
-            
+
             <div class="filter-group">
                 <label>🛠️ Service Type</label>
                 <div class="checkbox-list" id="service-filters">
-                    <label class="checkbox-item"><input type="checkbox" class="service-filter" value="Cleaning" checked> Cleaning</label>
-                    <label class="checkbox-item"><input type="checkbox" class="service-filter" value="Filling" checked> Filling</label>
-                    <label class="checkbox-item"><input type="checkbox" class="service-filter" value="Implant" checked> Implant</label>
+                    <label class="checkbox-item checked"><input type="checkbox" class="service-filter" value="Cleaning" checked> Cleaning</label>
+                    <label class="checkbox-item checked"><input type="checkbox" class="service-filter" value="Filling" checked> Filling</label>
+                    <label class="checkbox-item checked"><input type="checkbox" class="service-filter" value="Implant" checked> Implant</label>
                 </div>
             </div>
-            
+
             <div class="filter-group upload-box">
                 <label for="excel-file-input" class="custom-file-upload">📁 Upload Excel Data</label>
                 <input type="file" id="excel-file-input" accept=".xlsx, .xls" style="display:none;">
-                <span id="file-name-display" style="font-size: 11px; color: var(--text-muted); text-align: center; display: block; margin-top: 5px;"></span>
+                <span class="file-name-display" id="file-name-display"></span>
             </div>
-            
+
             <div class="filter-count">
                 <span id="record-count">0 records</span>
-                <button onclick="logout()" style="margin-top: 10px; padding: 5px 15px; background: #E53E3E; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;">🚪 Logout</button>
+                <button class="btn-logout" onclick="logout()">🚪 تسجيل الخروج</button>
             </div>
         </aside>
-        
+
+        <!-- MAIN CONTENT -->
         <main class="main-content">
             <header class="dashboard-header">
                 <h1 id="main-header-title">APEX STRATEGIES : CLINIC DATA ANALYSIS</h1>
             </header>
-            
+
             <section class="kpi-section" id="kpi-container">
-                <div class="kpi-card revenue"><span>💰 Total Revenue</span><h2 id="kpi-rev">$0.0</h2></div>
-                <div class="kpi-card appointments"><span>📋 Total Appointments</span><h2 id="kpi-app">0</h2></div>
-                <div class="kpi-card rate"><span>📊 No-Show Rate</span><h2 id="kpi-rate">0.0%</h2></div>
+                <div class="kpi-card revenue">
+                    <span>💰 Total Revenue</span>
+                    <h2 id="kpi-rev">$0.0</h2>
+                </div>
+                <div class="kpi-card appointments">
+                    <span>📋 Total Appointments</span>
+                    <h2 id="kpi-app">0</h2>
+                </div>
+                <div class="kpi-card rate">
+                    <span>📊 No-Show Rate</span>
+                    <h2 id="kpi-rate">0.0%</h2>
+                </div>
             </section>
-            
+
             <section class="charts-grid">
                 <div class="chart-box">
                     <h3>📈 Monthly Revenue Trend</h3>
-                    <div class="chart-container"><canvas id="revenueTrendChart"></canvas></div>
+                    <div class="chart-container">
+                        <canvas id="revenueTrendChart"></canvas>
+                    </div>
                 </div>
                 <div class="chart-box">
                     <h3>📊 Revenue by Lead Source</h3>
-                    <div class="chart-container"><canvas id="leadSourceChart"></canvas></div>
+                    <div class="chart-container">
+                        <canvas id="leadSourceChart"></canvas>
+                    </div>
                 </div>
             </section>
         </main>
     </div>
-    
+
     <div id="toast" class="toast"></div>
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // ============== CONFIGURATION ==============
-            const API_BASE_URL = 'http://127.0.0.1:8000/api';
-            
-            // ============== STATE ==============
-            let state = {
-                token: null,
-                refreshToken: null,
-                tokenExpiry: null,
-                rawData: [],
-                filteredData: [],
-                charts: { revenueTrend: null, leadSource: null },
-                isLoaded: false
-            };
-            
-            // ============== TOAST ==============
-            function showToast(message, type = 'info', duration = 4000) {
-                const toast = document.getElementById('toast');
-                toast.textContent = message;
-                toast.className = `toast ${type} show`;
-                clearTimeout(toast._timeout);
-                toast._timeout = setTimeout(() => toast.classList.remove('show'), duration);
+        // ==============================================
+        // CONFIGURATION
+        // ==============================================
+        const API_BASE_URL = 'http://127.0.0.1:8000/api';
+        // Uncomment for ngrok:
+        // const API_BASE_URL = 'https://your-ngrok-url.ngrok-free.dev/api';
+
+        // ==============================================
+        // STATE
+        // ==============================================
+        let state = {
+            token: null,
+            refreshToken: null,
+            tokenExpiry: null,
+            rawData: [],
+            filteredData: [],
+            charts: {
+                revenueTrend: null,
+                leadSource: null
+            },
+            isLoaded: false
+        };
+
+        // ==============================================
+        // TOAST NOTIFICATION
+        // ==============================================
+        function showToast(message, type = 'info', duration = 4000) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
+        // ==============================================
+        // TOKEN MANAGEMENT
+        // ==============================================
+        function getToken() {
+            return localStorage.getItem('access_token');
+        }
+
+        function getRefreshToken() {
+            return localStorage.getItem('refresh_token');
+        }
+
+        function getTokenExpiry() {
+            const expiry = localStorage.getItem('token_expiry');
+            return expiry ? parseInt(expiry) : null;
+        }
+
+        function saveTokens(data) {
+            if (data.access_token) {
+                localStorage.setItem('access_token', data.access_token);
+                state.token = data.access_token;
             }
-            
-            // ============== TOKEN MANAGEMENT ==============
-            function getToken() {
-                return localStorage.getItem('access_token');
+            if (data.refresh_token) {
+                localStorage.setItem('refresh_token', data.refresh_token);
+                state.refreshToken = data.refresh_token;
             }
-            
-            function getRefreshToken() {
-                return localStorage.getItem('refresh_token');
+            if (data.expires_in) {
+                const expiry = Date.now() + (data.expires_in * 1000);
+                localStorage.setItem('token_expiry', expiry.toString());
+                state.tokenExpiry = expiry;
             }
-            
-            function getTokenExpiry() {
-                const expiry = localStorage.getItem('token_expiry');
-                return expiry ? parseInt(expiry) : null;
-            }
-            
-            function saveTokens(data) {
-                if (data.access_token) {
-                    localStorage.setItem('access_token', data.access_token);
-                    state.token = data.access_token;
+        }
+
+        function clearTokens() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('token_expiry');
+            localStorage.removeItem('user_data');
+            state.token = null;
+            state.refreshToken = null;
+            state.tokenExpiry = null;
+        }
+
+        function isTokenExpired() {
+            const expiry = getTokenExpiry();
+            if (!expiry) return true;
+            const bufferTime = 5 * 60 * 1000; // 5 minutes buffer
+            return Date.now() > (expiry - bufferTime);
+        }
+
+        // ==============================================
+        // AUTHENTICATION
+        // ==============================================
+        async function login(email, password) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/signin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    saveTokens(data);
+                    localStorage.setItem('user_data', JSON.stringify(data));
+                    console.log('✅ Login successful!');
+                    showToast('✅ تم تسجيل الدخول بنجاح!', 'success');
+                    return true;
+                } else {
+                    showToast(`❌ ${data.detail || 'فشل تسجيل الدخول'}`, 'error');
+                    return false;
                 }
-                if (data.refresh_token) {
-                    localStorage.setItem('refresh_token', data.refresh_token);
-                    state.refreshToken = data.refresh_token;
+            } catch (error) {
+                console.error('❌ Login error:', error);
+                showToast('❌ خطأ في الاتصال بالسيرفر', 'error');
+                return false;
+            }
+        }
+
+        async function refreshAccessToken() {
+            const refreshToken = getRefreshToken();
+            if (!refreshToken) {
+                console.log('⚠️ No refresh token found');
+                return false;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/refresh`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ refresh_token: refreshToken })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    saveTokens(data);
+                    console.log('✅ Token refreshed successfully!');
+                    showToast('✅ تم تجديد الجلسة', 'info', 2000);
+                    return true;
+                } else {
+                    console.warn('⚠️ Refresh token failed:', data.detail);
+                    return false;
                 }
-                if (data.expires_in) {
-                    const expiry = Date.now() + (data.expires_in * 1000);
-                    localStorage.setItem('token_expiry', expiry.toString());
-                    state.tokenExpiry = expiry;
+            } catch (error) {
+                console.error('❌ Refresh error:', error);
+                return false;
+            }
+        }
+
+        function logout() {
+            clearTokens();
+            // Destroy charts to prevent memory leaks
+            if (state.charts.revenueTrend) {
+                state.charts.revenueTrend.destroy();
+                state.charts.revenueTrend = null;
+            }
+            if (state.charts.leadSource) {
+                state.charts.leadSource.destroy();
+                state.charts.leadSource = null;
+            }
+            showToast('✅ تم تسجيل الخروج', 'info', 3000);
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1000);
+        }
+
+        // ==============================================
+        // AUTHENTICATED FETCH WITH AUTO-REFRESH
+        // ==============================================
+        async function fetchWithAuth(url, options = {}, retryCount = 0) {
+            // Check token expiry
+            if (isTokenExpired()) {
+                console.log('🔄 Token expired, refreshing...');
+                const refreshed = await refreshAccessToken();
+                if (!refreshed && retryCount < 2) {
+                    // Prompt for login
+                    const email = prompt('🔒 انتهت صلاحية الجلسة، الرجاء إدخال البريد الإلكتروني:');
+                    if (!email) throw new Error('تم الإلغاء');
+                    const password = prompt('🔑 الرجاء إدخال كلمة المرور:');
+                    if (!password) throw new Error('تم الإلغاء');
+                    const loggedIn = await login(email, password);
+                    if (!loggedIn) throw new Error('فشل تسجيل الدخول');
+                } else if (!refreshed) {
+                    throw new Error('فشل تجديد التوكن');
                 }
             }
-            
-            function clearTokens() {
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('refresh_token');
-                localStorage.removeItem('token_expiry');
-                localStorage.removeItem('user_data');
-                state.token = null;
-                state.refreshToken = null;
-                state.tokenExpiry = null;
-            }
-            
-            function isTokenExpired() {
-                const expiry = getTokenExpiry();
-                if (!expiry) return true;
-                const bufferTime = 5 * 60 * 1000; // 5 minutes buffer
-                return Date.now() > (expiry - bufferTime);
-            }
-            
-            // ==============================================
-            // تسجيل الدخول
-            // ==============================================
-            async function login(email, password) {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/signin`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, password })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (response.ok) {
-                        saveTokens(data);
-                        localStorage.setItem('user_data', JSON.stringify(data));
-                        console.log('✅ تم تسجيل الدخول بنجاح!');
-                        showToast('✅ تم تسجيل الدخول بنجاح!', 'success');
-                        return true;
-                    } else {
-                        showToast(`❌ ${data.detail || 'فشل تسجيل الدخول'}`, 'error');
-                        return false;
+
+            const token = getToken();
+            if (!token) throw new Error('لا يوجد توكن');
+
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        ...options.headers,
+                        'Authorization': `Bearer ${token}`,
+                        'ngrok-skip-browser-warning': 'true',
+                        'Content-Type': options.body instanceof FormData ? undefined : 'application/json'
                     }
-                } catch (error) {
-                    console.error('❌ خطأ في تسجيل الدخول:', error);
-                    showToast('❌ خطأ في الاتصال بالسيرفر', 'error');
-                    return false;
-                }
-            }
-            
-            // ==============================================
-            // تجديد التوكن
-            // ==============================================
-            async function refreshAccessToken() {
-                const refreshToken = getRefreshToken();
-                
-                if (!refreshToken) {
-                    console.log('⚠️ لا يوجد Refresh Token');
-                    return false;
-                }
-                
-                try {
-                    const response = await fetch(`${API_BASE_URL}/refresh`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ refresh_token: refreshToken })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (response.ok) {
-                        saveTokens(data);
-                        console.log('✅ تم تجديد التوكن بنجاح!');
-                        showToast('✅ تم تجديد الجلسة', 'info', 2000);
-                        return true;
-                    } else {
-                        console.warn('⚠️ فشل تجديد التوكن');
-                        return false;
-                    }
-                } catch (error) {
-                    console.error('❌ خطأ في تجديد التوكن:', error);
-                    return false;
-                }
-            }
-            
-            // ==============================================
-            // طلب مع إدارة التوكن تلقائياً
-            // ==============================================
-            async function fetchWithAuth(url, options = {}, retryCount = 0) {
-                // التحقق من صلاحية التوكن
-                if (isTokenExpired()) {
-                    console.log('🔄 التوكن منتهي، جاري التجديد...');
+                });
+
+                // If 401, try refresh once more
+                if (response.status === 401 && retryCount < 2) {
+                    console.log('🔄 401 Unauthorized - retrying with refresh...');
                     const refreshed = await refreshAccessToken();
-                    
-                    if (!refreshed && retryCount < 2) {
-                        // طلب تسجيل الدخول
+                    if (refreshed) {
+                        return fetchWithAuth(url, options, retryCount + 1);
+                    } else {
+                        // Prompt for login
                         const email = prompt('🔒 انتهت صلاحية الجلسة، الرجاء إدخال البريد الإلكتروني:');
                         if (!email) throw new Error('تم الإلغاء');
-                        
                         const password = prompt('🔑 الرجاء إدخال كلمة المرور:');
                         if (!password) throw new Error('تم الإلغاء');
-                        
                         const loggedIn = await login(email, password);
-                        if (!loggedIn) throw new Error('فشل تسجيل الدخول');
-                    } else if (!refreshed) {
-                        throw new Error('فشل تجديد التوكن');
-                    }
-                }
-                
-                const token = getToken();
-                if (!token) throw new Error('لا يوجد توكن');
-                
-                try {
-                    const response = await fetch(url, {
-                        ...options,
-                        headers: {
-                            ...options.headers,
-                            'Authorization': `Bearer ${token}`,
-                            'ngrok-skip-browser-warning': 'true',
-                            'Content-Type': options.body instanceof FormData ? undefined : 'application/json'
-                        }
-                    });
-                    
-                    // إذا كان 401، حاول تجديد التوكن مرة واحدة
-                    if (response.status === 401 && retryCount < 2) {
-                        console.log('🔄 401 Unauthorized - محاولة التجديد...');
-                        const refreshed = await refreshAccessToken();
-                        
-                        if (refreshed) {
+                        if (loggedIn) {
                             return fetchWithAuth(url, options, retryCount + 1);
-                        } else {
-                            // طلب تسجيل الدخول مجدداً
-                            const email = prompt('🔒 انتهت صلاحية الجلسة، الرجاء إدخال البريد الإلكتروني:');
-                            if (!email) throw new Error('تم الإلغاء');
-                            
-                            const password = prompt('🔑 الرجاء إدخال كلمة المرور:');
-                            if (!password) throw new Error('تم الإلغاء');
-                            
-                            const loggedIn = await login(email, password);
-                            if (loggedIn) {
-                                return fetchWithAuth(url, options, retryCount + 1);
+                        }
+                    }
+                    throw new Error('فشل تجديد الجلسة');
+                }
+
+                return response;
+            } catch (error) {
+                console.error('❌ Fetch error:', error);
+                throw error;
+            }
+        }
+
+        // ==============================================
+        // CHART MANAGEMENT
+        // ==============================================
+        function destroyCharts() {
+            if (state.charts.revenueTrend) {
+                state.charts.revenueTrend.destroy();
+                state.charts.revenueTrend = null;
+            }
+            if (state.charts.leadSource) {
+                state.charts.leadSource.destroy();
+                state.charts.leadSource = null;
+            }
+        }
+
+        function renderCharts(records) {
+            destroyCharts();
+
+            const ctx1 = document.getElementById('revenueTrendChart')?.getContext('2d');
+            const ctx2 = document.getElementById('leadSourceChart')?.getContext('2d');
+
+            if (!ctx1 || !ctx2) return;
+
+            // Calculate monthly revenue
+            const monthlyData = {};
+            records.forEach(record => {
+                const month = record.Month || 'Other';
+                const revenue = parseFloat(record.Revenue) || 0;
+                monthlyData[month] = (monthlyData[month] || 0) + revenue;
+            });
+
+            // Sort months
+            const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June',
+                               'July', 'August', 'September', 'October', 'November', 'December'];
+            const sortedMonths = Object.keys(monthlyData).sort((a, b) => {
+                const idxA = monthOrder.indexOf(a);
+                const idxB = monthOrder.indexOf(b);
+                if (idxA === -1 && idxB === -1) return a.localeCompare(b);
+                if (idxA === -1) return 1;
+                if (idxB === -1) return -1;
+                return idxA - idxB;
+            });
+
+            const revenueValues = sortedMonths.map(m => monthlyData[m] || 0);
+
+            // Revenue Trend Chart
+            state.charts.revenueTrend = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: sortedMonths.length > 0 ? sortedMonths : ['Jan', 'Feb', 'Mar', 'Apr'],
+                    datasets: [{
+                        label: 'Monthly Revenue',
+                        data: revenueValues.length > 0 ? revenueValues : [0, 0, 0, 0],
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        fill: true,
+                        borderWidth: 3,
+                        tension: 0.3,
+                        pointBackgroundColor: '#8b5cf6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#94a3b8',
+                                font: { family: 'Cairo' }
                             }
                         }
-                        throw new Error('فشل تجديد الجلسة');
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#94a3b8',
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: { display: false }
+                        }
                     }
-                    
-                    return response;
-                } catch (error) {
-                    console.error('❌ خطأ في الطلب:', error);
-                    throw error;
                 }
+            });
+
+            // Lead Source Chart
+            const leadData = {};
+            records.forEach(record => {
+                const source = record.Lead_Source || 'Unknown';
+                const revenue = parseFloat(record.Revenue) || 0;
+                leadData[source] = (leadData[source] || 0) + revenue;
+            });
+
+            const leadSources = Object.keys(leadData);
+            const leadValues = leadSources.map(s => leadData[s] || 0);
+
+            const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899'];
+
+            state.charts.leadSource = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: leadSources.length > 0 ? leadSources : ['Source 1', 'Source 2', 'Source 3', 'Source 4'],
+                    datasets: [{
+                        label: 'Revenue by Lead Source',
+                        data: leadValues.length > 0 ? leadValues : [0, 0, 0, 0],
+                        backgroundColor: leadSources.map((_, i) => colors[i % colors.length]),
+                        borderWidth: 0,
+                        borderRadius: 4,
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { family: 'Cairo' }
+                            },
+                            grid: { display: false }
+                        },
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#94a3b8',
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ==============================================
+        // DASHBOARD UPDATE
+        // ==============================================
+        function updateDashboardUI(records) {
+            if (!records || records.length === 0) {
+                document.getElementById('kpi-rev').textContent = '$0.0';
+                document.getElementById('kpi-app').textContent = '0';
+                document.getElementById('kpi-rate').textContent = '0.0%';
+                document.getElementById('record-count').textContent = '0 records';
+                renderCharts([]);
+                return;
             }
-            
-            // ==============================================
-            // تسجيل الخروج
-            // ==============================================
-            function logout() {
-                clearTokens();
-                showToast('✅ تم تسجيل الخروج', 'info', 3000);
-                setTimeout(() => location.reload(), 1000);
+
+            let totalRevenue = 0;
+            let noShowCount = 0;
+
+            records.forEach(record => {
+                totalRevenue += parseFloat(record.Revenue) || 0;
+                const status = (record.Status || '').toLowerCase();
+                if (status.includes('no-show') || status.includes('no_show') || 
+                    status.includes('canceled') || status.includes('cancelled') ||
+                    status.includes('missed')) {
+                    noShowCount++;
+                }
+            });
+
+            document.getElementById('kpi-rev').textContent = '$' + totalRevenue.toLocaleString();
+            document.getElementById('kpi-app').textContent = records.length;
+            document.getElementById('kpi-rate').textContent = 
+                ((noShowCount / records.length) * 100).toFixed(1) + '%';
+            document.getElementById('record-count').textContent = 
+                records.length + ' records';
+
+            renderCharts(records);
+        }
+
+        // ==============================================
+        // DATA LOADING
+        // ==============================================
+        function loadDemoData() {
+            const demoData = [
+                { Revenue: 12500, Doctor_Name: 'Dr. Ahmad', Status: 'Completed', 
+                  Service_Type: 'Cleaning', Lead_Source: 'Google Maps', Month: 'January 2026' },
+                { Revenue: 8300, Doctor_Name: 'Dr. Layla', Status: 'No-Show', 
+                  Service_Type: 'Filling', Lead_Source: 'TikTok', Month: 'January 2026' },
+                { Revenue: 15200, Doctor_Name: 'Dr. Sarah', Status: 'Completed', 
+                  Service_Type: 'Implant', Lead_Source: 'Instagram', Month: 'February 2026' },
+                { Revenue: 9800, Doctor_Name: 'Dr. Ahmad', Status: 'Completed', 
+                  Service_Type: 'Cleaning', Lead_Source: 'Friend Referral', Month: 'February 2026' },
+                { Revenue: 6700, Doctor_Name: 'Dr. Layla', Status: 'Completed', 
+                  Service_Type: 'Filling', Lead_Source: 'Google Maps', Month: 'March 2026' },
+                { Revenue: 14100, Doctor_Name: 'Dr. Sarah', Status: 'No-Show', 
+                  Service_Type: 'Implant', Lead_Source: 'TikTok', Month: 'March 2026' },
+                { Revenue: 11200, Doctor_Name: 'Dr. Ahmad', Status: 'Completed', 
+                  Service_Type: 'Cleaning', Lead_Source: 'Instagram', Month: 'April 2026' },
+                { Revenue: 9500, Doctor_Name: 'Dr. Sarah', Status: 'Completed', 
+                  Service_Type: 'Implant', Lead_Source: 'Friend Referral', Month: 'April 2026' }
+            ];
+
+            state.rawData = demoData;
+            state.filteredData = demoData;
+            updateDashboardUI(demoData);
+            showToast(`✅ تم تحميل ${demoData.length} سجل تجريبي`, 'success');
+        }
+
+        async function loadFromBackend() {
+            try {
+                const response = await fetchWithAuth(`${API_BASE_URL}/dashboard/analytics`);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('📊 Backend data:', data);
+                    // Process data if needed
+                }
+            } catch (error) {
+                console.error('❌ Failed to load backend data:', error);
             }
-            
-            // ==============================================
-            // تحميل البيانات التجريبية
-            // ==============================================
-            function loadDemoData() {
-                const demoData = [
-                    { Revenue: 12500, Doctor_Name: 'Dr. Ahmad', Status: 'Completed', Service_Type: 'Cleaning', Lead_Source: 'Google Maps', Month: 'January 2026' },
-                    { Revenue: 8300, Doctor_Name: 'Dr. Layla', Status: 'No-Show', Service_Type: 'Filling', Lead_Source: 'TikTok', Month: 'January 2026' },
-                    { Revenue: 15200, Doctor_Name: 'Dr. Sarah', Status: 'Completed', Service_Type: 'Implant', Lead_Source: 'Instagram', Month: 'February 2026' },
-                    { Revenue: 9800, Doctor_Name: 'Dr. Ahmad', Status: 'Completed', Service_Type: 'Cleaning', Lead_Source: 'Friend Referral', Month: 'February 2026' },
-                    { Revenue: 6700, Doctor_Name: 'Dr. Layla', Status: 'Completed', Service_Type: 'Filling', Lead_Source: 'Google Maps', Month: 'March 2026' },
-                    { Revenue: 14100, Doctor_Name: 'Dr. Sarah', Status: 'No-Show', Service_Type: 'Implant', Lead_Source: 'TikTok', Month: 'March 2026' },
-                    { Revenue: 11200, Doctor_Name: 'Dr. Ahmad', Status: 'Completed', Service_Type: 'Cleaning', Lead_Source: 'Instagram', Month: 'April 2026' },
-                    { Revenue: 9500, Doctor_Name: 'Dr. Sarah', Status: 'Completed', Service_Type: 'Implant', Lead_Source: 'Friend Referral', Month: 'April 2026' }
-                ];
-                
-                state.rawData = demoData;
-                state.filteredData = demoData;
-                updateDashboardUI(demoData);
-                showToast(`✅ تم تحميل ${demoData.length} سجل تجريبي`, 'success');
+        }
+
+        // ==============================================
+        // FILE UPLOAD
+        // ==============================================
+        async function handleFileUpload(file) {
+            const nameDisplay = document.getElementById('file-name-display');
+            nameDisplay.textContent = `📄 ${file.name}`;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                showToast('⏳ جاري رفع الملف...', 'info');
+
+                const response = await fetchWithAuth(`${API_BASE_URL}/dashboard/upload-excel`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    if (result.analytics && Array.isArray(result.analytics)) {
+                        state.rawData = result.analytics;
+                        state.filteredData = result.analytics;
+                        updateDashboardUI(result.analytics);
+                        showToast(`✅ تم رفع ${result.analytics.length} سجل بنجاح!`, 'success');
+                    } else {
+                        showToast('⚠️ لم يتم العثور على بيانات في الملف', 'warning');
+                    }
+                } else {
+                    showToast(`❌ ${result.detail || 'فشل رفع الملف'}`, 'error');
+                }
+            } catch (error) {
+                console.error('❌ Upload error:', error);
+                showToast('❌ خطأ في رفع الملف', 'error');
+            } finally {
+                document.getElementById('excel-file-input').value = '';
             }
-            
-            // ==============================================
-            // تحديث الداشبورد
-            // ==============================================
-            function updateDashboardUI(records) {
-                if (!records || records.length === 0) {
-                    document.getElementById('kpi-rev').textContent = '$0.0';
-                    document.getElementById('kpi-app').textContent = '0';
-                    document.getElementById('kpi-rate').textContent = '0.0%';
-                    document.getElementById('record-count').textContent = '0 records';
+        }
+
+        // ==============================================
+        // FILTERS
+        // ==============================================
+        function applyFilters() {
+            const selectedDoctors = Array.from(
+                document.querySelectorAll('.doctor-filter:checked')
+            ).map(cb => cb.value);
+
+            const selectedServices = Array.from(
+                document.querySelectorAll('.service-filter:checked')
+            ).map(cb => cb.value);
+
+            let filtered = state.rawData;
+
+            if (selectedDoctors.length > 0) {
+                filtered = filtered.filter(record => 
+                    selectedDoctors.includes(record.Doctor_Name)
+                );
+            }
+
+            if (selectedServices.length > 0) {
+                filtered = filtered.filter(record =>
+                    selectedServices.includes(record.Service_Type)
+                );
+            }
+
+            state.filteredData = filtered;
+            updateDashboardUI(filtered);
+        }
+
+        // ==============================================
+        // INITIALIZATION
+        // ==============================================
+        async function initDashboard() {
+            console.log('🚀 Initializing dashboard...');
+
+            // Check authentication
+            const token = getToken();
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Check token expiry
+            if (isTokenExpired()) {
+                const refreshed = await refreshAccessToken();
+                if (!refreshed) {
+                    window.location.href = 'login.html';
                     return;
                 }
-                
-                let totalRevenue = 0;
-                let noShowCount = 0;
-                
-                records.forEach(record => {
-                    totalRevenue += record.Revenue || record.revenue || 0;
-                    const status = (record.Status || record.status || '').toLowerCase();
-                    if (status.includes('no-show') || status.includes('no_show') || status.includes('canceled') || status.includes('cancelled')) {
-                        noShowCount++;
-                    }
-                });
-                
-                document.getElementById('kpi-rev').textContent = '$' + totalRevenue.toLocaleString();
-                document.getElementById('kpi-app').textContent = records.length;
-                document.getElementById('kpi-rate').textContent = ((noShowCount / records.length) * 100).toFixed(1) + '%';
-                document.getElementById('record-count').textContent = records.length + ' records';
             }
-            
-            // ==============================================
-            // تهيئة الداشبورد
-            // ==============================================
-            async function initDashboard() {
-                console.log('🚀 تهيئة الداشبورد...');
-                
-                // التحقق من التوكن
-                const token = getToken();
-                if (!token) {
-                    const email = prompt('🔑 الرجاء إدخال البريد الإلكتروني:');
-                    if (!email) return;
-                    
-                    const password = prompt('🔑 الرجاء إدخال كلمة المرور:');
-                    if (!password) return;
-                    
-                    const loggedIn = await login(email, password);
-                    if (!loggedIn) return;
-                }
-                
-                // تجديد التوكن إذا كان منتهياً
-                if (isTokenExpired()) {
-                    await refreshAccessToken();
-                }
-                
-                // تحميل البيانات
+
+            // Load user data
+            const userData = localStorage.getItem('user_data');
+            if (userData) {
                 try {
-                    const response = await fetchWithAuth(`${API_BASE_URL}/dashboard/analytics`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        console.log('📊 بيانات الداشبورد:', data);
-                    }
-                } catch (error) {
-                    console.error('❌ خطأ في تحميل البيانات:', error);
-                }
-                
-                // تحميل بيانات تجريبية للاختبار
+                    const user = JSON.parse(userData);
+                    document.getElementById('dashboard-title').textContent = 
+                        user.account_type?.toUpperCase() || 'APEX STRATEGIES';
+                } catch (e) {}
+            }
+
+            // Load data
+            try {
+                await loadFromBackend();
                 loadDemoData();
-                
-                console.log('✅ تم تهيئة الداشبورد بالكامل!');
+            } catch (error) {
+                console.error('❌ Error loading data:', error);
+                loadDemoData();
             }
-            
-            // ==============================================
-            // رفع ملف Excel
-            // ==============================================
-            async function handleFileUpload(file) {
-                const nameDisplay = document.getElementById('file-name-display');
-                nameDisplay.textContent = `📄 ${file.name}`;
-                
-                const formData = new FormData();
-                formData.append('file', file);
-                
-                try {
-                    showToast('⏳ جاري رفع الملف...', 'info');
-                    
-                    const response = await fetchWithAuth(`${API_BASE_URL}/dashboard/upload-excel`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (response.ok) {
-                        if (result.analytics && Array.isArray(result.analytics)) {
-                            state.rawData = result.analytics;
-                            state.filteredData = state.analytics;
-                            updateDashboardUI(result.analytics);
-                            showToast(`✅ تم رفع ${result.analytics.length} سجل بنجاح!`, 'success');
-                        } else {
-                            showToast('⚠️ لم يتم العثور على بيانات في الملف', 'warning');
-                        }
+
+            // Setup filters
+            document.querySelectorAll('.doctor-filter, .service-filter').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    // Update checkbox styling
+                    const label = cb.closest('.checkbox-item');
+                    if (cb.checked) {
+                        label.classList.add('checked');
                     } else {
-                        showToast(`❌ ${result.detail || 'فشل رفع الملف'}`, 'error');
+                        label.classList.remove('checked');
                     }
-                } catch (error) {
-                    console.error('❌ خطأ في الرفع:', error);
-                    showToast('❌ خطأ في رفع الملف', 'error');
-                }
-            }
-            
-            // ==============================================
-            // إعداد المستمعات
-            // ==============================================
-            function setupListeners() {
-                // رفع الملف
-                const fileInput = document.getElementById('excel-file-input');
-                fileInput.addEventListener('change', (e) => {
-                    const file = e.target.files[0];
-                    if (file) handleFileUpload(file);
-                    fileInput.value = '';
+                    applyFilters();
                 });
-                
-                // الفلاتر
-                document.querySelectorAll('.doctor-filter, .service-filter').forEach(cb => {
-                    cb.addEventListener('change', () => {
-                        // تطبيق الفلاتر هنا
-                        console.log('🔄 تغيير الفلاتر');
-                    });
-                });
-            }
-            
-            // ==============================================
-            // تشغيل التطبيق
-            // ==============================================
-            // إضافة دوال للـ Console
-            window.login = login;
-            window.logout = logout;
-            window.loadDemoData = loadDemoData;
-            window.refreshAccessToken = refreshAccessToken;
-            window.fetchWithAuth = fetchWithAuth;
-            
-            // تهيئة
-            setupListeners();
-            initDashboard();
-        });
+            });
+
+            // Setup file upload
+            const fileInput = document.getElementById('excel-file-input');
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) handleFileUpload(file);
+                fileInput.value = '';
+            });
+
+            // Auto-apply filters
+            applyFilters();
+
+            console.log('✅ Dashboard initialized successfully!');
+            state.isLoaded = true;
+        }
+
+        // ==============================================
+        // EXPOSE TO CONSOLE
+        // ==============================================
+        window.login = login;
+        window.logout = logout;
+        window.refreshAccessToken = refreshAccessToken;
+        window.fetchWithAuth = fetchWithAuth;
+        window.loadDemoData = loadDemoData;
+
+        // ==============================================
+        // START
+        // ==============================================
+        document.addEventListener('DOMContentLoaded', initDashboard);
     </script>
 </body>
 </html>
