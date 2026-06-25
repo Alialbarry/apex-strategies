@@ -268,11 +268,11 @@
         <div id="login-form">
             <div class="form-group">
                 <label>📧 البريد الإلكتروني</label>
-                <input type="email" id="login-email" placeholder="example@email.com" value="ali.albarry.404@gmail.com">
+                <input type="email" id="login-email" placeholder="example@email.com" value="admin@apex.com">
             </div>
             <div class="form-group">
                 <label>🔑 كلمة المرور</label>
-                <input type="password" id="login-password" placeholder="أدخل كلمة المرور">
+                <input type="password" id="login-password" placeholder="أدخل كلمة المرور" value="123456">
             </div>
             <button class="btn-submit" id="login-btn">🔓 تسجيل الدخول</button>
             <div class="divider">أو</div>
@@ -286,27 +286,27 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>👤 الاسم الأول</label>
-                    <input type="text" id="signup-firstname" placeholder="الاسم الأول">
+                    <input type="text" id="signup-firstname" placeholder="الاسم الأول" value="Ali">
                 </div>
                 <div class="form-group">
                     <label>👤 اسم العائلة</label>
-                    <input type="text" id="signup-lastname" placeholder="اسم العائلة">
+                    <input type="text" id="signup-lastname" placeholder="اسم العائلة" value="Albarry">
                 </div>
             </div>
             <div class="form-group">
                 <label>📧 البريد الإلكتروني</label>
-                <input type="email" id="signup-email" placeholder="example@email.com">
+                <input type="email" id="signup-email" placeholder="example@email.com" value="ali.albarry.404@gmail.com">
             </div>
             <div class="form-group">
                 <label>🔑 كلمة المرور</label>
-                <input type="password" id="signup-password" placeholder="6 أحرف على الأقل">
+                <input type="password" id="signup-password" placeholder="6 أحرف على الأقل" value="123456">
                 <span class="password-hint">كلمة المرور يجب أن تكون 6 أحرف على الأقل</span>
             </div>
             <div class="form-group">
                 <label>📋 نوع الحساب</label>
                 <select id="signup-account-type">
                     <option value="production">🏭 Production</option>
-                    <option value="medical">🏥 Medical</option>
+                    <option value="medical" selected>🏥 Medical</option>
                     <option value="financial">💰 Financial</option>
                 </select>
             </div>
@@ -350,8 +350,6 @@
         // Configuration
         // ==============================================
         const API_BASE_URL = 'http://127.0.0.1:8000/api';
-        // Uncomment for ngrok:
-        // const API_BASE_URL = 'https://your-ngrok-url.ngrok-free.app/api';
 
         // ==============================================
         // Helper Functions
@@ -436,6 +434,8 @@
             setLoading(true);
 
             try {
+                console.log('🔄 Attempting login for:', email);
+                
                 const response = await fetch(`${API_BASE_URL}/signin`, {
                     method: 'POST',
                     headers: {
@@ -454,7 +454,8 @@
                         localStorage.setItem('refresh_token', data.refresh_token);
                     }
                     if (data.expires_in) {
-                        localStorage.setItem('token_expiry', (Date.now() + data.expires_in * 1000).toString());
+                        const expiry = Date.now() + (data.expires_in * 1000);
+                        localStorage.setItem('token_expiry', expiry.toString());
                     }
                     localStorage.setItem('user_data', JSON.stringify(data));
 
@@ -467,7 +468,7 @@
                     showMessage(`❌ ${data.detail || 'فشل تسجيل الدخول'}`, 'error');
                 }
             } catch (error) {
-                console.error('❌ Error:', error);
+                console.error('❌ Login error:', error);
                 showMessage('❌ خطأ في الاتصال بالسيرفر. تأكد من تشغيل السيرفر.', 'error');
             } finally {
                 setLoading(false);
@@ -522,6 +523,8 @@
             setLoading(true);
 
             try {
+                console.log('🔄 Attempting signup for:', email);
+                
                 const response = await fetch(`${API_BASE_URL}/signup`, {
                     method: 'POST',
                     headers: {
@@ -546,7 +549,8 @@
                         localStorage.setItem('refresh_token', data.refresh_token);
                     }
                     if (data.expires_in) {
-                        localStorage.setItem('token_expiry', (Date.now() + data.expires_in * 1000).toString());
+                        const expiry = Date.now() + (data.expires_in * 1000);
+                        localStorage.setItem('token_expiry', expiry.toString());
                     }
                     localStorage.setItem('user_data', JSON.stringify(data));
 
@@ -559,7 +563,7 @@
                     showMessage(`❌ ${data.detail || 'فشل إنشاء الحساب'}`, 'error');
                 }
             } catch (error) {
-                console.error('❌ Error:', error);
+                console.error('❌ Signup error:', error);
                 showMessage('❌ خطأ في الاتصال بالسيرفر. تأكد من تشغيل السيرفر.', 'error');
             } finally {
                 setLoading(false);
@@ -602,9 +606,11 @@
         if (token && token.length > 20) {
             // Check if token is still valid
             if (tokenExpiry && Date.now() < parseInt(tokenExpiry)) {
+                console.log('✅ Valid token found, redirecting to dashboard...');
                 window.location.href = 'dashboard.html';
             } else {
                 // Token expired, clear it
+                console.log('⚠️ Token expired, clearing...');
                 localStorage.removeItem('access_token');
                 localStorage.removeItem('refresh_token');
                 localStorage.removeItem('token_expiry');
@@ -614,7 +620,7 @@
 
         console.log('🔐 Login page ready');
         console.log('📍 API:', API_BASE_URL);
-        console.log('💡 Use "إنشاء حساب جديد" to create an account');
+        console.log('💡 Demo credentials: admin@apex.com / 123456');
     </script>
 </body>
 </html>
