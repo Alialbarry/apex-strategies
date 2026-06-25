@@ -16,123 +16,150 @@
             --button-hover: #388bfd;
             --success-color: #2ea043;
             --error-color: #f85149;
+            --warning-color: #d29922;
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         
-        .login-card { 
-            background: var(--card-bg); 
-            padding: 40px; 
-            border-radius: 12px; 
-            border: 1px solid var(--border-color); 
-            width: 100%; 
-            max-width: 450px; 
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 20px;
+            background: radial-gradient(circle at center, #1a233a 0%, #0b0f19 100%);
         }
-        
-        .login-card h2 { 
-            text-align: center; 
-            margin-bottom: 5px; 
-            color: #ffffff; 
-            font-weight: 700; 
-            letter-spacing: 1px; 
+
+        .login-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #1f6feb, #8b5cf6);
+        }
+
+        .login-card h2 {
+            text-align: center;
+            margin-bottom: 5px;
+            color: #ffffff;
+            font-weight: 700;
+            letter-spacing: 1px;
+            font-size: 24px;
+        }
+
         .login-card .subtitle {
             text-align: center;
             color: #8b949e;
             font-size: 14px;
             margin-bottom: 30px;
         }
-        
-        .form-group { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 8px; 
-            margin-bottom: 18px; 
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 18px;
         }
-        
+
         .form-group label {
             font-size: 14px;
             color: #8b949e;
+            font-weight: 600;
         }
-        
-        .form-group input, 
+
+        .form-group input,
         .form-group select {
-            width: 100%; 
-            padding: 12px; 
-            background: var(--input-bg); 
-            border: 1px solid var(--border-color); 
-            border-radius: 6px; 
-            color: white; 
-            font-size: 16px;
-            text-align: center;
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: white;
+            font-size: 15px;
+            transition: all 0.3s ease;
         }
-        
-        .form-group input:focus, 
-        .form-group select:focus { 
-            border-color: var(--button-hover); 
-            outline: none; 
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--button-bg);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.15);
         }
-        
+
         .form-group select option {
             background: var(--card-bg);
             color: white;
         }
-        
+
         .form-row {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
-        
+
         .form-row .form-group {
             flex: 1;
         }
-        
-        .btn-submit { 
-            width: 100%; 
-            padding: 14px; 
-            background: var(--button-bg); 
-            border: none; 
-            border-radius: 6px; 
-            color: white; 
-            font-size: 18px; 
-            font-weight: 700; 
-            cursor: pointer; 
-            transition: all 0.3s; 
-            margin-top: 10px; 
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--button-bg), #2563eb);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
         }
-        
-        .btn-submit:hover { 
-            background: var(--button-hover); 
+
+        .btn-submit:hover {
             transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(31, 111, 235, 0.3);
         }
-        
+
         .btn-submit:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
-        
+
         .btn-secondary {
             width: 100%;
             padding: 12px;
             background: transparent;
             color: var(--button-bg);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             margin-top: 10px;
         }
-        
+
         .btn-secondary:hover {
             background: var(--input-bg);
             border-color: var(--button-bg);
         }
-        
+
         .divider {
             text-align: center;
             margin: 20px 0;
@@ -140,7 +167,7 @@
             font-size: 14px;
             position: relative;
         }
-        
+
         .divider::before,
         .divider::after {
             content: '';
@@ -150,81 +177,93 @@
             height: 1px;
             background: var(--border-color);
         }
-        
+
         .divider::before { left: 0; }
         .divider::after { right: 0; }
-        
+
         .message {
             text-align: center;
             margin-top: 15px;
-            padding: 10px;
-            border-radius: 6px;
+            padding: 12px;
+            border-radius: 8px;
             display: none;
             font-size: 14px;
+            font-weight: 600;
         }
-        
+
         .message.error {
             display: block;
             background: rgba(248, 81, 73, 0.1);
             border: 1px solid var(--error-color);
             color: var(--error-color);
         }
-        
+
         .message.success {
             display: block;
             background: rgba(46, 160, 67, 0.1);
             border: 1px solid var(--success-color);
             color: var(--success-color);
         }
-        
+
+        .message.warning {
+            display: block;
+            background: rgba(210, 153, 34, 0.1);
+            border: 1px solid var(--warning-color);
+            color: var(--warning-color);
+        }
+
         .loading {
             text-align: center;
             margin-top: 15px;
             display: none;
             color: var(--button-bg);
         }
-        
+
         .loading::after {
             content: '...';
             animation: dots 1.5s steps(4, end) infinite;
         }
-        
+
         @keyframes dots {
             0% { content: ''; }
             25% { content: '.'; }
             50% { content: '..'; }
             75% { content: '...'; }
         }
-        
+
         .toggle-link {
             color: var(--button-bg);
             cursor: pointer;
             font-weight: 600;
         }
-        
+
         .toggle-link:hover {
             text-decoration: underline;
         }
-        
+
+        .password-hint {
+            font-size: 12px;
+            color: #8b949e;
+            margin-top: 4px;
+        }
+
+        .form-field-error {
+            border-color: var(--error-color) !important;
+        }
+
         @media (max-width: 480px) {
-            .login-card {
-                padding: 25px;
-            }
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
+            .login-card { padding: 25px; }
+            .form-row { flex-direction: column; gap: 0; }
         }
     </style>
 </head>
 <body>
-
     <div class="login-card">
         <h2 id="form-title">🔐 تسجيل الدخول</h2>
         <p class="subtitle" id="form-subtitle">مرحباً بك في منصة Apex Strategies</p>
-        
+
         <!-- ========================================== -->
-        <!-- نموذج تسجيل الدخول -->
+        <!-- SIGN IN FORM -->
         <!-- ========================================== -->
         <div id="login-form">
             <div class="form-group">
@@ -235,40 +274,34 @@
                 <label>🔑 كلمة المرور</label>
                 <input type="password" id="login-password" placeholder="أدخل كلمة المرور">
             </div>
-            
             <button class="btn-submit" id="login-btn">🔓 تسجيل الدخول</button>
-            
             <div class="divider">أو</div>
-            
             <button class="btn-secondary" id="show-signup-btn">📝 إنشاء حساب جديد</button>
         </div>
-        
+
         <!-- ========================================== -->
-        <!-- نموذج إنشاء حساب -->
+        <!-- SIGN UP FORM -->
         <!-- ========================================== -->
         <div id="signup-form" style="display: none;">
             <div class="form-row">
                 <div class="form-group">
                     <label>👤 الاسم الأول</label>
-                    <input type="text" id="signup-firstname" placeholder="Ali" value="Ali">
+                    <input type="text" id="signup-firstname" placeholder="الاسم الأول">
                 </div>
                 <div class="form-group">
                     <label>👤 اسم العائلة</label>
-                    <input type="text" id="signup-lastname" placeholder="Albarry" value="Albarry">
+                    <input type="text" id="signup-lastname" placeholder="اسم العائلة">
                 </div>
             </div>
-            
             <div class="form-group">
                 <label>📧 البريد الإلكتروني</label>
-                <input type="email" id="signup-email" placeholder="example@email.com" value="ali.albarry.404@gmail.com">
+                <input type="email" id="signup-email" placeholder="example@email.com">
             </div>
-            
             <div class="form-group">
                 <label>🔑 كلمة المرور</label>
                 <input type="password" id="signup-password" placeholder="6 أحرف على الأقل">
-                <span style="font-size: 12px; color: #8b949e;">كلمة المرور يجب أن تكون 6 أحرف على الأقل</span>
+                <span class="password-hint">كلمة المرور يجب أن تكون 6 أحرف على الأقل</span>
             </div>
-            
             <div class="form-group">
                 <label>📋 نوع الحساب</label>
                 <select id="signup-account-type">
@@ -277,16 +310,13 @@
                     <option value="financial">💰 Financial</option>
                 </select>
             </div>
-            
             <button class="btn-submit" id="signup-btn">✅ إنشاء حساب</button>
-            
             <div class="divider">أو</div>
-            
             <button class="btn-secondary" id="show-login-btn">🔓 لدي حساب بالفعل</button>
         </div>
-        
+
         <!-- ========================================== -->
-        <!-- الرسائل -->
+        <!-- MESSAGES -->
         <!-- ========================================== -->
         <div id="message" class="message"></div>
         <div id="loading" class="loading">⏳ جاري المعالجة</div>
@@ -294,7 +324,7 @@
 
     <script>
         // ==============================================
-        // عناصر DOM
+        // DOM Elements
         // ==============================================
         const loginForm = document.getElementById('login-form');
         const signupForm = document.getElementById('signup-form');
@@ -306,84 +336,119 @@
         const loadingEl = document.getElementById('loading');
         const formTitle = document.getElementById('form-title');
         const formSubtitle = document.getElementById('form-subtitle');
-        
+
+        // Input elements
+        const loginEmail = document.getElementById('login-email');
+        const loginPassword = document.getElementById('login-password');
+        const signupFirstname = document.getElementById('signup-firstname');
+        const signupLastname = document.getElementById('signup-lastname');
+        const signupEmail = document.getElementById('signup-email');
+        const signupPassword = document.getElementById('signup-password');
+        const signupAccountType = document.getElementById('signup-account-type');
+
         // ==============================================
-        // الإعدادات
+        // Configuration
         // ==============================================
         const API_BASE_URL = 'http://127.0.0.1:8000/api';
-        // إذا كنت تستخدم ngrok، استخدم هذا:
-        // const API_BASE_URL = 'https://veteran-antibody-strep.ngrok-free.dev/api';
-        
+        // Uncomment for ngrok:
+        // const API_BASE_URL = 'https://your-ngrok-url.ngrok-free.app/api';
+
         // ==============================================
-        // دوال مساعدة
+        // Helper Functions
         // ==============================================
         function showMessage(text, type = 'error') {
             messageEl.textContent = text;
             messageEl.className = `message ${type}`;
         }
-        
+
         function hideMessage() {
             messageEl.className = 'message';
             messageEl.textContent = '';
         }
-        
+
         function setLoading(loading) {
             loadingEl.style.display = loading ? 'block' : 'none';
             loginBtn.disabled = loading;
             signupBtn.disabled = loading;
         }
-        
+
+        function clearErrors() {
+            document.querySelectorAll('.form-field-error').forEach(el => {
+                el.classList.remove('form-field-error');
+            });
+        }
+
+        function markError(field) {
+            field.classList.add('form-field-error');
+        }
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
         // ==============================================
-        // تبديل النماذج
+        // Form Switching
         // ==============================================
-        function showLogin() {
+        function showLoginForm() {
             loginForm.style.display = 'block';
             signupForm.style.display = 'none';
             formTitle.textContent = '🔐 تسجيل الدخول';
             formSubtitle.textContent = 'مرحباً بك في منصة Apex Strategies';
             hideMessage();
+            clearErrors();
         }
-        
-        function showSignup() {
+
+        function showSignupForm() {
             loginForm.style.display = 'none';
             signupForm.style.display = 'block';
             formTitle.textContent = '📝 إنشاء حساب جديد';
             formSubtitle.textContent = 'انضم إلى منصة Apex Strategies';
             hideMessage();
+            clearErrors();
         }
-        
-        showSignupBtn.addEventListener('click', showSignup);
-        showLoginBtn.addEventListener('click', showLogin);
-        
+
+        showSignupBtn.addEventListener('click', showSignupForm);
+        showLoginBtn.addEventListener('click', showLoginForm);
+
         // ==============================================
-        // تسجيل الدخول
+        // Login Handler
         // ==============================================
         async function handleLogin() {
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value;
-            
+            const email = loginEmail.value.trim();
+            const password = loginPassword.value;
+
+            // Validation
             if (!email || !password) {
                 showMessage('⚠️ الرجاء إدخال البريد الإلكتروني وكلمة المرور', 'error');
+                if (!email) markError(loginEmail);
+                if (!password) markError(loginPassword);
                 return;
             }
-            
+
+            if (!validateEmail(email)) {
+                showMessage('⚠️ الرجاء إدخال بريد إلكتروني صحيح', 'error');
+                markError(loginEmail);
+                return;
+            }
+
             hideMessage();
+            clearErrors();
             setLoading(true);
-            
+
             try {
                 const response = await fetch(`${API_BASE_URL}/signin`, {
                     method: 'POST',
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json',
                         'ngrok-skip-browser-warning': 'true'
                     },
                     body: JSON.stringify({ email, password })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok) {
-                    // حفظ التوكنات
+                    // Save tokens
                     localStorage.setItem('access_token', data.access_token);
                     if (data.refresh_token) {
                         localStorage.setItem('refresh_token', data.refresh_token);
@@ -392,7 +457,7 @@
                         localStorage.setItem('token_expiry', (Date.now() + data.expires_in * 1000).toString());
                     }
                     localStorage.setItem('user_data', JSON.stringify(data));
-                    
+
                     showMessage('✅ تم تسجيل الدخول بنجاح! جاري التوجيه...', 'success');
                     
                     setTimeout(() => {
@@ -402,45 +467,64 @@
                     showMessage(`❌ ${data.detail || 'فشل تسجيل الدخول'}`, 'error');
                 }
             } catch (error) {
-                console.error('❌ خطأ:', error);
+                console.error('❌ Error:', error);
                 showMessage('❌ خطأ في الاتصال بالسيرفر. تأكد من تشغيل السيرفر.', 'error');
             } finally {
                 setLoading(false);
             }
         }
-        
+
         // ==============================================
-        // إنشاء حساب جديد
+        // Signup Handler
         // ==============================================
         async function handleSignup() {
-            const firstName = document.getElementById('signup-firstname').value.trim();
-            const lastName = document.getElementById('signup-lastname').value.trim();
-            const email = document.getElementById('signup-email').value.trim();
-            const password = document.getElementById('signup-password').value;
-            const accountType = document.getElementById('signup-account-type').value;
-            
-            if (!firstName || !lastName) {
-                showMessage('⚠️ الرجاء إدخال الاسم الأول واسم العائلة', 'error');
-                return;
+            const firstName = signupFirstname.value.trim();
+            const lastName = signupLastname.value.trim();
+            const email = signupEmail.value.trim();
+            const password = signupPassword.value;
+            const accountType = signupAccountType.value;
+
+            // Validation
+            let hasError = false;
+            clearErrors();
+
+            if (!firstName || firstName.length < 2) {
+                showMessage('⚠️ الاسم الأول يجب أن يكون حرفين على الأقل', 'error');
+                markError(signupFirstname);
+                hasError = true;
             }
-            
+
+            if (!lastName || lastName.length < 2) {
+                showMessage('⚠️ اسم العائلة يجب أن يكون حرفين على الأقل', 'error');
+                markError(signupLastname);
+                hasError = true;
+            }
+
             if (!email) {
                 showMessage('⚠️ الرجاء إدخال البريد الإلكتروني', 'error');
-                return;
+                markError(signupEmail);
+                hasError = true;
+            } else if (!validateEmail(email)) {
+                showMessage('⚠️ الرجاء إدخال بريد إلكتروني صحيح', 'error');
+                markError(signupEmail);
+                hasError = true;
             }
-            
+
             if (!password || password.length < 6) {
                 showMessage('⚠️ كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
-                return;
+                markError(signupPassword);
+                hasError = true;
             }
-            
+
+            if (hasError) return;
+
             hideMessage();
             setLoading(true);
-            
+
             try {
                 const response = await fetch(`${API_BASE_URL}/signup`, {
                     method: 'POST',
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json',
                         'ngrok-skip-browser-warning': 'true'
                     },
@@ -452,11 +536,11 @@
                         account_type: accountType
                     })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok) {
-                    // حفظ التوكنات
+                    // Save tokens
                     localStorage.setItem('access_token', data.access_token);
                     if (data.refresh_token) {
                         localStorage.setItem('refresh_token', data.refresh_token);
@@ -465,7 +549,7 @@
                         localStorage.setItem('token_expiry', (Date.now() + data.expires_in * 1000).toString());
                     }
                     localStorage.setItem('user_data', JSON.stringify(data));
-                    
+
                     showMessage('✅ تم إنشاء الحساب وتسجيل الدخول بنجاح! جاري التوجيه...', 'success');
                     
                     setTimeout(() => {
@@ -475,40 +559,62 @@
                     showMessage(`❌ ${data.detail || 'فشل إنشاء الحساب'}`, 'error');
                 }
             } catch (error) {
-                console.error('❌ خطأ:', error);
+                console.error('❌ Error:', error);
                 showMessage('❌ خطأ في الاتصال بالسيرفر. تأكد من تشغيل السيرفر.', 'error');
             } finally {
                 setLoading(false);
             }
         }
-        
+
         // ==============================================
-        // ربط الأحداث
+        // Event Listeners
         // ==============================================
         loginBtn.addEventListener('click', handleLogin);
         signupBtn.addEventListener('click', handleSignup);
-        
-        // الضغط على Enter
-        document.getElementById('login-password').addEventListener('keypress', (e) => {
+
+        // Enter key support
+        loginPassword.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') handleLogin();
         });
-        
-        document.getElementById('signup-password').addEventListener('keypress', (e) => {
+
+        signupPassword.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') handleSignup();
         });
-        
+
+        // Clear errors on input
+        document.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('input', () => {
+                el.classList.remove('form-field-error');
+                hideMessage();
+            });
+            el.addEventListener('change', () => {
+                el.classList.remove('form-field-error');
+                hideMessage();
+            });
+        });
+
         // ==============================================
-        // التحقق من وجود توكن
+        // Auto-login check
         // ==============================================
         const token = localStorage.getItem('access_token');
+        const tokenExpiry = localStorage.getItem('token_expiry');
+
         if (token && token.length > 20) {
-            // إذا كان هناك توكن، انتقل مباشرة للداشبورد
-            window.location.href = 'dashboard.html';
+            // Check if token is still valid
+            if (tokenExpiry && Date.now() < parseInt(tokenExpiry)) {
+                window.location.href = 'dashboard.html';
+            } else {
+                // Token expired, clear it
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                localStorage.removeItem('token_expiry');
+                localStorage.removeItem('user_data');
+            }
         }
-        
-        console.log('🔐 صفحة تسجيل الدخول جاهزة');
+
+        console.log('🔐 Login page ready');
         console.log('📍 API:', API_BASE_URL);
-        console.log('💡 استخدم "إنشاء حساب جديد" لإنشاء حساب');
+        console.log('💡 Use "إنشاء حساب جديد" to create an account');
     </script>
 </body>
 </html>
