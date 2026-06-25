@@ -459,8 +459,6 @@
         // CONFIGURATION
         // ==============================================
         const API_BASE_URL = 'http://127.0.0.1:8000/api';
-        // Uncomment for ngrok:
-        // const API_BASE_URL = 'https://your-ngrok-url.ngrok-free.dev/api';
 
         // ==============================================
         // STATE
@@ -475,7 +473,8 @@
                 revenueTrend: null,
                 leadSource: null
             },
-            isLoaded: false
+            isLoaded: false,
+            isRefreshing: false
         };
 
         // ==============================================
@@ -536,8 +535,15 @@
         function isTokenExpired() {
             const expiry = getTokenExpiry();
             if (!expiry) return true;
-            const bufferTime = 5 * 60 * 1000; // 5 minutes buffer
-            return Date.now() > (expiry - bufferTime);
+            // 5 minute buffer
+            return Date.now() > (expiry - 5 * 60 * 1000);
+        }
+
+        function hasValidToken() {
+            const token = getToken();
+            if (!token || token.length < 20) return false;
+            if (isTokenExpired()) return false;
+            return true;
         }
 
         // ==============================================
@@ -545,9 +551,14 @@
         // ==============================================
         async function login(email, password) {
             try {
+                console.log('🔄 Login attempt for:', email);
+                
                 const response = await fetch(`${API_BASE_URL}/signin`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
+                    },
                     body: JSON.stringify({ email, password })
                 });
 
@@ -560,6 +571,7 @@
                     showToast('✅ تم تسجيل الدخول بنجاح!', 'success');
                     return true;
                 } else {
+                    console.error('❌ Login failed:', data.detail);
                     showToast(`❌ ${data.detail || 'فشل تسجيل الدخول'}`, 'error');
                     return false;
                 }
@@ -571,16 +583,28 @@
         }
 
         async function refreshAccessToken() {
+            if (state.isRefreshing) {
+                console.log('⏳ Refresh already in progress...');
+                return false;
+            }
+
             const refreshToken = getRefreshToken();
             if (!refreshToken) {
                 console.log('⚠️ No refresh token found');
                 return false;
             }
 
+            state.isRefreshing = true;
+
             try {
+                console.log('🔄 Refreshing access token...');
+                
                 const response = await fetch(`${API_BASE_URL}/refresh`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
+                    },
                     body: JSON.stringify({ refresh_token: refreshToken })
                 });
 
@@ -590,13 +614,16 @@
                     saveTokens(data);
                     console.log('✅ Token refreshed successfully!');
                     showToast('✅ تم تجديد الجلسة', 'info', 2000);
+                    state.isRefreshing = false;
                     return true;
                 } else {
-                    console.warn('⚠️ Refresh token failed:', data.detail);
+                    console.warn('⚠️ Refresh failed:', data.detail);
+                    state.isRefreshing = false;
                     return false;
                 }
             } catch (error) {
                 console.error('❌ Refresh error:', error);
+                state.isRefreshing = false;
                 return false;
             }
         }
@@ -618,29 +645,32 @@
             }, 1000);
         }
 
+        function redirectToLogin() {
+            clearTokens();
+            window.location.href = 'login.html';
+        }
+
         // ==============================================
         // AUTHENTICATED FETCH WITH AUTO-REFRESH
         // ==============================================
         async function fetchWithAuth(url, options = {}, retryCount = 0) {
-            // Check token expiry
-            if (isTokenExpired()) {
-                console.log('🔄 Token expired, refreshing...');
+            // Check if we have a valid token
+            if (!hasValidToken()) {
+                console.log('🔄 Token invalid or expired, attempting refresh...');
                 const refreshed = await refreshAccessToken();
-                if (!refreshed && retryCount < 2) {
-                    // Prompt for login
-                    const email = prompt('🔒 انتهت صلاحية الجلسة، الرجاء إدخال البريد الإلكتروني:');
-                    if (!email) throw new Error('تم الإلغاء');
-                    const password = prompt('🔑 الرجاء إدخال كلمة المرور:');
-                    if (!password) throw new Error('تم الإلغاء');
-                    const loggedIn = await login(email, password);
-                    if (!loggedIn) throw new Error('فشل تسجيل الدخول');
-                } else if (!refreshed) {
-                    throw new Error('فشل تجديد التوكن');
+                if (!refreshed) {
+                    console.log('❌ Refresh failed, redirecting to login...');
+                    redirectToLogin();
+                    throw new Error('Session expired. Please login again.');
                 }
             }
 
             const token = getToken();
-            if (!token) throw new Error('لا يوجد توكن');
+            if (!token) {
+                console.log('❌ No token available, redirecting to login...');
+                redirectToLogin();
+                throw new Error('No token available.');
+            }
 
             try {
                 const response = await fetch(url, {
@@ -660,17 +690,10 @@
                     if (refreshed) {
                         return fetchWithAuth(url, options, retryCount + 1);
                     } else {
-                        // Prompt for login
-                        const email = prompt('🔒 انتهت صلاحية الجلسة، الرجاء إدخال البريد الإلكتروني:');
-                        if (!email) throw new Error('تم الإلغاء');
-                        const password = prompt('🔑 الرجاء إدخال كلمة المرور:');
-                        if (!password) throw new Error('تم الإلغاء');
-                        const loggedIn = await login(email, password);
-                        if (loggedIn) {
-                            return fetchWithAuth(url, options, retryCount + 1);
-                        }
+                        console.log('❌ Refresh failed after 401, redirecting to login...');
+                        redirectToLogin();
+                        throw new Error('Session expired. Please login again.');
                     }
-                    throw new Error('فشل تجديد الجلسة');
                 }
 
                 return response;
@@ -897,19 +920,6 @@
             showToast(`✅ تم تحميل ${demoData.length} سجل تجريبي`, 'success');
         }
 
-        async function loadFromBackend() {
-            try {
-                const response = await fetchWithAuth(`${API_BASE_URL}/dashboard/analytics`);
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('📊 Backend data:', data);
-                    // Process data if needed
-                }
-            } catch (error) {
-                console.error('❌ Failed to load backend data:', error);
-            }
-        }
-
         // ==============================================
         // FILE UPLOAD
         // ==============================================
@@ -987,20 +997,13 @@
             console.log('🚀 Initializing dashboard...');
 
             // Check authentication
-            const token = getToken();
-            if (!token) {
-                window.location.href = 'login.html';
+            if (!hasValidToken()) {
+                console.log('⚠️ No valid token found, redirecting to login...');
+                redirectToLogin();
                 return;
             }
 
-            // Check token expiry
-            if (isTokenExpired()) {
-                const refreshed = await refreshAccessToken();
-                if (!refreshed) {
-                    window.location.href = 'login.html';
-                    return;
-                }
-            }
+            console.log('✅ Valid token found');
 
             // Load user data
             const userData = localStorage.getItem('user_data');
@@ -1012,19 +1015,19 @@
                 } catch (e) {}
             }
 
-            // Load data
+            // Load demo data immediately
+            loadDemoData();
+
+            // Try to load from backend
             try {
                 await loadFromBackend();
-                loadDemoData();
             } catch (error) {
-                console.error('❌ Error loading data:', error);
-                loadDemoData();
+                console.log('⚠️ Backend data not available, using demo data');
             }
 
             // Setup filters
             document.querySelectorAll('.doctor-filter, .service-filter').forEach(cb => {
                 cb.addEventListener('change', () => {
-                    // Update checkbox styling
                     const label = cb.closest('.checkbox-item');
                     if (cb.checked) {
                         label.classList.add('checked');
@@ -1050,6 +1053,19 @@
             state.isLoaded = true;
         }
 
+        async function loadFromBackend() {
+            try {
+                const response = await fetchWithAuth(`${API_BASE_URL}/dashboard/analytics`);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('📊 Backend data received:', data);
+                    // We could process this data here if needed
+                }
+            } catch (error) {
+                console.log('⚠️ Backend data load skipped:', error.message);
+            }
+        }
+
         // ==============================================
         // EXPOSE TO CONSOLE
         // ==============================================
@@ -1062,6 +1078,11 @@
         // ==============================================
         // START
         // ==============================================
+        // Check if we should auto-redirect to login
+        if (!localStorage.getItem('access_token') || isTokenExpired()) {
+            console.log('⏳ No valid session, checking login page...');
+        }
+
         document.addEventListener('DOMContentLoaded', initDashboard);
     </script>
 </body>
