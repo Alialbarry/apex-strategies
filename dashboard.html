@@ -504,7 +504,6 @@
         // ==============================================
         async function fetchWithAuth(url, options = {}, retryCount = 0) {
             if (!hasValidToken()) {
-                // محاولة تجديد التوكن
                 const refreshToken = getRefreshToken();
                 if (refreshToken) {
                     try {
@@ -551,7 +550,6 @@
                 });
 
                 if (response.status === 401 && retryCount < 2) {
-                    // محاولة تجديد التوكن مرة أخرى
                     const refreshToken = getRefreshToken();
                     if (refreshToken) {
                         try {
@@ -731,19 +729,30 @@
         }
 
         // ==============================================
-        // DASHBOARD UPDATE - FIXED VERSION
+        // DASHBOARD UPDATE - FIXED
         // ==============================================
         function updateDashboardUI(records) {
-            // التحقق من وجود العناصر قبل التعديل
-            const kpiRev = document.getElementById('kpi-rev');
-            const kpiApp = document.getElementById('kpi-app');
-            const kpiRate = document.getElementById('kpi-rate');
+            // التحقق من وجود العناصر
+            const kpiContainer = document.getElementById('kpi-container');
             const recordCount = document.getElementById('record-count');
 
             if (!records || records.length === 0) {
-                if (kpiRev) kpiRev.textContent = '$0.0';
-                if (kpiApp) kpiApp.textContent = '0';
-                if (kpiRate) kpiRate.textContent = '0.0%';
+                if (kpiContainer) {
+                    kpiContainer.innerHTML = `
+                        <div class="kpi-card revenue">
+                            <span>💰 Total Revenue</span>
+                            <h2>$0.0</h2>
+                        </div>
+                        <div class="kpi-card appointments">
+                            <span>📋 Total Appointments</span>
+                            <h2>0</h2>
+                        </div>
+                        <div class="kpi-card rate">
+                            <span>📊 No-Show Rate</span>
+                            <h2>0.0%</h2>
+                        </div>
+                    `;
+                }
                 if (recordCount) recordCount.textContent = '0 records';
                 renderCharts([]);
                 return;
@@ -762,9 +771,24 @@
                 }
             });
 
-            if (kpiRev) kpiRev.textContent = '$' + totalRevenue.toLocaleString();
-            if (kpiApp) kpiApp.textContent = records.length;
-            if (kpiRate) kpiRate.textContent = ((noShowCount / records.length) * 100).toFixed(1) + '%';
+            // تحديث بطاقات KPI
+            if (kpiContainer) {
+                kpiContainer.innerHTML = `
+                    <div class="kpi-card revenue">
+                        <span>💰 Total Revenue</span>
+                        <h2>$${totalRevenue.toLocaleString()}</h2>
+                    </div>
+                    <div class="kpi-card appointments">
+                        <span>📋 Total Appointments</span>
+                        <h2>${records.length}</h2>
+                    </div>
+                    <div class="kpi-card rate">
+                        <span>📊 No-Show Rate</span>
+                        <h2>${((noShowCount / records.length) * 100).toFixed(1)}%</h2>
+                    </div>
+                `;
+            }
+
             if (recordCount) recordCount.textContent = records.length + ' records';
 
             renderCharts(records);
@@ -800,7 +824,7 @@
         }
 
         // ==============================================
-        // FILE UPLOAD - FIXED VERSION
+        // FILE UPLOAD - FIXED
         // ==============================================
         async function handleFileUpload(file) {
             const nameDisplay = document.getElementById('file-name-display');
@@ -835,7 +859,8 @@
                 console.error('❌ Upload error:', error);
                 showToast('❌ خطأ في رفع الملف: ' + error.message, 'error');
             } finally {
-                document.getElementById('excel-file-input').value = '';
+                const fileInput = document.getElementById('excel-file-input');
+                if (fileInput) fileInput.value = '';
             }
         }
 
@@ -889,7 +914,6 @@
         async function initDashboard() {
             console.log('🚀 Initializing dashboard...');
 
-            // Check authentication
             if (!hasValidToken()) {
                 console.log('⚠️ No valid token, redirecting to login...');
                 redirectToLogin();
@@ -931,7 +955,6 @@
                 });
             }
 
-            // Apply initial filters
             applyFilters();
 
             console.log('✅ Dashboard initialized successfully!');
