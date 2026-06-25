@@ -64,14 +64,21 @@
         }
 
         .brand-area h2 {
-            font-size: 22px;
+            font-size: 20px;
             color: var(--blue-accent);
             font-weight: 700;
+            line-height: 1.3;
         }
 
         .brand-area .subtitle {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
+        }
+
+        .brand-area .user-id-display {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
         }
 
         .filter-group {
@@ -209,9 +216,15 @@
         }
 
         .dashboard-header h1 {
-            font-size: 24px;
+            font-size: 22px;
             color: var(--purple-accent);
             font-weight: 700;
+        }
+
+        .dashboard-header .user-info {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
         }
 
         /* ==============================================
@@ -263,7 +276,7 @@
         }
 
         .kpi-card h2 {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 700;
         }
 
@@ -337,6 +350,26 @@
         .toast.warning { border-right: 4px solid #f59e0b; }
 
         /* ==============================================
+           EMPTY STATE
+           ============================================== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: var(--border-color);
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        /* ==============================================
            RESPONSIVE
            ============================================== */
         @media (max-width: 1024px) {
@@ -376,12 +409,13 @@
         <aside class="filter-sidebar">
             <div class="brand-area">
                 <h2 id="dashboard-title">APEX STRATEGIES</h2>
-                <span class="subtitle">CLINIC ANALYSIS</span>
+                <span class="subtitle">Dashboard</span>
+                <div class="user-id-display" id="user-id-display">User ID: --</div>
             </div>
 
             <div class="filter-group">
                 <label>📅 Data Range</label>
-                <input type="text" id="data-range" value="1/1/2026 - 4/11/2026" disabled>
+                <input type="text" id="data-range" value="Current Period" disabled>
             </div>
 
             <div class="filter-group">
@@ -417,7 +451,8 @@
         <!-- MAIN CONTENT -->
         <main class="main-content">
             <header class="dashboard-header">
-                <h1 id="main-header-title">APEX STRATEGIES : CLINIC DATA ANALYSIS</h1>
+                <h1 id="main-header-title">APEX STRATEGIES</h1>
+                <div class="user-info" id="user-info-display">Loading user data...</div>
             </header>
 
             <section class="kpi-section" id="kpi-container">
@@ -437,13 +472,13 @@
 
             <section class="charts-grid">
                 <div class="chart-box">
-                    <h3>📈 Monthly Revenue Trend</h3>
+                    <h3 id="line-chart-title">📈 Monthly Revenue Trend</h3>
                     <div class="chart-container">
                         <canvas id="revenueTrendChart"></canvas>
                     </div>
                 </div>
                 <div class="chart-box">
-                    <h3>📊 Revenue by Lead Source</h3>
+                    <h3 id="bar-chart-title">📊 Revenue by Lead Source</h3>
                     <div class="chart-container">
                         <canvas id="leadSourceChart"></canvas>
                     </div>
@@ -467,8 +502,11 @@
             token: null,
             refreshToken: null,
             tokenExpiry: null,
+            userData: null,
+            userId: null,
             rawData: [],
             filteredData: [],
+            dashboardConfig: null,
             charts: {
                 revenueTrend: null,
                 leadSource: null
@@ -478,7 +516,7 @@
         };
 
         // ==============================================
-        // TOAST NOTIFICATION
+        // TOAST
         // ==============================================
         function showToast(message, type = 'info', duration = 4000) {
             const toast = document.getElementById('toast');
@@ -506,6 +544,24 @@
             return expiry ? parseInt(expiry) : null;
         }
 
+        function getUserId() {
+            if (state.userId) return state.userId;
+            const id = localStorage.getItem('user_id');
+            if (id) {
+                state.userId = parseInt(id);
+                return state.userId;
+            }
+            const userData = localStorage.getItem('user_data');
+            if (userData) {
+                try {
+                    const parsed = JSON.parse(userData);
+                    state.userId = parsed.user_id;
+                    return state.userId;
+                } catch (e) {}
+            }
+            return null;
+        }
+
         function saveTokens(data) {
             if (data.access_token) {
                 localStorage.setItem('access_token', data.access_token);
@@ -520,6 +576,10 @@
                 localStorage.setItem('token_expiry', expiry.toString());
                 state.tokenExpiry = expiry;
             }
+            if (data.user_id) {
+                localStorage.setItem('user_id', data.user_id.toString());
+                state.userId = data.user_id;
+            }
         }
 
         function clearTokens() {
@@ -527,15 +587,16 @@
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('token_expiry');
             localStorage.removeItem('user_data');
+            localStorage.removeItem('user_id');
             state.token = null;
             state.refreshToken = null;
             state.tokenExpiry = null;
+            state.userId = null;
         }
 
         function isTokenExpired() {
             const expiry = getTokenExpiry();
             if (!expiry) return true;
-            // 5 minute buffer
             return Date.now() > (expiry - 5 * 60 * 1000);
         }
 
@@ -546,13 +607,16 @@
             return true;
         }
 
+        function redirectToLogin() {
+            clearTokens();
+            window.location.href = 'login.html';
+        }
+
         // ==============================================
         // AUTHENTICATION
         // ==============================================
         async function login(email, password) {
             try {
-                console.log('🔄 Login attempt for:', email);
-                
                 const response = await fetch(`${API_BASE_URL}/signin`, {
                     method: 'POST',
                     headers: { 
@@ -567,38 +631,25 @@
                 if (response.ok) {
                     saveTokens(data);
                     localStorage.setItem('user_data', JSON.stringify(data));
-                    console.log('✅ Login successful!');
-                    showToast('✅ تم تسجيل الدخول بنجاح!', 'success');
+                    state.userData = data;
                     return true;
-                } else {
-                    console.error('❌ Login failed:', data.detail);
-                    showToast(`❌ ${data.detail || 'فشل تسجيل الدخول'}`, 'error');
-                    return false;
                 }
+                return false;
             } catch (error) {
                 console.error('❌ Login error:', error);
-                showToast('❌ خطأ في الاتصال بالسيرفر', 'error');
                 return false;
             }
         }
 
         async function refreshAccessToken() {
-            if (state.isRefreshing) {
-                console.log('⏳ Refresh already in progress...');
-                return false;
-            }
+            if (state.isRefreshing) return false;
 
             const refreshToken = getRefreshToken();
-            if (!refreshToken) {
-                console.log('⚠️ No refresh token found');
-                return false;
-            }
+            if (!refreshToken) return false;
 
             state.isRefreshing = true;
 
             try {
-                console.log('🔄 Refreshing access token...');
-                
                 const response = await fetch(`${API_BASE_URL}/refresh`, {
                     method: 'POST',
                     headers: { 
@@ -612,17 +663,12 @@
 
                 if (response.ok) {
                     saveTokens(data);
-                    console.log('✅ Token refreshed successfully!');
-                    showToast('✅ تم تجديد الجلسة', 'info', 2000);
                     state.isRefreshing = false;
                     return true;
-                } else {
-                    console.warn('⚠️ Refresh failed:', data.detail);
-                    state.isRefreshing = false;
-                    return false;
                 }
+                state.isRefreshing = false;
+                return false;
             } catch (error) {
-                console.error('❌ Refresh error:', error);
                 state.isRefreshing = false;
                 return false;
             }
@@ -630,46 +676,29 @@
 
         function logout() {
             clearTokens();
-            // Destroy charts to prevent memory leaks
-            if (state.charts.revenueTrend) {
-                state.charts.revenueTrend.destroy();
-                state.charts.revenueTrend = null;
-            }
-            if (state.charts.leadSource) {
-                state.charts.leadSource.destroy();
-                state.charts.leadSource = null;
-            }
+            destroyCharts();
             showToast('✅ تم تسجيل الخروج', 'info', 3000);
             setTimeout(() => {
                 window.location.href = 'login.html';
             }, 1000);
         }
 
-        function redirectToLogin() {
-            clearTokens();
-            window.location.href = 'login.html';
-        }
-
         // ==============================================
-        // AUTHENTICATED FETCH WITH AUTO-REFRESH
+        // AUTHENTICATED FETCH
         // ==============================================
         async function fetchWithAuth(url, options = {}, retryCount = 0) {
-            // Check if we have a valid token
             if (!hasValidToken()) {
-                console.log('🔄 Token invalid or expired, attempting refresh...');
                 const refreshed = await refreshAccessToken();
                 if (!refreshed) {
-                    console.log('❌ Refresh failed, redirecting to login...');
                     redirectToLogin();
-                    throw new Error('Session expired. Please login again.');
+                    throw new Error('Session expired');
                 }
             }
 
             const token = getToken();
             if (!token) {
-                console.log('❌ No token available, redirecting to login...');
                 redirectToLogin();
-                throw new Error('No token available.');
+                throw new Error('No token available');
             }
 
             try {
@@ -683,16 +712,13 @@
                     }
                 });
 
-                // If 401, try refresh once more
                 if (response.status === 401 && retryCount < 2) {
-                    console.log('🔄 401 Unauthorized - retrying with refresh...');
                     const refreshed = await refreshAccessToken();
                     if (refreshed) {
                         return fetchWithAuth(url, options, retryCount + 1);
                     } else {
-                        console.log('❌ Refresh failed after 401, redirecting to login...');
                         redirectToLogin();
-                        throw new Error('Session expired. Please login again.');
+                        throw new Error('Session expired');
                     }
                 }
 
@@ -725,7 +751,7 @@
 
             if (!ctx1 || !ctx2) return;
 
-            // Calculate monthly revenue
+            // Monthly Revenue
             const monthlyData = {};
             records.forEach(record => {
                 const month = record.Month || 'Other';
@@ -733,7 +759,6 @@
                 monthlyData[month] = (monthlyData[month] || 0) + revenue;
             });
 
-            // Sort months
             const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June',
                                'July', 'August', 'September', 'October', 'November', 'December'];
             const sortedMonths = Object.keys(monthlyData).sort((a, b) => {
@@ -747,7 +772,6 @@
 
             const revenueValues = sortedMonths.map(m => monthlyData[m] || 0);
 
-            // Revenue Trend Chart
             state.charts.revenueTrend = new Chart(ctx1, {
                 type: 'line',
                 data: {
@@ -789,16 +813,14 @@
                             grid: { color: 'rgba(255,255,255,0.05)' }
                         },
                         x: {
-                            ticks: {
-                                color: '#94a3b8'
-                            },
+                            ticks: { color: '#94a3b8' },
                             grid: { display: false }
                         }
                     }
                 }
             });
 
-            // Lead Source Chart
+            // Lead Source
             const leadData = {};
             records.forEach(record => {
                 const source = record.Lead_Source || 'Unknown';
@@ -808,7 +830,6 @@
 
             const leadSources = Object.keys(leadData);
             const leadValues = leadSources.map(s => leadData[s] || 0);
-
             const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899'];
 
             state.charts.leadSource = new Chart(ctx2, {
@@ -828,9 +849,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            display: false
-                        }
+                        legend: { display: false }
                     },
                     scales: {
                         y: {
@@ -891,8 +910,152 @@
             renderCharts(records);
         }
 
+        function updateDashboardFromMetrics(metrics) {
+            const cardMetrics = metrics.filter(m => m.chart_type === 'card');
+            const lineMetrics = metrics.filter(m => m.chart_type === 'line');
+            const barMetrics = metrics.filter(m => m.chart_type === 'bar');
+
+            // KPI Cards
+            const kpiContainer = document.getElementById('kpi-container');
+            if (kpiContainer && cardMetrics.length > 0) {
+                let html = '';
+                const classes = ['revenue', 'appointments', 'rate'];
+                cardMetrics.forEach((metric, index) => {
+                    const colorClass = classes[index % classes.length] || '';
+                    html += `
+                        <div class="kpi-card ${colorClass}">
+                            <span>${metric.metric_name}</span>
+                            <h2>${metric.calculated_value || '0'}</h2>
+                        </div>
+                    `;
+                });
+                kpiContainer.innerHTML = html;
+            }
+
+            // Line Chart
+            if (lineMetrics.length > 0) {
+                const lineMetric = lineMetrics[0];
+                document.getElementById('line-chart-title').textContent = `📈 ${lineMetric.metric_name}`;
+                const ctx = document.getElementById('revenueTrendChart')?.getContext('2d');
+                if (ctx) {
+                    if (state.charts.revenueTrend) {
+                        state.charts.revenueTrend.destroy();
+                    }
+                    const data = lineMetric.data_points || [0, 0, 0, 0];
+                    const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'].slice(0, data.length);
+                    
+                    state.charts.revenueTrend = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: lineMetric.metric_name,
+                                data: data,
+                                borderColor: '#8b5cf6',
+                                backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                                fill: true,
+                                borderWidth: 3,
+                                tension: 0.3,
+                                pointBackgroundColor: '#8b5cf6',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2,
+                                pointRadius: 4,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    labels: {
+                                        color: '#94a3b8',
+                                        font: { family: 'Cairo' }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        color: '#94a3b8',
+                                        callback: function(value) {
+                                            return '$' + value.toLocaleString();
+                                        }
+                                    },
+                                    grid: { color: 'rgba(255,255,255,0.05)' }
+                                },
+                                x: {
+                                    ticks: { color: '#94a3b8' },
+                                    grid: { display: false }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Bar Chart
+            if (barMetrics.length > 0) {
+                const barMetric = barMetrics[0];
+                document.getElementById('bar-chart-title').textContent = `📊 ${barMetric.metric_name}`;
+                const ctx = document.getElementById('leadSourceChart')?.getContext('2d');
+                if (ctx) {
+                    if (state.charts.leadSource) {
+                        state.charts.leadSource.destroy();
+                    }
+                    const data = barMetric.data_points || [0, 0, 0, 0];
+                    const labels = ['Source 1', 'Source 2', 'Source 3', 'Source 4'].slice(0, data.length);
+                    const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b'];
+                    
+                    state.charts.leadSource = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: barMetric.metric_name,
+                                data: data,
+                                backgroundColor: colors.slice(0, data.length),
+                                borderWidth: 0,
+                                borderRadius: 4,
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
+                            },
+                            scales: {
+                                y: {
+                                    ticks: {
+                                        color: '#94a3b8',
+                                        font: { family: 'Cairo' }
+                                    },
+                                    grid: { display: false }
+                                },
+                                x: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        color: '#94a3b8',
+                                        callback: function(value) {
+                                            return '$' + value.toLocaleString();
+                                        }
+                                    },
+                                    grid: { color: 'rgba(255,255,255,0.05)' }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            document.getElementById('record-count').textContent = 
+                (cardMetrics.length + lineMetrics.length + barMetrics.length) + ' metrics';
+        }
+
         // ==============================================
-        // DATA LOADING
+        // LOAD DEMO DATA
         // ==============================================
         function loadDemoData() {
             const demoData = [
@@ -921,6 +1084,54 @@
         }
 
         // ==============================================
+        // LOAD USER DASHBOARD FROM BACKEND
+        // ==============================================
+        async function loadUserDashboard() {
+            const userId = getUserId();
+            if (!userId) {
+                console.log('❌ No user ID found');
+                return false;
+            }
+
+            console.log(`👤 Loading dashboard for user: ${userId}`);
+
+            try {
+                // Get dashboard config
+                const configResponse = await fetchWithAuth(`${API_BASE_URL}/dashboard/${userId}`);
+                if (configResponse.ok) {
+                    const config = await configResponse.json();
+                    state.dashboardConfig = config;
+                    
+                    document.getElementById('dashboard-title').textContent = config.dashboard_name || 'APEX STRATEGIES';
+                    document.getElementById('main-header-title').textContent = config.dashboard_name || 'APEX STRATEGIES';
+                    document.getElementById('user-id-display').textContent = `User ID: ${userId}`;
+                    document.getElementById('user-info-display').textContent = 
+                        `${config.user_name || 'User'} • ${config.account_type || 'Account'}`;
+                    
+                    console.log('📊 Dashboard config loaded:', config);
+                }
+
+                // Get analytics data
+                const analyticsResponse = await fetchWithAuth(`${API_BASE_URL}/dashboard/${userId}/analytics`);
+                if (analyticsResponse.ok) {
+                    const analytics = await analyticsResponse.json();
+                    
+                    if (analytics.metrics && analytics.metrics.length > 0) {
+                        console.log('📊 Analytics loaded:', analytics.metrics.length, 'metrics');
+                        updateDashboardFromMetrics(analytics.metrics);
+                        showToast(`✅ تم تحميل داشبورد المستخدم ${userId}`, 'success');
+                        return true;
+                    }
+                }
+
+                return false;
+            } catch (error) {
+                console.error('❌ Error loading dashboard:', error);
+                return false;
+            }
+        }
+
+        // ==============================================
         // FILE UPLOAD
         // ==============================================
         async function handleFileUpload(file) {
@@ -946,6 +1157,11 @@
                         state.filteredData = result.analytics;
                         updateDashboardUI(result.analytics);
                         showToast(`✅ تم رفع ${result.analytics.length} سجل بنجاح!`, 'success');
+                        
+                        // Reload dashboard after upload
+                        setTimeout(() => {
+                            loadUserDashboard();
+                        }, 1000);
                     } else {
                         showToast('⚠️ لم يتم العثور على بيانات في الملف', 'warning');
                     }
@@ -998,31 +1214,27 @@
 
             // Check authentication
             if (!hasValidToken()) {
-                console.log('⚠️ No valid token found, redirecting to login...');
+                console.log('⚠️ No valid token, redirecting to login...');
                 redirectToLogin();
                 return;
             }
 
-            console.log('✅ Valid token found');
-
-            // Load user data
-            const userData = localStorage.getItem('user_data');
-            if (userData) {
-                try {
-                    const user = JSON.parse(userData);
-                    document.getElementById('dashboard-title').textContent = 
-                        user.account_type?.toUpperCase() || 'APEX STRATEGIES';
-                } catch (e) {}
+            const userId = getUserId();
+            if (!userId) {
+                console.log('⚠️ No user ID found, redirecting to login...');
+                redirectToLogin();
+                return;
             }
 
-            // Load demo data immediately
-            loadDemoData();
+            console.log(`✅ User ID: ${userId}`);
 
-            // Try to load from backend
-            try {
-                await loadFromBackend();
-            } catch (error) {
-                console.log('⚠️ Backend data not available, using demo data');
+            // Load user dashboard from backend
+            const loaded = await loadUserDashboard();
+
+            // If no custom dashboard, load demo data
+            if (!loaded) {
+                console.log('📊 Using demo data as fallback');
+                loadDemoData();
             }
 
             // Setup filters
@@ -1046,43 +1258,24 @@
                 fileInput.value = '';
             });
 
-            // Auto-apply filters
+            // Apply initial filters
             applyFilters();
 
             console.log('✅ Dashboard initialized successfully!');
             state.isLoaded = true;
         }
 
-        async function loadFromBackend() {
-            try {
-                const response = await fetchWithAuth(`${API_BASE_URL}/dashboard/analytics`);
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('📊 Backend data received:', data);
-                    // We could process this data here if needed
-                }
-            } catch (error) {
-                console.log('⚠️ Backend data load skipped:', error.message);
-            }
-        }
-
         // ==============================================
         // EXPOSE TO CONSOLE
         // ==============================================
-        window.login = login;
         window.logout = logout;
         window.refreshAccessToken = refreshAccessToken;
-        window.fetchWithAuth = fetchWithAuth;
         window.loadDemoData = loadDemoData;
+        window.loadUserDashboard = loadUserDashboard;
 
         // ==============================================
         // START
         // ==============================================
-        // Check if we should auto-redirect to login
-        if (!localStorage.getItem('access_token') || isTokenExpired()) {
-            console.log('⏳ No valid session, checking login page...');
-        }
-
         document.addEventListener('DOMContentLoaded', initDashboard);
     </script>
 </body>
