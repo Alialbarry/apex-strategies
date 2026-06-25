@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
+        /* نفس الـ Styles السابقة */
         :root {
             --primary-bg: #0f172a;
             --sidebar-bg: #1a233a;
@@ -32,10 +33,7 @@
             min-height: 100vh;
         }
 
-        .dashboard-wrapper { 
-            display: flex; 
-            width: 100%; 
-        }
+        .dashboard-wrapper { display: flex; width: 100%; }
 
         .filter-sidebar {
             width: 280px;
@@ -390,9 +388,7 @@
                 <h1 id="main-header-title">APEX STRATEGIES</h1>
             </header>
 
-            <section class="kpi-section" id="kpi-container">
-                <!-- سيتم ملؤها بواسطة JavaScript -->
-            </section>
+            <section class="kpi-section" id="kpi-container"></section>
 
             <section class="charts-grid">
                 <div class="chart-box">
@@ -500,11 +496,15 @@
         }
 
         // ==============================================
-        // AUTHENTICATED FETCH
+        // AUTHENTICATED FETCH - مع تحسين الأمان
         // ==============================================
         async function fetchWithAuth(url, options = {}, retryCount = 0) {
-            if (!hasValidToken()) {
-                const refreshToken = getRefreshToken();
+            let token = localStorage.getItem('access_token');
+            
+            if (!token || isTokenExpired()) {
+                console.log('🔄 Token expired or missing, refreshing...');
+                
+                const refreshToken = localStorage.getItem('refresh_token');
                 if (refreshToken) {
                     try {
                         const response = await fetch(`${API_BASE_URL}/refresh`, {
@@ -512,45 +512,52 @@
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ refresh_token: refreshToken })
                         });
+                        
                         const data = await response.json();
+                        
                         if (response.ok && data.access_token) {
                             localStorage.setItem('access_token', data.access_token);
+                            token = data.access_token;
                             if (data.expires_in) {
                                 localStorage.setItem('token_expiry', (Date.now() + data.expires_in * 1000).toString());
                             }
+                            console.log('✅ Token refreshed successfully');
                         } else {
+                            console.log('❌ Refresh failed, redirecting to login');
                             redirectToLogin();
                             throw new Error('Session expired');
                         }
                     } catch (error) {
+                        console.log('❌ Refresh error, redirecting to login');
                         redirectToLogin();
                         throw new Error('Session expired');
                     }
                 } else {
+                    console.log('❌ No refresh token, redirecting to login');
                     redirectToLogin();
-                    throw new Error('No token available');
+                    throw new Error('No refresh token');
                 }
             }
-
-            const token = getToken();
+            
             if (!token) {
                 redirectToLogin();
                 throw new Error('No token available');
             }
-
+            
             try {
                 const response = await fetch(url, {
                     ...options,
                     headers: {
                         ...options.headers,
                         'Authorization': `Bearer ${token}`,
-                        'ngrok-skip-browser-warning': 'true',
-                        'Content-Type': options.body instanceof FormData ? undefined : 'application/json'
+                        'ngrok-skip-browser-warning': 'true'
                     }
                 });
-
-                if (response.status === 401 && retryCount < 2) {
-                    const refreshToken = getRefreshToken();
+                
+                if (response.status === 401 && retryCount < 1) {
+                    console.log('🔄 401 Unauthorized, retrying with new token...');
+                    
+                    const refreshToken = localStorage.getItem('refresh_token');
                     if (refreshToken) {
                         try {
                             const refreshResponse = await fetch(`${API_BASE_URL}/refresh`, {
@@ -558,7 +565,9 @@
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ refresh_token: refreshToken })
                             });
+                            
                             const data = await refreshResponse.json();
+                            
                             if (refreshResponse.ok && data.access_token) {
                                 localStorage.setItem('access_token', data.access_token);
                                 if (data.expires_in) {
@@ -566,12 +575,15 @@
                                 }
                                 return fetchWithAuth(url, options, retryCount + 1);
                             }
-                        } catch (error) {}
+                        } catch (error) {
+                            console.log('❌ Refresh failed');
+                        }
                     }
+                    
                     redirectToLogin();
                     throw new Error('Session expired');
                 }
-
+                
                 return response;
             } catch (error) {
                 console.error('❌ Fetch error:', error);
@@ -729,10 +741,9 @@
         }
 
         // ==============================================
-        // DASHBOARD UPDATE - FIXED
+        // DASHBOARD UPDATE
         // ==============================================
         function updateDashboardUI(records) {
-            // التحقق من وجود العناصر
             const kpiContainer = document.getElementById('kpi-container');
             const recordCount = document.getElementById('record-count');
 
@@ -771,7 +782,6 @@
                 }
             });
 
-            // تحديث بطاقات KPI
             if (kpiContainer) {
                 kpiContainer.innerHTML = `
                     <div class="kpi-card revenue">
@@ -824,7 +834,7 @@
         }
 
         // ==============================================
-        // FILE UPLOAD - FIXED
+        // FILE UPLOAD
         // ==============================================
         async function handleFileUpload(file) {
             const nameDisplay = document.getElementById('file-name-display');
@@ -929,10 +939,8 @@
 
             console.log(`✅ User ID: ${userId}`);
 
-            // Load demo data
             loadDemoData();
 
-            // Setup filters
             document.querySelectorAll('.doctor-filter, .service-filter').forEach(cb => {
                 cb.addEventListener('change', () => {
                     const label = cb.closest('.checkbox-item');
@@ -945,7 +953,6 @@
                 });
             });
 
-            // Setup file upload
             const fileInput = document.getElementById('excel-file-input');
             if (fileInput) {
                 fileInput.addEventListener('change', (e) => {
@@ -961,15 +968,9 @@
             state.isLoaded = true;
         }
 
-        // ==============================================
-        // EXPOSE TO CONSOLE
-        // ==============================================
         window.logout = logout;
         window.loadDemoData = loadDemoData;
 
-        // ==============================================
-        // START
-        // ==============================================
         document.addEventListener('DOMContentLoaded', initDashboard);
     </script>
 </body>
