@@ -596,7 +596,6 @@
         }
 
         function renderCharts(records) {
-            // تدمير المخططات القديمة
             destroyCharts();
 
             const ctx1 = document.getElementById('revenueTrendChart')?.getContext('2d');
@@ -615,38 +614,77 @@
             // ==========================================
             // 1. Monthly Revenue Trend (Line Chart)
             // ==========================================
+            console.log('📊 Building monthly data from', records.length, 'records');
+            
             const monthlyData = {};
-            records.forEach(record => {
-                // دعم عدة تنسيقات للشهر
+            records.forEach((record, index) => {
+                // محاولة استخراج الشهر من عدة حقول
                 let month = record.Month || record.month || record.Appointment_Month || 
-                           record.appointment_month || record.Date || record.date || 'Other';
+                           record.appointment_month || record.Date || record.date || 
+                           record.Appointment_Date || record.appointment_date || 'Other';
                 
-                // إذا كان التاريخ بصيغة مختلفة، حاول استخراج الشهر
+                // إذا كان الشهر يحتوي على شرطة مائلة (/) حاول تحويله
                 if (month && month.includes('/')) {
                     try {
-                        const dateParts = month.split('/');
-                        if (dateParts.length === 3) {
+                        const parts = month.split('/');
+                        if (parts.length === 3) {
                             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                                                'July', 'August', 'September', 'October', 'November', 'December'];
-                            const monthIndex = parseInt(dateParts[0]) - 1;
+                            const monthIndex = parseInt(parts[0]) - 1;
                             if (monthIndex >= 0 && monthIndex < 12) {
-                                month = `${monthNames[monthIndex]} ${dateParts[2]}`;
+                                let year = parts[2];
+                                if (year.length === 2) {
+                                    year = '20' + year;
+                                }
+                                month = `${monthNames[monthIndex]} ${year}`;
                             }
+                        }
+                    } catch (e) {
+                        // إذا فشل التحويل، استخدم القيمة كما هي
+                    }
+                }
+                
+                // محاولة تحويل التاريخ إذا كان بصيغة مختلفة
+                if (month && typeof month === 'string' && month.includes('-')) {
+                    try {
+                        const dt = new Date(month);
+                        if (!isNaN(dt.getTime())) {
+                            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                                               'July', 'August', 'September', 'October', 'November', 'December'];
+                            month = `${monthNames[dt.getMonth()]} ${dt.getFullYear()}`;
                         }
                     } catch (e) {}
                 }
                 
                 const revenue = parseFloat(record.Revenue || record.revenue || 0);
-                monthlyData[month] = (monthlyData[month] || 0) + revenue;
+                
+                // تجميع الإيرادات حسب الشهر
+                if (!monthlyData[month]) {
+                    monthlyData[month] = 0;
+                }
+                monthlyData[month] += revenue;
             });
+
+            console.log('📊 Monthly data:', monthlyData);
 
             // ترتيب الأشهر
             const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June',
                                'July', 'August', 'September', 'October', 'November', 'December'];
             
             const sortedMonths = Object.keys(monthlyData).sort((a, b) => {
-                const idxA = monthOrder.indexOf(a);
-                const idxB = monthOrder.indexOf(b);
+                // إذا كان الشهر يحتوي على سنة، استخرج الشهر والسنة
+                const getMonthIndex = (m) => {
+                    for (let i = 0; i < monthOrder.length; i++) {
+                        if (m.includes(monthOrder[i])) {
+                            return i;
+                        }
+                    }
+                    return -1;
+                };
+                
+                const idxA = getMonthIndex(a);
+                const idxB = getMonthIndex(b);
+                
                 if (idxA === -1 && idxB === -1) return a.localeCompare(b);
                 if (idxA === -1) return 1;
                 if (idxB === -1) return -1;
@@ -655,15 +693,21 @@
 
             const revenueValues = sortedMonths.map(m => monthlyData[m] || 0);
 
-            // رسم المخطط الخطي
-            if (revenueValues.length > 0 && revenueValues.some(v => v > 0)) {
+            console.log('📊 Sorted months:', sortedMonths);
+            console.log('📊 Revenue values:', revenueValues);
+
+            // رسم المخطط الخطي - حتى لو كانت نقطة بيانات واحدة
+            if (revenueValues.length > 0) {
+                const labels = sortedMonths.length > 0 ? sortedMonths : ['Jan', 'Feb', 'Mar', 'Apr'];
+                const data = revenueValues.length > 0 ? revenueValues : [0, 0, 0, 0];
+                
                 state.charts.revenueTrend = new Chart(ctx1, {
                     type: 'line',
                     data: {
-                        labels: sortedMonths.length > 0 ? sortedMonths : ['Jan', 'Feb', 'Mar', 'Apr'],
+                        labels: labels,
                         datasets: [{
                             label: 'Monthly Revenue',
-                            data: revenueValues.length > 0 ? revenueValues : [0, 0, 0, 0],
+                            data: data,
                             borderColor: '#8b5cf6',
                             backgroundColor: 'rgba(139, 92, 246, 0.15)',
                             fill: true,
@@ -715,7 +759,7 @@
                         }
                     }
                 });
-                console.log('✅ Line chart rendered with', revenueValues.length, 'data points');
+                console.log('✅ Line chart rendered with', data.length, 'data points');
             } else {
                 console.log('⚠️ No data for line chart');
             }
@@ -735,7 +779,9 @@
             const leadValues = leadSources.map(s => leadData[s] || 0);
             const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#14b8a6'];
 
-            if (leadValues.length > 0 && leadValues.some(v => v > 0)) {
+            console.log('📊 Lead source data:', leadData);
+
+            if (leadValues.length > 0) {
                 state.charts.leadSource = new Chart(ctx2, {
                     type: 'bar',
                     data: {
@@ -797,7 +843,7 @@
         }
 
         // ==============================================
-        // DASHBOARD UPDATE - محسّن
+        // DASHBOARD UPDATE
         // ==============================================
         function updateDashboardUI(records) {
             console.log('📊 Updating dashboard with', records?.length || 0, 'records');
@@ -911,7 +957,7 @@
         }
 
         // ==============================================
-        // FILE UPLOAD - مع إعادة تحميل كامل
+        // FILE UPLOAD
         // ==============================================
         async function handleFileUpload(file) {
             const nameDisplay = document.getElementById('file-name-display');
@@ -933,18 +979,12 @@
                 if (response.ok) {
                     if (result.analytics && Array.isArray(result.analytics) && result.analytics.length > 0) {
                         console.log('📊 Received', result.analytics.length, 'records from backend');
+                        console.log('📊 Summary:', result.summary);
                         
-                        // تحديث البيانات
                         state.rawData = result.analytics;
                         state.filteredData = result.analytics;
                         
-                        // تحديث الواجهة
                         updateDashboardUI(result.analytics);
-                        
-                        // تحديث ملخص
-                        if (result.summary) {
-                            console.log('📊 Summary:', result.summary);
-                        }
                         
                         showToast(`✅ تم رفع ${result.analytics.length} سجل بنجاح!`, 'success');
                     } else {
@@ -1029,10 +1069,8 @@
 
             console.log(`✅ User ID: ${userId}`);
 
-            // تحميل البيانات التجريبية أولاً
             loadDemoData();
 
-            // إعداد الفلاتر
             document.querySelectorAll('.doctor-filter, .service-filter').forEach(cb => {
                 cb.addEventListener('change', () => {
                     const label = cb.closest('.checkbox-item');
@@ -1045,7 +1083,6 @@
                 });
             });
 
-            // إعداد رفع الملف
             const fileInput = document.getElementById('excel-file-input');
             if (fileInput) {
                 fileInput.addEventListener('change', (e) => {
@@ -1058,7 +1095,6 @@
                 });
             }
 
-            // تطبيق الفلاتر
             applyFilters();
 
             console.log('✅ Dashboard initialized successfully!');
@@ -1072,6 +1108,7 @@
         window.loadDemoData = loadDemoData;
         window.updateDashboardUI = updateDashboardUI;
         window.renderCharts = renderCharts;
+        window.state = state;
 
         // ==============================================
         // START
