@@ -273,7 +273,7 @@
             </div>
             <div class="form-group">
                 <label>🔑 كلمة المرور</label>
-                <input type="password" id="login-password" placeholder="أدخل كلمة المرور" value="123456">
+                <input type="password" id="login-password" placeholder="أدخل كلمة المرور" value="admin123">
             </div>
             <button class="btn-submit" id="login-btn">🔓 تسجيل الدخول</button>
             <div class="divider">أو</div>
@@ -287,20 +287,28 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>👤 الاسم الأول</label>
-                    <input type="text" id="signup-firstname" placeholder="الاسم الأول" value="Ali">
+                    <input type="text" id="signup-firstname" placeholder="الاسم الأول">
                 </div>
                 <div class="form-group">
                     <label>👤 اسم العائلة</label>
-                    <input type="text" id="signup-lastname" placeholder="اسم العائلة" value="Albarry">
+                    <input type="text" id="signup-lastname" placeholder="اسم العائلة">
                 </div>
             </div>
             <div class="form-group">
                 <label>📧 البريد الإلكتروني</label>
-                <input type="email" id="signup-email" placeholder="example@email.com" value="ali.albarry.404@gmail.com">
+                <input type="email" id="signup-email" placeholder="example@email.com">
+            </div>
+            <div class="form-group">
+                <label>📱 رقم الهاتف (اختياري)</label>
+                <input type="text" id="signup-phone" placeholder="05xxxxxxxx">
+            </div>
+            <div class="form-group">
+                <label>🏢 اسم الشركة (اختياري)</label>
+                <input type="text" id="signup-company" placeholder="اسم الشركة">
             </div>
             <div class="form-group">
                 <label>🔑 كلمة المرور</label>
-                <input type="password" id="signup-password" placeholder="6 أحرف على الأقل" value="123456">
+                <input type="password" id="signup-password" placeholder="6 أحرف على الأقل">
                 <span class="password-hint">كلمة المرور يجب أن تكون 6 أحرف على الأقل</span>
             </div>
             <div class="form-group">
@@ -326,9 +334,9 @@
         <!-- DEMO INFO -->
         <!-- ========================================== -->
         <div class="demo-box">
-            🔑 للاختبار: admin@apex.com / 123456
+            🔑 للاختبار كمدير: admin@apex.com / admin123
             <br>
-            أو قم بإنشاء حساب جديد
+            أو قم بإنشاء حساب جديد وسيتم تفعيله بواسطة المدير
         </div>
     </div>
 
@@ -352,6 +360,8 @@
         const signupFirstname = document.getElementById('signup-firstname');
         const signupLastname = document.getElementById('signup-lastname');
         const signupEmail = document.getElementById('signup-email');
+        const signupPhone = document.getElementById('signup-phone');
+        const signupCompany = document.getElementById('signup-company');
         const signupPassword = document.getElementById('signup-password');
         const signupAccountType = document.getElementById('signup-account-type');
 
@@ -472,8 +482,13 @@
                     saveAuthData(data);
                     showMessage('✅ تم تسجيل الدخول بنجاح! جاري التوجيه...', 'success');
                     
+                    // التوجيه حسب صلاحية المستخدم
                     setTimeout(() => {
-                        window.location.href = 'dashboard.html';
+                        if (data.is_admin) {
+                            window.location.href = 'admin-dashboard.html';
+                        } else {
+                            window.location.href = 'dashboard.html';
+                        }
                     }, 1500);
                 } else {
                     showMessage(`❌ ${data.detail || 'فشل تسجيل الدخول'}`, 'error');
@@ -487,12 +502,14 @@
         }
 
         // ==============================================
-        // Signup Handler
+        // Signup Handler - التوجيه إلى صفحة الترحيب
         // ==============================================
         async function handleSignup() {
             const firstName = signupFirstname.value.trim();
             const lastName = signupLastname.value.trim();
             const email = signupEmail.value.trim();
+            const phone = signupPhone.value.trim();
+            const company = signupCompany.value.trim();
             const password = signupPassword.value;
             const accountType = signupAccountType.value;
 
@@ -546,7 +563,9 @@
                         last_name: lastName,
                         email: email,
                         password: password,
-                        account_type: accountType
+                        account_type: accountType,
+                        phone: phone,
+                        company_name: company
                     })
                 });
 
@@ -554,10 +573,12 @@
 
                 if (response.ok) {
                     saveAuthData(data);
-                    showMessage('✅ تم إنشاء الحساب وتسجيل الدخول بنجاح! جاري التوجيه...', 'success');
+                    
+                    // ⭐ التوجيه إلى صفحة الترحيب
+                    showMessage('✅ تم إنشاء الحساب بنجاح! جاري التوجيه...', 'success');
                     
                     setTimeout(() => {
-                        window.location.href = 'dashboard.html';
+                        window.location.href = 'welcome.html';
                     }, 1500);
                 } else {
                     showMessage(`❌ ${data.detail || 'فشل إنشاء الحساب'}`, 'error');
@@ -603,8 +624,21 @@
 
         if (token && token.length > 20) {
             if (tokenExpiry && Date.now() < parseInt(tokenExpiry)) {
-                console.log('✅ Valid token found, redirecting to dashboard...');
-                window.location.href = 'dashboard.html';
+                console.log('✅ Valid token found, redirecting...');
+                // محاولة معرفة نوع المستخدم
+                const userData = localStorage.getItem('user_data');
+                if (userData) {
+                    try {
+                        const data = JSON.parse(userData);
+                        if (data.is_admin) {
+                            window.location.href = 'admin-dashboard.html';
+                        } else {
+                            window.location.href = 'dashboard.html';
+                        }
+                    } catch (e) {
+                        window.location.href = 'dashboard.html';
+                    }
+                }
             } else {
                 console.log('⚠️ Token expired, clearing...');
                 localStorage.removeItem('access_token');
@@ -617,7 +651,7 @@
 
         console.log('🔐 Login page ready');
         console.log('📍 API:', API_BASE_URL);
-        console.log('💡 Demo: admin@apex.com / 123456');
+        console.log('💡 Admin: admin@apex.com / admin123');
     </script>
 </body>
 </html>
