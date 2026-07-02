@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Apex Strategies</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-bg: #0f172a;
+            --sidebar-bg: #1a233a;
+            --card-bg: #1e293b;
+            --text-color: #f1f5f9;
+            --text-muted: #94a3b8;
+            --green-accent: #10b981;
+            --red-accent: #ef4444;
+            --blue-accent: #3b82f6;
+            --yellow-accent: #f59e0b;
+            --purple-accent: #8b5cf6;
+            --border-color: #334155;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        
+        body { 
+            background-color: var(--primary-bg); 
+            color: var(--text-color); 
+            display: flex; 
+            min-height: 100vh;
+        }
+
+        .admin-wrapper { display: flex; width: 100%; }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: 260px;
+            min-height: 100vh;
+            background: var(--sidebar-bg);
+            border-left: 1px solid var(--border-color);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-sm);
+            z-index: 10;
+        }
+
+        .brand-area {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .brand-area h2 {
+            font-size: 20px;
+            color: var(--blue-accent);
+            font-weight: 700;
+        }
+
+        .brand-area .subtitle {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--blue-accent);
+        }
+
+        .menu-item i { width: 20px; }
+
+        .btn-logout {
+            width: 100%;
+            margin-top: auto;
+            padding: 12px;
+            background: var(--red-accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .admin-main {
+            flex: 1;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            max-width: calc(100% - 260px);
+            overflow-x: hidden;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .admin-header h1 {
+            font-size: 22px;
+            color: var(--purple-accent);
+            font-weight: 700;
+        }
+
+        .admin-header .admin-info {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-card .number {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .stat-card .number.green { color: var(--green-accent); }
+        .stat-card .number.blue { color: var(--blue-accent); }
+        .stat-card .number.yellow { color: var(--yellow-accent); }
+        .stat-card .number.red { color: var(--red-accent); }
+
+        /* Users Table */
+        .users-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            overflow: hidden;
+        }
+
+        .users-section .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .users-section .section-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-box input {
+            padding: 8px 16px;
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            min-width: 150px;
+        }
+
+        .search-box input:focus {
+            border-color: var(--blue-accent);
+            outline: none;
+        }
+
+        .search-box button {
+            padding: 8px 12px;
+            background: var(--blue-accent);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-box button:hover {
+            transform: scale(1.05);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background: rgba(255,255,255,0.02);
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: right;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        td {
+            color: var(--text-color);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-badge.active { background: rgba(16, 185, 129, 0.15); color: var(--green-accent); }
+        .status-badge.pending { background: rgba(245, 158, 11, 0.15); color: var(--yellow-accent); }
+        .status-badge.inactive { background: rgba(239, 68, 68, 0.15); color: var(--red-accent); }
+        .status-badge.admin { background: rgba(59, 130, 246, 0.15); color: var(--blue-accent); }
+        .status-badge.paid { background: rgba(16, 185, 129, 0.15); color: var(--green-accent); }
+        .status-badge.expired { background: rgba(239, 68, 68, 0.15); color: var(--red-accent); }
+
+        .btn-action {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 2px;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-action:hover { transform: translateY(-1px); }
+
+        .btn-action.activate { background: var(--green-accent); color: white; }
+        .btn-action.deactivate { background: var(--yellow-accent); color: white; }
+        .btn-action.delete { background: var(--red-accent); color: white; }
+        .btn-action.reset-pw { background: var(--blue-accent); color: white; }
+        .btn-action.edit { background: var(--purple-accent); color: white; }
+
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #1e293b;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 8px;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.4s ease;
+            box-shadow: var(--shadow-md);
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+            font-weight: 600;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.success { border-right: 4px solid var(--green-accent); }
+        .toast.error { border-right: 4px solid var(--red-accent); }
+        .toast.info { border-right: 4px solid var(--blue-accent); }
+        .toast.warning { border-right: 4px solid var(--yellow-accent); }
+
+        @media (max-width: 768px) {
+            .admin-sidebar { width: 200px; padding: 16px; }
+            .admin-main { max-width: calc(100% - 200px); padding: 16px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .search-box input { width: 120px; }
+        }
+
+        @media (max-width: 480px) {
+            .admin-wrapper { flex-direction: column; }
+            .admin-sidebar {
+                width: 100%;
+                height: auto;
+                min-height: auto;
+                position: relative;
+                border-left: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 16px;
+            }
+            .admin-main { max-width: 100%; padding: 16px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .admin-header { flex-direction: column; gap: 10px; text-align: center; }
+            .section-header { flex-direction: column; align-items: stretch; }
+            .search-box { flex-wrap: wrap; }
+            .search-box input { flex: 1; min-width: 100px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="brand-area">
+                <h2>⚡ APEX</h2>
+                <span class="subtitle">Admin Panel</span>
+            </div>
+
+            <div class="menu-item active" onclick="loadUsers()">
+                <i class="fas fa-users"></i> المستخدمين
+            </div>
+            <div class="menu-item" onclick="loadStats()">
+                <i class="fas fa-chart-pie"></i> الإحصائيات
+            </div>
+            <div class="menu-item" onclick="location.href='dashboard.html'">
+                <i class="fas fa-home"></i> الداشبورد
+            </div>
+
+            <button class="btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1>👑 لوحة تحكم المدير</h1>
+                <div class="admin-info">
+                    <i class="fas fa-user-shield"></i> 
+                    <span id="admin-name">Loading...</span>
+                </div>
+            </header>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid" id="stats-grid">
+                <div class="stat-card">
+                    <div class="number blue" id="total-users">0</div>
+                    <div class="label">👥 إجمالي المستخدمين</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number green" id="active-users">0</div>
+                    <div class="label">✅ المستخدمين النشطين</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number yellow" id="pending-users">0</div>
+                    <div class="label">⏳ في انتظار التفعيل</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number red" id="inactive-users">0</div>
+                    <div class="label">🚫 المستخدمين المعطلين</div>
+                </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="users-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-users"></i> قائمة المستخدمين</h3>
+                    <div class="search-box">
+                        <input type="text" id="search-input" placeholder="🔍 بحث..." oninput="filterUsers()">
+                        <button onclick="loadUsers()" title="تحديث">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>الاسم</th>
+                                <th>البريد الإلكتروني</th>
+                                <th>نوع الحساب</th>
+                                <th>الحالة</th>
+                                <th>الدفع</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody">
+                            <tr><td colspan="7" style="text-align:center;color:var(--text-muted);">جاري التحميل...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // ==============================================
+        // CONFIGURATION
+        // ==============================================
+        const API_BASE_URL = 'http://127.0.0.1:8000/api';
+
+        // ==============================================
+        // TOAST
+        // ==============================================
+        function showToast(message, type = 'info', duration = 4000) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
+        // ==============================================
+        // TOKEN MANAGEMENT
+        // ==============================================
+        function getToken() {
+            return localStorage.getItem('access_token');
+        }
+
+        function getUserData() {
+            const data = localStorage.getItem('user_data');
+            return data ? JSON.parse(data) : null;
+        }
+
+        function isTokenExpired() {
+            const expiry = localStorage.getItem('token_expiry');
+            if (!expiry) return true;
+            return Date.now() > (parseInt(expiry) - 5 * 60 * 1000);
+        }
+
+        function redirectToLogin() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // ==============================================
+        // AUTHENTICATED FETCH
+        // ==============================================
+        async function fetchWithAuth(url, options = {}) {
+            let token = getToken();
+            
+            if (!token || isTokenExpired()) {
+                const refreshToken = localStorage.getItem('refresh_token');
+                if (refreshToken) {
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/refresh`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ refresh_token: refreshToken })
+                        });
+                        const data = await response.json();
+                        if (response.ok && data.access_token) {
+                            localStorage.setItem('access_token', data.access_token);
+                            token = data.access_token;
+                            if (data.expires_in) {
+                                localStorage.setItem('token_expiry', (Date.now() + data.expires_in * 1000).toString());
+                            }
+                        } else {
+                            redirectToLogin();
+                            return;
+                        }
+                    } catch (error) {
+                        redirectToLogin();
+                        return;
+                    }
+                } else {
+                    redirectToLogin();
+                    return;
+                }
+            }
+
+            if (!token) {
+                redirectToLogin();
+                return;
+            }
+
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        ...options.headers,
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
+                    }
+                });
+
+                if (response.status === 401) {
+                    redirectToLogin();
+                    return;
+                }
+
+                return response;
+            } catch (error) {
+                console.error('❌ Fetch error:', error);
+                throw error;
+            }
+        }
+
+        // ==============================================
+        // LOAD STATS
+        // ==============================================
+        async function loadStats() {
+            try {
+                const response = await fetchWithAuth(`${API_BASE_URL}/admin/stats`);
+                if (response && response.ok) {
+                    const data = await response.json();
+                    
+                    document.getElementById('total-users').textContent = data.total_users || 0;
+                    document.getElementById('active-users').textContent = data.active_users || 0;
+                    document.getElementById('pending-users').textContent = data.pending_users || 0;
+                    document.getElementById('inactive-users').textContent = data.inactive_users || 0;
+                }
+            } catch (error) {
+                console.error('❌ Error loading stats:', error);
+            }
+        }
+
+        // ==============================================
+        // LOAD USERS
+        // ==============================================
+        async function loadUsers() {
+            const tbody = document.getElementById('users-tbody');
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">جاري التحميل...</td></tr>';
+
+            try {
+                const response = await fetchWithAuth(`${API_BASE_URL}/admin/users`);
+                if (response && response.ok) {
+                    const users = await response.json();
+                    renderUsers(users);
+                    loadStats();
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--red-accent);">❌ فشل التحميل</td></tr>';
+                }
+            } catch (error) {
+                console.error('❌ Error loading users:', error);
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--red-accent);">❌ فشل التحميل</td></tr>';
+            }
+        }
+
+        // ==============================================
+        // RENDER USERS
+        // ==============================================
+        function renderUsers(users) {
+            const tbody = document.getElementById('users-tbody');
+            const currentUser = getUserData();
+            
+            if (!users || users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">لا يوجد مستخدمين</td></tr>';
+                return;
+            }
+
+            let html = '';
+            users.forEach((user, index) => {
+                // تحديد حالة المستخدم
+                let statusClass = 'pending';
+                let statusText = 'في انتظار التفعيل';
+                
+                if (user.is_admin) {
+                    statusClass = 'admin';
+                    statusText = 'مدير';
+                } else if (user.is_active) {
+                    statusClass = 'active';
+                    statusText = 'نشط';
+                }
+                
+                // حالة الدفع
+                const paymentClass = user.payment_status === 'paid' ? 'paid' : 
+                                    (user.payment_status === 'pending' ? 'pending' : 'expired');
+                const paymentText = user.payment_status === 'paid' ? 'مدفوع' : 
+                                   (user.payment_status === 'pending' ? 'قيد الانتظار' : 'منتهي');
+
+                // منع عرض إجراءات على المستخدم نفسه
+                const isSelf = currentUser && currentUser.user_id === user.id;
+
+                // عرض نوع الحساب مترجم
+                const accountTypeMap = {
+                    'production': '🏭 إنتاج',
+                    'medical': '🏥 طبي',
+                    'financial': '💰 مالي',
+                    'admin': '👑 مدير'
+                };
+                const accountType = accountTypeMap[user.account_type] || user.account_type;
+
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${user.first_name || ''} ${user.last_name || ''}</td>
+                        <td>${user.email || ''}</td>
+                        <td>${accountType}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td><span class="status-badge ${paymentClass}">${paymentText}</span></td>
+                        <td>
+                            ${!isSelf ? `
+                                ${!user.is_admin ? `
+                                    ${!user.is_active ? 
+                                        `<button class="btn-action activate" onclick="activateUser(${user.id})" title="تفعيل">
+                                            <i class="fas fa-check"></i>
+                                        </button>` : 
+                                        `<button class="btn-action deactivate" onclick="deactivateUser(${user.id})" title="تعطيل">
+                                            <i class="fas fa-pause"></i>
+                                        </button>`
+                                    }
+                                    <button class="btn-action reset-pw" onclick="resetPassword(${user.id})" title="تغيير كلمة المرور">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                ` : `<span style="color:var(--text-muted);font-size:11px;">مدير</span>`}
+                                <button class="btn-action delete" onclick="deleteUser(${user.id})" title="حذف">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            ` : `<span style="color:var(--text-muted);font-size:11px;">👤 أنت</span>`}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        // ==============================================
+        // FILTER USERS
+        // ==============================================
+        function filterUsers() {
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const rows = document.querySelectorAll('#users-tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(search) ? '' : 'none';
+            });
+        }
+
+        // ==============================================
+        // ACTIVATE USER
+        // ==============================================
+        async function activateUser(userId) {
+            if (!confirm('هل تريد تفعيل هذا الحساب؟')) return;
+
+            try {
+                const response = await fetchWithAuth(`${API_BASE_URL}/admin/users/${userId}/activate`, {
+                    method: 'POST'
+                });
+
+                if (response && response.ok) {
+                    showToast('✅ تم تفعيل الحساب بنجاح', 'success');
+                    loadUsers();
+                } else {
+                    const data = await response.json();
+                    showToast('❌ ' + (data.detail || 'فشل التفعيل'), 'error');
+                }
+            } catch (error) {
+                showToast('❌ خطأ في الاتصال', 'error');
+            }
+        }
+
+        // ==============================================
+        // DEACTIVATE USER
+        // ==============================================
+        async function deactivateUser(userId) {
+            if (!confirm('هل تريد تعطيل هذا الحساب؟')) return;
+
+            try {
+                const response = await fetchWithAuth(`${API_BASE_URL}/admin/users/${userId}/deactivate`, {
+                    method: 'POST'
+                });
+
+                if (response && response.ok) {
+                    showToast('✅ تم تعطيل الحساب بنجاح', 'success');
+                    loadUsers();
+                } else {
+                    const data = await response.json();
+                    showToast('❌ ' + (data.detail || 'فشل التعطيل'), 'error');
+                }
+            } catch (error) {
+                showToast('❌ خطأ في الاتصال', 'error');
+            }
+        }
+
+        // ==============================================
+        // DELETE USER
+        // ==============================================
+        async function deleteUser(userId) {
+            if (!confirm('⚠️ هل أنت متأكد من حذف هذا الحساب؟ هذا الإجراء لا يمكن التراجع عنه!')) return;
+
+            try {
+                const response = await fetchWithAuth(`${API_BASE_URL}/admin/users/${userId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response && response.ok) {
+                    showToast('✅ تم حذف الحساب بنجاح', 'success');
+                    loadUsers();
+                } else {
+                    const data = await response.json();
+                    showToast('❌ ' + (data.detail || 'فشل الحذف'), 'error');
+                }
+            } catch (error) {
+                showToast('❌ خطأ في الاتصال', 'error');
+            }
+        }
+
+        // ==============================================
+        // RESET PASSWORD
+        // ==============================================
+        async function resetPassword(userId) {
+            const newPassword = prompt('🔑 أدخل كلمة المرور الجديدة (6 أحرف على الأقل):');
+            if (!newPassword) return;
+            
+            if (newPassword.length < 6) {
+                showToast('❌ كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetchWithAuth(`${API_BASE_URL}/admin/users/${userId}/reset-password`, {
+                    method: 'POST',
+                    body: JSON.stringify({ new_password: newPassword })
+                });
+
+                if (response && response.ok) {
+                    showToast('✅ تم تغيير كلمة المرور بنجاح', 'success');
+                } else {
+                    const data = await response.json();
+                    showToast('❌ ' + (data.detail || 'فشل تغيير كلمة المرور'), 'error');
+                }
+            } catch (error) {
+                showToast('❌ خطأ في الاتصال', 'error');
+            }
+        }
+
+        // ==============================================
+        // LOGOUT
+        // ==============================================
+        function logout() {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+
+        // ==============================================
+        // INITIALIZATION
+        // ==============================================
+        async function initAdmin() {
+            // التحقق من صلاحية المدير
+            const userData = getUserData();
+            if (!userData || !userData.is_admin) {
+                showToast('❌ غير مصرح لك بالدخول إلى لوحة المدير', 'error');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 2000);
+                return;
+            }
+
+            document.getElementById('admin-name').textContent = 
+                `${userData.first_name || ''} ${userData.last_name || ''}`;
+
+            await loadUsers();
+        }
+
+        // ==============================================
+        // START
+        // ==============================================
+        document.addEventListener('DOMContentLoaded', initAdmin);
+    </script>
+</body>
+</html>
