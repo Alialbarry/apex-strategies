@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apex Strategies - Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
             --bg-color: #0d1117;
@@ -241,20 +242,54 @@
             border-color: var(--error-color) !important;
         }
 
-        .demo-box {
-            background: rgba(31, 111, 235, 0.05);
-            border: 1px dashed rgba(31, 111, 235, 0.2);
-            border-radius: 10px;
-            padding: 12px 16px;
+        /* ============================================== */
+        /* ⭐ القسم الجديد - إعلان الترحيب */
+        /* ============================================== */
+        .welcome-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.08));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 16px 20px;
             margin-top: 20px;
-            font-size: 12px;
-            color: #60a5fa;
             text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .welcome-box:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(139, 92, 246, 0.12));
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .welcome-box .icon {
+            font-size: 28px;
+            color: #3b82f6;
+            margin-bottom: 6px;
+        }
+
+        .welcome-box h4 {
+            color: #f1f5f9;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .welcome-box p {
+            color: #94a3b8;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .welcome-box .highlight {
+            color: #60a5fa;
+            font-weight: 600;
         }
 
         @media (max-width: 480px) {
             .login-card { padding: 25px; }
             .form-row { flex-direction: column; gap: 0; }
+            .welcome-box h4 { font-size: 14px; }
+            .welcome-box p { font-size: 12px; }
         }
     </style>
 </head>
@@ -331,12 +366,18 @@
         <div id="loading" class="loading">⏳ جاري المعالجة</div>
 
         <!-- ========================================== -->
-        <!-- DEMO INFO -->
+        <!-- ⭐ القسم الجديد - إعلان الترحيب (بدلاً من demo-box) -->
         <!-- ========================================== -->
-        <div class="demo-box">
-            🔑 للاختبار كمدير: admin@apex.com / admin123
-            <br>
-            أو قم بإنشاء حساب جديد وسيتم تفعيله بواسطة المدير
+        <div class="welcome-box">
+            <div class="icon">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <h4>🚀 منصة Apex Strategies</h4>
+            <p>
+                منصة ذكاء الأعمال المتكاملة لتحليل البيانات وإدارة الأداء
+                <br>
+                <span class="highlight">سجل الآن واستمتع بتجربة احترافية</span>
+            </p>
         </div>
     </div>
 
@@ -482,7 +523,6 @@
                     saveAuthData(data);
                     showMessage('✅ تم تسجيل الدخول بنجاح! جاري التوجيه...', 'success');
                     
-                    // التوجيه حسب صلاحية المستخدم
                     setTimeout(() => {
                         if (data.is_admin) {
                             window.location.href = 'admin-dashboard.html';
@@ -502,7 +542,7 @@
         }
 
         // ==============================================
-        // Signup Handler - التوجيه إلى صفحة الترحيب
+        // Signup Handler
         // ==============================================
         async function handleSignup() {
             const firstName = signupFirstname.value.trim();
@@ -573,8 +613,6 @@
 
                 if (response.ok) {
                     saveAuthData(data);
-                    
-                    // ⭐ التوجيه إلى صفحة الترحيب
                     showMessage('✅ تم إنشاء الحساب بنجاح! جاري التوجيه...', 'success');
                     
                     setTimeout(() => {
@@ -625,7 +663,6 @@
         if (token && token.length > 20) {
             if (tokenExpiry && Date.now() < parseInt(tokenExpiry)) {
                 console.log('✅ Valid token found, redirecting...');
-                // محاولة معرفة نوع المستخدم
                 const userData = localStorage.getItem('user_data');
                 if (userData) {
                     try {
@@ -651,7 +688,6 @@
 
         console.log('🔐 Login page ready');
         console.log('📍 API:', API_BASE_URL);
-        console.log('💡 Admin: admin@apex.com / admin123');
     </script>
 </body>
 </html>
