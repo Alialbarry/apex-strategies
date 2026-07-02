@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مرحباً بك - Apex Strategies</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1a233a 50%, #2d1b4e 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+
+        .bg-animation .line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #3b82f6, #8b5cf6, transparent);
+            animation: moveLine 8s linear infinite;
+        }
+
+        .bg-animation .line:nth-child(1) { top: 10%; animation-delay: 0s; width: 60%; }
+        .bg-animation .line:nth-child(2) { top: 30%; animation-delay: 2s; width: 80%; }
+        .bg-animation .line:nth-child(3) { top: 50%; animation-delay: 4s; width: 50%; }
+        .bg-animation .line:nth-child(4) { top: 70%; animation-delay: 6s; width: 70%; }
+        .bg-animation .line:nth-child(5) { top: 90%; animation-delay: 3s; width: 90%; }
+
+        @keyframes moveLine {
+            0% { left: -20%; }
+            100% { left: 120%; }
+        }
+
+        .data-points {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .data-point {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #3b82f6;
+            border-radius: 50%;
+            animation: floatData 12s ease-in-out infinite;
+        }
+
+        .data-point:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; }
+        .data-point:nth-child(2) { top: 25%; left: 85%; animation-delay: 2s; }
+        .data-point:nth-child(3) { top: 45%; left: 20%; animation-delay: 4s; }
+        .data-point:nth-child(4) { top: 60%; left: 75%; animation-delay: 6s; }
+        .data-point:nth-child(5) { top: 80%; left: 15%; animation-delay: 8s; }
+        .data-point:nth-child(6) { top: 90%; left: 90%; animation-delay: 3s; }
+        .data-point:nth-child(7) { top: 35%; left: 50%; animation-delay: 5s; }
+        .data-point:nth-child(8) { top: 70%; left: 45%; animation-delay: 7s; }
+        .data-point:nth-child(9) { top: 10%; left: 60%; animation-delay: 1s; }
+        .data-point:nth-child(10) { top: 55%; left: 95%; animation-delay: 9s; }
+
+        @keyframes floatData {
+            0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+            25% { transform: translateY(-30px) scale(1.5); opacity: 0.8; }
+            75% { transform: translateY(30px) scale(0.5); opacity: 0.5; }
+        }
+
+        .welcome-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 560px;
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 48px 40px;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+            text-align: center;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .logo span { color: #3b82f6; }
+
+        .success-icon {
+            font-size: 64px;
+            color: #10b981;
+            margin: 20px 0;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .welcome-subtitle {
+            color: #94a3b8;
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .welcome-subtitle strong {
+            color: #60a5fa;
+        }
+
+        .whatsapp-box {
+            background: rgba(37, 211, 102, 0.08);
+            border: 1px solid rgba(37, 211, 102, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 20px 0 30px;
+            transition: all 0.3s ease;
+        }
+
+        .whatsapp-box:hover {
+            background: rgba(37, 211, 102, 0.15);
+            border-color: rgba(37, 211, 102, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .whatsapp-box .icon {
+            font-size: 40px;
+            color: #25D366;
+            margin-bottom: 8px;
+        }
+
+        .whatsapp-box h3 {
+            color: white;
+            font-size: 18px;
+            margin-bottom: 6px;
+        }
+
+        .whatsapp-box p {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #25D366;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .whatsapp-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
+        }
+
+        .whatsapp-btn i { font-size: 20px; }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .info-box i {
+            color: #60a5fa;
+            margin-left: 8px;
+        }
+
+        .info-box strong {
+            color: #f1f5f9;
+        }
+
+        .btn-dashboard {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 10px 24px;
+            background: rgba(255,255,255,0.05);
+            color: #94a3b8;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-dashboard:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        @media (max-width: 480px) {
+            .welcome-container { padding: 32px 20px; }
+            .welcome-title { font-size: 22px; }
+            .logo { font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- خلفية متحركة -->
+    <div class="bg-animation">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+    </div>
+    <div class="data-points">
+        <div class="data-point"></div>
+        <div class="data-point"></div>
+        <div class="data-point"></div>
+        <div class="data-point"></div>
+        <div class="data-point"></div>
+        <div class="data-point"></div>
+        <div class="data-point"></div>
+        <div class="data-point"></div>
+        <div class="data-point"></div>
+        <div class="data-point"></div>
+    </div>
+
+    <!-- المحتوى -->
+    <div class="welcome-container">
+        <div class="logo">APEX <span>Strategies</span></div>
+        
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+
+        <h1 class="welcome-title">🎉 تم إنشاء حسابك بنجاح!</h1>
+        
+        <p class="welcome-subtitle">
+            مرحباً بك في منصة <strong>Apex Strategies</strong> للتحليل الذكي للبيانات.<br>
+            حسابك الآن قيد المراجعة من قبل فريقنا.
+        </p>
+
+        <!-- WhatsApp Box -->
+        <div class="whatsapp-box">
+            <div class="icon">
+                <i class="fab fa-whatsapp"></i>
+            </div>
+            <h3>📱 تواصل معنا عبر واتساب</h3>
+            <p>
+                لإكمال عملية التسجيل وتفعيل حسابك، يرجى التواصل معنا على واتساب<br>
+                لتأكيد الدفعات والحصول على صلاحية الدخول الكاملة.
+            </p>
+            <a href="https://wa.me/963985212728" target="_blank" class="whatsapp-btn">
+                <i class="fab fa-whatsapp"></i>
+                تواصل الآن
+            </a>
+        </div>
+
+        <div class="info-box">
+            <i class="fas fa-info-circle"></i>
+            <strong>ملاحظة:</strong> سيتم تفعيل حسابك بعد تأكيد الدفعات والتواصل مع فريق الدعم.
+            <br>
+            <span style="font-size:12px;color:#64748b;">
+                <i class="far fa-clock"></i> فترة الانتظار المتوقعة: 24-48 ساعة
+            </span>
+        </div>
+
+        <a href="login.html" class="btn-dashboard">
+            <i class="fas fa-arrow-left"></i>
+            العودة إلى صفحة تسجيل الدخول
+        </a>
+    </div>
+
+    <script>
+        // التحقق من وجود بيانات المستخدم
+        const userData = localStorage.getItem('user_data');
+        if (!userData) {
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 3000);
+        } else {
+            try {
+                const data = JSON.parse(userData);
+                document.querySelector('.welcome-title').textContent = 
+                    `🎉 مرحباً ${data.first_name || ''}!`;
+            } catch (e) {}
+        }
+
+        console.log('🎉 Welcome page loaded successfully!');
+        console.log('📱 WhatsApp: https://wa.me/963985212728');
+    </script>
+</body>
+</html>
