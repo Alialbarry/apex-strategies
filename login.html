@@ -416,11 +416,12 @@
             box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
         }
 
-        #privacy-consent .btn-later {
+        /* ⭐ زر "رفض" - جديد */
+        #privacy-consent .btn-decline {
             padding: 10px 20px;
             background: transparent;
-            color: #94a3b8;
-            border: 1px solid #334155;
+            color: #f87171;
+            border: 1px solid #ef4444;
             border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
@@ -429,10 +430,12 @@
             font-family: 'Cairo', sans-serif;
         }
 
-        #privacy-consent .btn-later:hover {
-            background: rgba(255,255,255,0.05);
-            border-color: #60a5fa;
-            color: #60a5fa;
+        #privacy-consent .btn-decline:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+            color: #ef4444;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
         }
 
         #privacy-consent .btn-read {
@@ -465,7 +468,7 @@
             #privacy-consent { padding: 15px 20px; }
             #privacy-consent .consent-text p { font-size: 13px; }
             #privacy-consent .btn-accept { padding: 8px 20px; font-size: 13px; }
-            #privacy-consent .btn-later { padding: 8px 16px; font-size: 13px; }
+            #privacy-consent .btn-decline { padding: 8px 16px; font-size: 13px; }
             #privacy-consent .btn-read { padding: 8px 16px; font-size: 13px; }
             .toast { max-width: 90%; font-size: 13px; padding: 12px 20px; bottom: 80px; }
         }
@@ -591,8 +594,9 @@
                 <button class="btn-accept" onclick="acceptPrivacyPolicy()">
                     <i class="fas fa-check"></i> موافق
                 </button>
-                <button class="btn-later" onclick="closeConsentTemporarily()">
-                    <i class="fas fa-clock"></i> لاحقاً
+                <!-- ⭐ زر "رفض" بدلاً من "لاحقاً" -->
+                <button class="btn-decline" onclick="declineConsent()">
+                    <i class="fas fa-times"></i> رفض
                 </button>
                 <a href="privacy-policy.html" target="_blank" class="btn-read">
                     <i class="fas fa-file-alt"></i> قراءة
@@ -655,9 +659,11 @@
             showToast('✅ تم قبول سياسة الخصوصية وشروط الاستخدام', 'success', 3000);
         }
 
-        function closeConsentTemporarily() {
-            document.getElementById('privacy-consent').style.display = 'none';
-            showToast('⏳ يمكنك قراءة السياسة والشروط لاحقاً', 'info', 3000);
+        // ⭐ وظيفة زر "رفض" - توجيه المستخدم إلى الصفحة الرئيسية
+        function declineConsent() {
+            if (confirm('⚠️ أنت ترفض سياسة الخصوصية وشروط الاستخدام.\n\nسيتم توجيهك إلى الصفحة الرئيسية.')) {
+                window.location.href = 'index.html';
+            }
         }
 
         function checkPrivacyConsent() {
