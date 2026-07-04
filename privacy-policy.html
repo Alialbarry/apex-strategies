@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سياسة الخصوصية - Apex Strategies</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            line-height: 1.8;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #1e293b;
+            padding: 50px 60px;
+            border-radius: 16px;
+            border: 1px solid #334155;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 30px;
+            margin-bottom: 30px;
+        }
+
+        .header .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .header .logo span {
+            color: #3b82f6;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #3b82f6;
+            margin-top: 10px;
+            font-weight: 700;
+        }
+
+        .header .date {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .badge-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge.green {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        .badge.blue {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        .badge.purple {
+            background: rgba(139, 92, 246, 0.15);
+            color: #a78bfa;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: #60a5fa;
+            font-size: 20px;
+            margin-bottom: 12px;
+            border-right: 4px solid #3b82f6;
+            padding-right: 16px;
+        }
+
+        .section h3 {
+            color: #94a3b8;
+            font-size: 16px;
+            margin: 16px 0 8px 0;
+        }
+
+        .section p, .section li {
+            color: #cbd5e1;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .section ul {
+            padding-right: 24px;
+            list-style-type: none;
+        }
+
+        .section ul li::before {
+            content: "• ";
+            color: #3b82f6;
+            font-weight: 700;
+        }
+
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin: 16px 0;
+        }
+
+        .highlight-box strong {
+            color: #60a5fa;
+        }
+
+        .highlight-box.gold {
+            background: rgba(245, 158, 11, 0.05);
+            border-color: rgba(245, 158, 11, 0.15);
+        }
+
+        .highlight-box.gold strong {
+            color: #fbbf24;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .table th {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 12px 16px;
+            text-align: right;
+            border-bottom: 2px solid #334155;
+        }
+
+        .table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #334155;
+            color: #cbd5e1;
+        }
+
+        .footer {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 2px solid #334155;
+            margin-top: 30px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 10px 24px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .contact-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .contact-icons a {
+            color: #94a3b8;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .contact-icons a:hover {
+            color: #3b82f6;
+            transform: scale(1.2);
+        }
+
+        /* زر الموافقة */
+        .accept-section {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(16, 185, 129, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+
+        .accept-section p {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .btn-accept-privacy {
+            padding: 12px 36px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .btn-accept-privacy:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            .header h1 {
+                font-size: 24px;
+            }
+            .section h2 {
+                font-size: 18px;
+            }
+            .badge-group {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">APEX <span>Strategies</span></div>
+            <h1>🔐 سياسة الخصوصية</h1>
+            <div class="date">تاريخ النفاذ: 4 يوليو 2026</div>
+            <div class="badge-group">
+                <span class="badge green">✅ متوافقة مع GDPR</span>
+                <span class="badge blue">✅ متوافقة مع CCPA</span>
+                <span class="badge purple">🔒 تشفير شامل</span>
+            </div>
+        </div>
+
+        <!-- المقدمة -->
+        <div class="section">
+            <h2>1. المقدمة</h2>
+            <p>
+                نحن في <strong>Apex Strategies</strong> ("نحن"، "المنصة") نلتزم بأعلى معايير حماية الخصوصية
+                وتأمين البيانات التي تودعونها لدينا. تشرح سياسة الخصوصية هذه كيفية جمع معلوماتكم،
+                استخدامها، وحمايتها عند زيارتكم لموقعنا واستخدامكم للوحة التحكم والتحليلات الخاصة بنا.
+            </p>
+            <div class="highlight-box gold">
+                <strong>📌 يرجى قراءة هذه السياسة بعناية.</strong>
+                إذا كنت لا توافق على الشروط الواردة فيها، يرجى عدم الدخول إلى المنصة أو استخدام خدماتها.
+            </div>
+        </div>
+
+        <!-- 1. البيانات التي نجمعها -->
+        <div class="section">
+            <h2>2. البيانات التي نجمعها</h2>
+            <p>
+                نحن نجمع فقط البيانات الضرورية واللازمة لتقديم خدمات التحليل البرمجي لكفاءة تشغيل مشروعك:
+            </p>
+
+            <h3>2.1 بيانات الحساب</h3>
+            <ul>
+                <li><strong>المعرفات الشخصية الأساسية</strong> - الاسم، البريد الإلكتروني، وبيانات الدخول.</li>
+                <li><strong>كلمات المرور</strong> - يتم تشفيرها وتعميتها بشكل كامل وتلقائي باستخدام bcrypt.</li>
+                <li><strong>رقم الهاتف</strong> - للتواصل (اختياري).</li>
+                <li><strong>اسم الشركة</strong> - لتخصيص الخدمة (اختياري).</li>
+                <li><strong>نوع الحساب</strong> - (Production، Medical، Financial).</li>
+            </ul>
+
+            <h3>2.2 البيانات التحليلية المرفوعة</h3>
+            <ul>
+                <li>
+                    <strong>ملفات العمل</strong> - مثل ملفات Excel أو CSV التي تحتوي على بيانات المواعيد، الإيرادات، وقنوات الاستقطاب.
+                </li>
+                <li>
+                    <strong>أنت تملك هذه البيانات بالكامل</strong> - ولن يتم الاطلاع عليها إلا برغبتك.
+                </li>
+            </ul>
+            <div class="highlight-box">
+                <strong>🔒 التزام صارم:</strong>
+                نحن لا نستخدم بيانات ملفاتك المرفوعة لأي أغراض تسويقية، ولا نقوم بتدريب نماذج الذكاء الاصطناعي على بيانات عملك الخاص.
+            </div>
+
+            <h3>2.3 البيانات التقنية (السجلات)</h3>
+            <ul>
+                <li><strong>عنوان IP</strong> - يستخدم حصرياً لأغراض الأمن الرقمي ومعالجة أخطاء النظام.</li>
+                <li><strong>نوع المتصفح ونظام التشغيل</strong> - لتحسين تجربة المستخدم.</li>
+                <li><strong>ملفات تعريف الارتباط (Cookies)</strong> - لتذكر تفضيلاتك وتحسين الأداء.</li>
+            </ul>
+        </div>
+
+        <!-- 2. كيف نستخدم بياناتكم -->
+        <div class="section">
+            <h2>3. كيف نستخدم بياناتكم؟</h2>
+            <p>نحن نستخدم البيانات التي يتم جمعها للأغراض المحددة التالية فقط:</p>
+            <ul>
+                <li>إنشاء حسابك الآمن وإدارته وصيانته.</li>
+                <li>معالجة ملفات البيانات المرفوعة من قبلك وتحويلها إلى رسوم بيانية تفاعلية وبطاقات أداء (KPIs) حية.</li>
+                <li>مراقبة الأداء التقني للمنصة وحمايتها من الثغرات أو الاختراقات.</li>
+                <li>تقديم الدعم الفني وحل المشكلات البرمجية التي قد تواجهها أثناء الاستخدام.</li>
+                <li>تحسين المنصة وتطوير الميزات بناءً على أنماط الاستخدام.</li>
+            </ul>
+        </div>
+
+        <!-- 3. الاحتفاظ بالبيانات وحذفها -->
+        <div class="section">
+            <h2>4. الاحتفاظ بالبيانات وحذفها</h2>
+            <ul>
+                <li>
+                    <strong>بيانات الحساب:</strong> يتم الاحتفاظ بها طالما أن حسابك نشط على المنصة.
+                </li>
+                <li>
+                    <strong>البيانات المرفوعة:</strong> يتم تخزين الملفات والبيانات المفلترة على سيرفراتنا بغرض عرضها في لوحتك الخاصة فقط.
+                </li>
+                <li>
+                    <strong>طلب الحذف:</strong> يمكنك طلب حذف ملفاتك أو مسح حسابك بالكامل نهائياً في أي وقت عبر الإعدادات أو بمراسلة الدعم الفني.
+                </li>
+                <li>
+                    <strong>مدة التخزين:</strong> بعد حذف الحساب، يتم حذف جميع البيانات خلال 30 يوماً.
+                </li>
+            </ul>
+        </div>
+
+        <!-- 4. أمن وحماية البيانات -->
+        <div class="section">
+            <h2>5. أمن وحماية البيانات</h2>
+            <p>
+                نحن نطبق إجراءات أمنية برمجية وتنظيمية قوية لحماية بياناتك الشخصية والتجارية:
+            </p>
+            <ul>
+                <li>
+                    <strong>التشفير:</strong> يتم حماية جميع البيانات المتبادلة بين متصفحك وسيرفراتنا باستخدام بروتوكول التشفير الآمن (SSL/TLS).
+                </li>
+                <li>
+                    <strong>صلاحيات الدخول:</strong> نعتمد نظام توكن (Access Tokens) صارم لضمان ألا تظهر بياناتك المرفوعة لأي مستخدم آخر.
+                </li>
+                <li>
+                    <strong>تشفير كلمات المرور:</strong> جميع كلمات المرور مشفرة باستخدام bcrypt ولا يمكن فك تشفيرها.
+                </li>
+                <li>
+                    <strong>النسخ الاحتياطي:</strong> نقوم بعمل نسخ احتياطية مشفرة للبيانات بشكل دوري.
+                </li>
+            </ul>
+        </div>
+
+        <!-- 5. مشاركة البيانات مع أطراف ثالثة -->
+        <div class="section">
+            <h2>6. مشاركة البيانات مع أطراف ثالثة</h2>
+            <div class="highlight-box">
+                <strong>🚫 البيع التجاري:</strong>
+                نحن <strong>لا نبيع</strong>، ولا نؤجر، ولا نتاجر ببياناتك أو بيانات عملائك مع أي شركات إعلانية أو جهات خارجية لأغراض تجارية مطلقاً.
+            </div>
+            <ul>
+                <li>
+                    <strong>مزودو الخدمات:</strong> قد يتم مشاركة البيانات التقنية الصرفة فقط مع مزودي خدمات الاستضافة السحابية الموثوقين، وذلك بالقدر اللازم لتشغيل المنصة برمجياً.
+                </li>
+                <li>
+                    <strong>المتطلبات القانونية:</strong> قد نشارك بياناتك إذا طلب منا القانون أو الجهات التنظيمية ذلك.
+                </li>
+                <li>
+                    <strong>بموافقتك:</strong> فقط عند حصولنا على موافقتك الصريحة.
+                </li>
+            </ul>
+        </div>
+
+        <!-- 6. حقوقك -->
+        <div class="section">
+            <h2>7. حقوقك</h2>
+            <p>
+                وفقاً لقوانين حماية البيانات (GDPR، CCPA)، لديك الحقوق التالية:
+            </p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>الحق</th>
+                        <th>الوصف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>حق الوصول</strong></td>
+                        <td>يمكنك طلب نسخة من بياناتك الشخصية.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>حق التصحيح</strong></td>
+                        <td>يمكنك تعديل أي بيانات غير صحيحة.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>حق الحذف</strong></td>
+                        <td>يمكنك طلب حذف بياناتك (مع بعض الاستثناءات القانونية).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>حق تقييد المعالجة</strong></td>
+                        <td>يمكنك طلب تقييد كيفية استخدام بياناتك.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>حق نقل البيانات</strong></td>
+                        <td>يمكنك طلب نقل بياناتك إلى مزود آخر.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 7. ملفات تعريف الارتباط -->
+        <div class="section">
+            <h2>8. ملفات تعريف الارتباط (Cookies)</h2>
+            <p>
+                نستخدم ملفات تعريف الارتباط لتحسين تجربتك على المنصة:
+            </p>
+            <ul>
+                <li><strong>الأساسية</strong> - ضرورية لتشغيل المنصة (مثل تسجيل الدخول).</li>
+                <li><strong>التفضيلات</strong> - لتذكر إعداداتك وتفضيلاتك.</li>
+                <li><strong>التحليلات</strong> - لتحسين أداء المنصة وفهم كيفية استخدامها.</li>
+            </ul>
+            <p>
+                يمكنك التحكم في ملفات تعريف الارتباط من خلال إعدادات المتصفح الخاص بك.
+            </p>
+        </div>
+
+        <!-- 8. التحديثات -->
+        <div class="section">
+            <h2>9. التحديثات على هذه السياسة</h2>
+            <p>
+                قد نقوم بتحديث سياسة الخصوصية هذه من وقت لآخر لمواكبة التغييرات البرمجية أو التنظيمية.
+            </p>
+            <ul>
+                <li>سنقوم بإشعارك بأي تغييرات جوهرية عن طريق تحديث "تاريخ النفاذ" أعلى هذه الصفحة.</li>
+                <li>سنرسل إشعاراً عبر البريد الإلكتروني للمستخدمين المسجلين.</li>
+                <li>سنعرض تنبيهاً داخل المنصة عند تسجيل الدخول.</li>
+            </ul>
+        </div>
+
+        <!-- 9. خصوصية الأطفال -->
+        <div class="section">
+            <h2>10. خصوصية الأطفال</h2>
+            <p>
+                منصتنا غير موجهة للأطفال تحت سن 13 عاماً. ولا نقوم عن قصد بجمع بيانات من الأطفال.
+                إذا اكتشفنا أننا جمعنا بيانات من طفل دون موافقة الوالدين، سنقوم بحذفها فوراً.
+            </p>
+        </div>
+
+        <!-- 10. اتصل بنا -->
+        <div class="section">
+            <h2>11. اتصل بنا</h2>
+            <p>
+                إذا كان لديك أي استفسار، أو طلب يتعلق بخصوصية بياناتك وحذفها، يمكنك التواصل معنا مباشرة عبر:
+            </p>
+            <div class="highlight-box">
+                <p>
+                    <strong>📧 البريد الإلكتروني:</strong>
+                    <a href="mailto:support@apexstrategies.com" style="color: #60a5fa;">support@apexstrategies.com</a>
+                </p>
+                <p>
+                    <strong>📱 واتساب:</strong>
+                    <a href="https://wa.me/963985212728" style="color: #60a5fa;">+963 985 212 728</a>
+                </p>
+            </div>
+            <div class="contact-icons">
+                <a href="https://www.linkedin.com/company/109245589/admin/dashboard/" target="_blank" title="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=61586230434467" target="_blank" title="Facebook">
+                    <i class="fab fa-facebook"></i>
+                </a>
+                <a href="https://wa.me/963985212728" target="_blank" title="WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+                <a href="mailto:support@apexstrategies.com" title="البريد الإلكتروني">
+                    <i class="fas fa-envelope"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- 11. الموافقة -->
+        <div class="section">
+            <h2>12. الموافقة</h2>
+            <div class="highlight-box gold">
+                <strong>✅ باستخدامك لمنصة Apex Strategies، فإنك توافق على سياسة الخصوصية هذه.</strong>
+                <br>
+                إذا كنت لا توافق على هذه السياسة، يرجى عدم استخدام المنصة.
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- زر الموافقة على سياسة الخصوصية -->
+        <!-- ========================================== -->
+        <div class="accept-section">
+            <p>
+                <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                بقراءتك لهذه السياسة، فإنك توافق على شروطها.
+            </p>
+            <button class="btn-accept-privacy" onclick="acceptPrivacy()">
+                ✅ أوافق على سياسة الخصوصية
+            </button>
+            <p style="color: #64748b; font-size: 12px; margin-top: 10px;">
+                سيتم حفظ اختيارك لتجنب ظهور هذه الرسالة مرة أخرى.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2026 <strong>Apex Strategies</strong>. جميع الحقوق محفوظة.</p>
+            <p>
+                <a href="login.html">🔐 تسجيل الدخول</a> |
+                <a href="mailto:support@apexstrategies.com">📧 الدعم الفني</a>
+            </p>
+            <a href="javascript:history.back()" class="btn-back">↩ العودة إلى الصفحة السابقة</a>
+        </div>
+    </div>
+
+    <script>
+        function acceptPrivacy() {
+            localStorage.setItem('privacy_accepted', 'true');
+            alert('✅ تم قبول سياسة الخصوصية بنجاح!');
+            window.location.href = 'login.html';
+        }
+
+        // إذا كان المستخدم قد وافق سابقاً
+        if (localStorage.getItem('privacy_accepted') === 'true') {
+            const backBtn = document.querySelector('.btn-back');
+            if (backBtn) {
+                backBtn.textContent = '↩ العودة إلى صفحة تسجيل الدخول';
+                backBtn.href = 'login.html';
+            }
+        }
+
+        console.log('📋 Privacy Policy page loaded');
+    </script>
+</body>
+</html>
