@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شروط وأحكام الاستخدام - Apex Strategies</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            line-height: 1.8;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #1e293b;
+            padding: 50px 60px;
+            border-radius: 16px;
+            border: 1px solid #334155;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 30px;
+            margin-bottom: 30px;
+        }
+
+        .header .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .header .logo span {
+            color: #3b82f6;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #3b82f6;
+            margin-top: 10px;
+            font-weight: 700;
+        }
+
+        .header .date {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .badge-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge.green {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        .badge.blue {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        .badge.purple {
+            background: rgba(139, 92, 246, 0.15);
+            color: #a78bfa;
+        }
+
+        .badge.yellow {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+        }
+
+        .badge.red {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: #60a5fa;
+            font-size: 20px;
+            margin-bottom: 12px;
+            border-right: 4px solid #3b82f6;
+            padding-right: 16px;
+        }
+
+        .section h3 {
+            color: #94a3b8;
+            font-size: 16px;
+            margin: 16px 0 8px 0;
+        }
+
+        .section p,
+        .section li {
+            color: #cbd5e1;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .section ul {
+            padding-right: 24px;
+            list-style-type: none;
+        }
+
+        .section ul li::before {
+            content: "• ";
+            color: #3b82f6;
+            font-weight: 700;
+        }
+
+        .section ol {
+            padding-right: 24px;
+            color: #cbd5e1;
+        }
+
+        .section ol li {
+            margin-bottom: 6px;
+        }
+
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin: 16px 0;
+        }
+
+        .highlight-box strong {
+            color: #60a5fa;
+        }
+
+        .highlight-box.gold {
+            background: rgba(245, 158, 11, 0.05);
+            border-color: rgba(245, 158, 11, 0.15);
+        }
+
+        .highlight-box.gold strong {
+            color: #fbbf24;
+        }
+
+        .highlight-box.red {
+            background: rgba(239, 68, 68, 0.05);
+            border-color: rgba(239, 68, 68, 0.15);
+        }
+
+        .highlight-box.red strong {
+            color: #f87171;
+        }
+
+        .footer {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 2px solid #334155;
+            margin-top: 30px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 10px 24px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .contact-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .contact-icons a {
+            color: #94a3b8;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .contact-icons a:hover {
+            color: #3b82f6;
+            transform: scale(1.2);
+        }
+
+        .accept-section {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(16, 185, 129, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+
+        .accept-section p {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .btn-accept-terms {
+            padding: 12px 36px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .btn-accept-terms:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            .header h1 {
+                font-size: 24px;
+            }
+            .section h2 {
+                font-size: 18px;
+            }
+            .badge-group {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">APEX <span>Strategies</span></div>
+            <h1>📜 شروط وأحكام الاستخدام</h1>
+            <div class="date">تاريخ آخر تحديث: 4 يوليو 2026</div>
+            <div class="badge-group">
+                <span class="badge green">✅ سارية المفعول</span>
+                <span class="badge blue">📌 محدثة</span>
+                <span class="badge purple">⚖️ متوافقة مع القانون</span>
+                <span class="badge yellow">🔒 تحمي حقوقك</span>
+                <span class="badge red">🚫 يمنع الانتهاك</span>
+            </div>
+        </div>
+
+        <!-- مقدمة -->
+        <div class="section">
+            <h2>مقدمة</h2>
+            <p>
+                مرحباً بكم في منصة <strong>Apex Strategies</strong> ("نحن"، "أو" "المنصة").
+                تحكم شروط وأحكام الاستخدام هذه ("الشروط") دخولكم واستخدامكم للموقع الإلكتروني،
+                البرمجيات، وخدمات الـ SaaS التحليلية التابعة لنا.
+            </p>
+            <div class="highlight-box gold">
+                <strong>📌 تنبيه مهم:</strong>
+                بمجرد دخولك إلى المنصة أو استخدامها، فإنك توافق على الالتزام الكامل بهذه الشروط.
+                إذا كنت لا توافق على أي جزء منها، يجب عليك التوقف فوراً عن استخدام خدماتنا.
+            </div>
+        </div>
+
+        <!-- 1. إنشاء الحساب وأمن البيانات -->
+        <div class="section">
+            <h2>1. إنشاء الحساب وأمن البيانات</h2>
+
+            <h3>أهلية الحساب</h3>
+            <ul>
+                <li>للاستفادة من خدمات المنصة، يجب تقديم معلومات دقيقة، كاملة، ومحدثة أثناء عملية التسجيل.</li>
+                <li>يجب أن يكون عمرك 18 عاماً على الأقل لاستخدام المنصة.</li>
+                <li>إذا كنت تستخدم المنصة نيابة عن شركة، فإنك تقر بأن لديك الصلاحية لربط تلك الشركة بهذه الاتفاقية.</li>
+            </ul>
+
+            <h3>مسؤولية الحساب</h3>
+            <ul>
+                <li>أنت المسؤول الحصري عن الحفاظ على سرية بيانات دخولك (اسم المستخدم، كلمة المرور، وتوكن التحقق "Access Tokens").</li>
+                <li>أنت المسؤول عن كافة الأنشطة والتعديلات التي تتم من خلال حسابك.</li>
+                <li>جميع كلمات المرور مشفرة باستخدام bcrypt ولا يمكن فك تشفيرها.</li>
+            </ul>
+
+            <h3>الاستخدام غير المصرح به</h3>
+            <ul>
+                <li>يجب عليك إبلاغ الدعم الفني فوراً في حال اكتشاف أي استخدام غير مصرح به لحسابك أو أي خرق أمني.</li>
+                <li>لا تتحمل المنصة أي مسؤولية عن أي خسائر ناتجة عن عدم التزامك بتأمين حسابك.</li>
+            </ul>
+
+            <div class="highlight-box">
+                <strong>🔒 أمان إضافي:</strong>
+                جميع البيانات المتبادلة بين متصفحك وسيرفراتنا مشفرة باستخدام بروتوكول SSL/TLS.
+            </div>
+        </div>
+
+        <!-- 2. الاستخدام المصرح به والرخصة البرمجية -->
+        <div class="section">
+            <h2>2. الاستخدام المصرح به والرخصة البرمجية</h2>
+
+            <h3>الترخيص</h3>
+            <ul>
+                <li>تمنحك المنصة رخصة محدودة، غير حصرية، وغير قابلة للتنازل، وقابلة للإلغاء للاستفادة من لوحة التحكم والخدمات البرمجية.</li>
+                <li>الاستخدام مخصص لأغراض تحليل البيانات وإدارة ذكاء الأعمال الخاص بمشروعك.</li>
+            </ul>
+
+            <h3>الأنشطة المحظورة</h3>
+            <div class="highlight-box red">
+                <strong>🚫 يلتزم المستخدم بعدم القيام بالآتي أو محاولة القيام به:</strong>
+            </div>
+            <ul>
+                <li><strong>الهندسة العكسية</strong> - محاولة فك الشفرة المصدرية (Source Code)، أو نسخ الهيكلية البرمجية للمنصة (بما في ذلك إعدادات FastAPI أو واجهات الجافا سكريبت ومكتبات Chart.js).</li>
+                <li><strong>رفع الملفات الضارة</strong> - رفع أي ملفات تحتوي على فيروسات، برمجيات خبيثة، أو أكواد تهدف إلى تعطيل البنية التحتية للسيرفر.</li>
+                <li><strong>استغلال الثغرات</strong> - تخطي أو استغلال ثغرات نظام الحماية، أو بوابات التحقق (Authentication APIs).</li>
+                <li><strong>الاستخدام غير القانوني</strong> - استخدام المنصة لأي غرض غير قانوني أو احتيالي.</li>
+                <li><strong>انتحال الشخصية</strong> - انتحال شخصية أخرى أو استخدام حساب شخص آخر.</li>
+                <li><strong>إعادة البيع</strong> - بيع أو إعادة بيع الخدمات دون موافقة خطية منا.</li>
+            </ul>
+        </div>
+
+        <!-- 3. ملكية البيانات وقانونيتها -->
+        <div class="section">
+            <h2>3. ملكية البيانات وقانونيتها</h2>
+
+            <h3>ملكية البيانات</h3>
+            <ul>
+                <li>أنت تحتفظ بالملكية الكاملة وحقوق الملكية الفكرية والمسؤولية القانونية عن كافة البيانات والملفات (مثل ملفات Excel أو CSV) التي تقوم برفعها ومعالجتها داخل المنصة.</li>
+                <li>نحن لا نملك أي حق ملكية على بياناتك، ولا نستخدمها لأغراض تسويقية أو تدريب نماذج الذكاء الاصطناعي.</li>
+            </ul>
+
+            <h3>قانونية البيانات</h3>
+            <ul>
+                <li>أنت تضمن وتتعهد بأنك تملك الحق القانوني والموافقات الصريحة (بما في ذلك موافقات العملاء أو المرضى إن وجدت) لرفع هذه البيانات ومعالجتها.</li>
+                <li>تتعهد بعدم رفع أي بيانات تنتهك قوانين الخصوصية المحلية أو الأسرار التجارية لأطراف أخرى.</li>
+            </ul>
+
+            <div class="highlight-box">
+                <strong>📋 ملاحظة:</strong>
+                أنت المسؤول الوحيد عن دقة البيانات التي ترفعها وعن أي عواقب قانونية تترتب عليها.
+            </div>
+        </div>
+
+        <!-- 4. الملكية الفكرية للمنصة -->
+        <div class="section">
+            <h2>4. الملكية الفكرية للمنصة</h2>
+            <p>
+                إن جميع الحقوق والعناوين والمصالح الخاصة بالمنصة (بما في ذلك على سبيل المثال لا الحصر:
+                الاسم التجاري <strong>Apex Strategies</strong>، الشعارات، الواجهات الرسومية،
+                تصميم لوحة التحكم "Dashboard"، الأكواد المصدرية، والقوالب) هي وتظل ملكاً حصرياً لنا،
+                ومحمية بموجب قوانين الملكية الفكرية وحقوق النشر.
+            </p>
+            <ul>
+                <li>لا يجوز لك نسخ أو تعديل أو توزيع أي جزء من المنصة دون موافقة خطية.</li>
+                <li>أي انتهاك لحقوق الملكية الفكرية سيعرضك للمساءلة القانونية.</li>
+            </ul>
+        </div>
+
+        <!-- 5. استمرارية الخدمة والتعديلات البرمجية -->
+        <div class="section">
+            <h2>5. استمرارية الخدمة والتعديلات البرمجية</h2>
+
+            <h3>التوفر</h3>
+            <ul>
+                <li>بينما نبذل قصارى جهدنا لضمان استقرار السيرفرات على مدار الساعة، فإن الخدمة تُقدم <strong>"كما هي"</strong> و<strong>"حسب توفرها"</strong>.</li>
+                <li>لا نضمن عدم حدوث انقطاعات مؤقتة نتيجة لأعمال الصيانة التقنية، أو تحديثات النظام، أو مشاكل شبكات الإنترنت الخارجية.</li>
+                <li>نسعى لتقليل فترات التوقف ونخطر المستخدمين مسبقاً بأي صيانة مجدولة.</li>
+            </ul>
+
+            <h3>التعديلات</h3>
+            <ul>
+                <li>تحتفظ المنصة بالحق في تعديل، تحديث، أو إيقاف ميزات معينة داخل لوحة التحكم في أي وقت.</li>
+                <li>يتم ذلك بهدف تحسين الأداء البرمجي أو سد الثغرات الأمنية.</li>
+                <li>سنقوم بإخطارك بأي تغييرات جوهرية عبر البريد الإلكتروني أو إشعار على المنصة.</li>
+            </ul>
+        </div>
+
+        <!-- 6. حدود المسؤولية القانونية -->
+        <div class="section">
+            <h2>6. حدود المسؤولية القانونية</h2>
+            <div class="highlight-box gold">
+                <strong>⚠️ إلى الحد الأقصى الذي يسمح به القانون النافذ:</strong>
+            </div>
+            <p>
+                لا تتحمل <strong>Apex Strategies</strong> المسؤولية عن أي أضرار غير مباشرة، أو عرضية، أو تبعية
+                (بما في ذلك على سبيل المثال لا الحصر: خسارة الأرباح، تلف البيانات نتيجة رفع ملفات خاطئة،
+                توقف النظام، أو أي خسائر مالية وتجارية) تنتج عن استخدامك للمنصة أو عدم القدرة على استخدامها.
+            </p>
+            <p>
+                الحد الأقصى للمسؤولية هو المبلغ الذي دفعته للمنصة خلال الـ 12 شهراً الماضية.
+            </p>
+        </div>
+
+        <!-- 7. إنهاء الخدمة -->
+        <div class="section">
+            <h2>7. إنهاء الخدمة</h2>
+            <p>
+                نحتفظ بالحق، ووفقاً لتقديرنا الخاص ودون أي مسؤولية قانونية، في تعليق حسابك أو إنهاء صلاحية دخولك للمنصة فوراً، في حال:
+            </p>
+            <ul>
+                <li>انتهاكك لهذه الشروط.</li>
+                <li>القيام بنشاط احتيالي.</li>
+                <li>محاولة الإضرار بأمن واستقرار المخدمات (Servers).</li>
+                <li>عدم سداد الرسوم المستحقة.</li>
+                <li>بناءً على طلب من الجهات القانونية.</li>
+            </ul>
+            <div class="highlight-box">
+                <strong>📌 ملاحظة:</strong>
+                في حالة إنهاء الحساب، سيتم حذف بياناتك وفقاً لسياسة الخصوصية الخاصة بنا خلال 30 يوماً.
+            </div>
+        </div>
+
+        <!-- 8. القانون الواجب التطبيق -->
+        <div class="section">
+            <h2>8. القانون الواجب التطبيق</h2>
+            <p>
+                تخضع هذه الشروط والأحكام وتُفسر وفقاً للقوانين والأنظمة المحلية المعمول بها
+                والمنظمة للمعاملات الإلكترونية والجرائم المعلوماتية.
+            </p>
+            <ul>
+                <li>أي نزاع ينشأ عن هذه الشروط يخضع للاختصاص القضائي للمحاكم المحلية.</li>
+                <li>في حال وجود تعارض بين هذه الشروط وأي قانون محلي، تسود هذه الشروط.</li>
+            </ul>
+        </div>
+
+        <!-- 9. التواصل معنا -->
+        <div class="section">
+            <h2>9. التواصل معنا</h2>
+            <p>
+                إذا كان لديك أي استفسار أو بحاجة لتوضيح بشأن هذه الشروط والأحكام، يمكنك مراسلتنا مباشرة عبر:
+            </p>
+            <div class="highlight-box">
+                <p>
+                    <strong>📧 البريد الإلكتروني:</strong>
+                    <a href="mailto:support@apexstrategies.com" style="color: #60a5fa;">support@apexstrategies.com</a>
+                </p>
+                <p>
+                    <strong>📱 واتساب:</strong>
+                    <a href="https://wa.me/963985212728" style="color: #60a5fa;">+963 985 212 728</a>
+                </p>
+            </div>
+            <div class="contact-icons">
+                <a href="https://www.linkedin.com/company/109245589/admin/dashboard/" target="_blank" title="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=61586230434467" target="_blank" title="Facebook">
+                    <i class="fab fa-facebook"></i>
+                </a>
+                <a href="https://wa.me/963985212728" target="_blank" title="WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+                <a href="mailto:support@apexstrategies.com" title="البريد الإلكتروني">
+                    <i class="fas fa-envelope"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- 10. الموافقة النهائية -->
+        <div class="section">
+            <h2>10. الموافقة</h2>
+            <div class="highlight-box gold">
+                <strong>✅ باستخدامك لمنصة Apex Strategies، فإنك توافق على شروط وأحكام الاستخدام هذه.</strong>
+                <br>
+                إذا كنت لا توافق على هذه الشروط، يرجى عدم استخدام المنصة.
+            </div>
+        </div>
+
+        <!-- زر الموافقة -->
+        <div class="accept-section">
+            <p>
+                <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                بقراءتك لهذه الشروط والأحكام، فإنك توافق على الالتزام بها.
+            </p>
+            <button class="btn-accept-terms" onclick="acceptTerms()">
+                ✅ أوافق على الشروط والأحكام
+            </button>
+            <p style="color: #64748b; font-size: 12px; margin-top: 10px;">
+                سيتم حفظ اختيارك لتجنب ظهور هذه الرسالة مرة أخرى.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2026 <strong>Apex Strategies</strong>. جميع الحقوق محفوظة.</p>
+            <p>
+                <a href="privacy-policy.html">🔐 سياسة الخصوصية</a> |
+                <a href="login.html">🔐 تسجيل الدخول</a> |
+                <a href="mailto:support@apexstrategies.com">📧 الدعم الفني</a>
+            </p>
+            <a href="javascript:history.back()" class="btn-back">↩ العودة إلى الصفحة السابقة</a>
+        </div>
+    </div>
+
+    <script>
+        function acceptTerms() {
+            localStorage.setItem('terms_accepted', 'true');
+            alert('✅ تم قبول شروط وأحكام الاستخدام بنجاح!');
+            window.location.href = 'login.html';
+        }
+
+        // إذا كان المستخدم قد وافق سابقاً
+        if (localStorage.getItem('terms_accepted') === 'true') {
+            const backBtn = document.querySelector('.btn-back');
+            if (backBtn) {
+                backBtn.textContent = '↩ العودة إلى صفحة تسجيل الدخول';
+                backBtn.href = 'login.html';
+            }
+        }
+
+        console.log('📋 Terms and Conditions page loaded');
+        console.log('📧 Support: support@apexstrategies.com');
+    </script>
+</body>
+</html>
