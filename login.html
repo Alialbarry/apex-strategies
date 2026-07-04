@@ -285,15 +285,176 @@
             font-weight: 600;
         }
 
+        /* ============================================== */
+        /* ⭐ Toast Notification */
+        /* ============================================== */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 10px;
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+            font-weight: 600;
+            font-size: 14px;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success { border-right: 4px solid var(--success-color); }
+        .toast.error { border-right: 4px solid var(--error-color); }
+        .toast.info { border-right: 4px solid var(--button-bg); }
+        .toast.warning { border-right: 4px solid var(--warning-color); }
+
+        /* ============================================== */
+        /* ⭐ نافذة الموافقة على الخصوصية */
+        /* ============================================== */
+        #privacy-consent {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1e293b;
+            border-top: 3px solid #3b82f6;
+            padding: 20px 30px;
+            z-index: 9999;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #privacy-consent .consent-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        #privacy-consent .consent-text {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        #privacy-consent .consent-text p {
+            color: #cbd5e1;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        #privacy-consent .consent-text .highlight {
+            color: #60a5fa;
+        }
+
+        #privacy-consent .consent-text .small-text {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        #privacy-consent .consent-text a {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+
+        #privacy-consent .consent-text a:hover {
+            color: #3b82f6;
+        }
+
+        #privacy-consent .consent-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        #privacy-consent .btn-accept {
+            padding: 10px 28px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        #privacy-consent .btn-accept:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        #privacy-consent .btn-read {
+            padding: 10px 20px;
+            background: transparent;
+            color: #94a3b8;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #privacy-consent .btn-read:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: #60a5fa;
+            color: #60a5fa;
+        }
+
         @media (max-width: 480px) {
             .login-card { padding: 25px; }
             .form-row { flex-direction: column; gap: 0; }
             .welcome-box h4 { font-size: 14px; }
             .welcome-box p { font-size: 12px; }
+            #privacy-consent { padding: 15px 20px; }
+            #privacy-consent .consent-text p { font-size: 13px; }
+            #privacy-consent .btn-accept { padding: 8px 20px; font-size: 13px; }
+            #privacy-consent .btn-read { padding: 8px 16px; font-size: 13px; }
+            .toast { max-width: 90%; font-size: 13px; padding: 12px 20px; bottom: 80px; }
         }
     </style>
 </head>
 <body>
+    <!-- ========================================== -->
+    <!-- TOAST NOTIFICATION -->
+    <!-- ========================================== -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ========================================== -->
+    <!-- LOGIN CARD -->
+    <!-- ========================================== -->
     <div class="login-card">
         <h2 id="form-title">🔐 تسجيل الدخول</h2>
         <p class="subtitle" id="form-subtitle">مرحباً بك في منصة Apex Strategies</p>
@@ -366,7 +527,7 @@
         <div id="loading" class="loading">⏳ جاري المعالجة</div>
 
         <!-- ========================================== -->
-        <!-- ⭐ القسم الجديد - إعلان الترحيب (بدلاً من demo-box) -->
+        <!-- ⭐ القسم الجديد - إعلان الترحيب -->
         <!-- ========================================== -->
         <div class="welcome-box">
             <div class="icon">
@@ -378,6 +539,35 @@
                 <br>
                 <span class="highlight">سجل الآن واستمتع بتجربة احترافية</span>
             </p>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- نافذة الموافقة على سياسة الخصوصية -->
+    <!-- ========================================== -->
+    <div id="privacy-consent">
+        <div class="consent-content">
+            <div class="consent-text">
+                <p>
+                    <i class="fas fa-shield-alt" style="color: #3b82f6; margin-left: 8px;"></i>
+                    نستخدم ملفات تعريف الارتباط (Cookies) لتحسين تجربتك على منصة 
+                    <span class="highlight">Apex Strategies</span>.
+                    <br>
+                    <span class="small-text">
+                        بالاستمرار في استخدام المنصة، فإنك توافق على 
+                        <a href="privacy-policy.html" target="_blank">سياسة الخصوصية</a>
+                        الخاصة بنا.
+                    </span>
+                </p>
+            </div>
+            <div class="consent-buttons">
+                <button class="btn-accept" onclick="acceptPrivacyPolicy()">
+                    <i class="fas fa-check"></i> موافق
+                </button>
+                <a href="privacy-policy.html" target="_blank" class="btn-read">
+                    <i class="fas fa-file-alt"></i> قراءة السياسة
+                </a>
+            </div>
         </div>
     </div>
 
@@ -410,6 +600,41 @@
         // Configuration
         // ==============================================
         const API_BASE_URL = 'http://127.0.0.1:8000/api';
+
+        // ==============================================
+        // Toast Notification
+        // ==============================================
+        function showToast(message, type = 'info', duration = 4000) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
+        // ==============================================
+        // Privacy Policy Consent
+        // ==============================================
+        function acceptPrivacyPolicy() {
+            localStorage.setItem('privacy_accepted', 'true');
+            document.getElementById('privacy-consent').style.display = 'none';
+            showToast('✅ تم قبول سياسة الخصوصية', 'success', 3000);
+        }
+
+        function checkPrivacyConsent() {
+            const accepted = localStorage.getItem('privacy_accepted');
+            if (!accepted) {
+                setTimeout(() => {
+                    const consent = document.getElementById('privacy-consent');
+                    if (consent) {
+                        consent.style.display = 'block';
+                    }
+                }, 1500);
+            }
+        }
 
         // ==============================================
         // Helper Functions
@@ -688,62 +913,13 @@
 
         console.log('🔐 Login page ready');
         console.log('📍 API:', API_BASE_URL);
+
+        // ==============================================
+        // Check Privacy Consent on page load
+        // ==============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            checkPrivacyConsent();
+        });
     </script>
-    <!-- ========================================== -->
-<!-- نافذة الموافقة على سياسة الخصوصية (Cookie Consent) -->
-<!-- ========================================== -->
-<div id="privacy-consent" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; border-top: 3px solid #3b82f6; padding: 20px 30px; z-index: 9999; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);">
-    <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-        <div style="flex: 1; min-width: 250px;">
-            <p style="color: #cbd5e1; font-size: 14px; margin: 0;">
-                <i class="fas fa-shield-alt" style="color: #3b82f6; margin-left: 8px;"></i>
-                نستخدم ملفات تعريف الارتباط (Cookies) لتحسين تجربتك على منصة 
-                <strong style="color: #60a5fa;">Apex Strategies</strong>.
-                <br>
-                <span style="color: #94a3b8; font-size: 12px;">
-                    بالاستمرار في استخدام المنصة، فإنك توافق على 
-                    <a href="privacy-policy.html" target="_blank" style="color: #60a5fa; text-decoration: underline;">
-                        سياسة الخصوصية
-                    </a>
-                    الخاصة بنا.
-                </span>
-            </p>
-        </div>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <button onclick="acceptPrivacyPolicy()" style="padding: 10px 28px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-family: 'Cairo', sans-serif;">
-                <i class="fas fa-check"></i> موافق
-            </button>
-            <a href="privacy-policy.html" target="_blank" style="padding: 10px 20px; background: transparent; color: #94a3b8; border: 1px solid #334155; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; transition: all 0.3s ease; font-family: 'Cairo', sans-serif;">
-                <i class="fas fa-file-alt"></i> قراءة السياسة
-            </a>
-        </div>
-    </div>
-</div>
-
-<script>
-    // ==============================================
-    // سياسة الخصوصية - الموافقة
-    // ==============================================
-    function acceptPrivacyPolicy() {
-        localStorage.setItem('privacy_accepted', 'true');
-        document.getElementById('privacy-consent').style.display = 'none';
-        showToast('✅ تم قبول سياسة الخصوصية', 'success', 3000);
-    }
-
-    function checkPrivacyConsent() {
-        const accepted = localStorage.getItem('privacy_accepted');
-        if (!accepted) {
-            // تأخير ظهور النافذة قليلاً
-            setTimeout(() => {
-                document.getElementById('privacy-consent').style.display = 'block';
-            }, 1000);
-        }
-    }
-
-    // عند تحميل الصفحة
-    document.addEventListener('DOMContentLoaded', function() {
-        checkPrivacyConsent();
-    });
-</script>
 </body>
 </html>
