@@ -699,9 +699,10 @@
         }
 
         // ==============================================
-        // ⭐ Privacy Policy & Terms Consent
+        // ⭐ Privacy Policy & Terms Consent (مع حفظ في قاعدة البيانات)
         // ==============================================
-        function acceptPrivacyPolicy() {
+        async function acceptPrivacyPolicy() {
+            // حفظ في localStorage (للواجهة)
             localStorage.setItem('privacy_accepted', 'true');
             localStorage.setItem('terms_accepted', 'true');
             isConsentAccepted = true;
@@ -710,7 +711,37 @@
             document.getElementById('consent-overlay').style.display = 'none';
             document.getElementById('privacy-consent').style.display = 'none';
             
-            // ⭐ إعادة تفعيل جميع الحقول والأزرار
+            // ⭐ إرسال الموافقة إلى السيرفر
+            try {
+                const token = localStorage.getItem('access_token');
+                if (token) {
+                    const response = await fetch(`${API_BASE_URL}/accept-privacy`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            accept_privacy: true,
+                            accept_terms: true,
+                            version: '1.0'
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('✅ Privacy acceptance saved to server:', data);
+                    } else {
+                        console.warn('⚠️ Failed to save privacy acceptance to server');
+                    }
+                } else {
+                    console.warn('⚠️ No token found, privacy acceptance not saved to server');
+                }
+            } catch (error) {
+                console.error('❌ Error saving privacy acceptance:', error);
+            }
+            
+            // إعادة تفعيل جميع الحقول
             enableAllFields();
             
             showToast('✅ تم قبول سياسة الخصوصية وشروط الاستخدام', 'success', 3000);
@@ -722,21 +753,48 @@
             }
         }
 
-        function checkPrivacyConsent() {
-            const accepted = localStorage.getItem('privacy_accepted');
-            if (!accepted) {
-                isConsentAccepted = false;
-                // إظهار التغطية والنافذة
-                document.getElementById('consent-overlay').style.display = 'block';
-                document.getElementById('privacy-consent').style.display = 'block';
-                
-                // ⭐ تعطيل جميع الحقول والأزرار
-                disableAllFields();
-            } else {
+        // ⭐ التحقق من الموافقة (من localStorage أولاً، ثم من السيرفر)
+        async function checkPrivacyConsent() {
+            // أولاً: التحقق من localStorage (للسرعة)
+            const localAccepted = localStorage.getItem('privacy_accepted');
+            
+            if (localAccepted) {
                 isConsentAccepted = true;
-                // التأكد من أن كل شيء مفعل
                 enableAllFields();
+                return;
             }
+            
+            // ثانياً: التحقق من السيرفر إذا كان المستخدم مسجلاً دخولاً
+            const token = localStorage.getItem('access_token');
+            if (token) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/me`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const userData = await response.json();
+                        if (userData.privacy_accepted) {
+                            // المستخدم وافق سابقاً على السيرفر
+                            localStorage.setItem('privacy_accepted', 'true');
+                            localStorage.setItem('terms_accepted', 'true');
+                            isConsentAccepted = true;
+                            enableAllFields();
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    console.error('❌ Error checking server consent:', error);
+                }
+            }
+            
+            // إذا لم يوافق، إظهار نافذة الموافقة
+            isConsentAccepted = false;
+            document.getElementById('consent-overlay').style.display = 'block';
+            document.getElementById('privacy-consent').style.display = 'block';
+            disableAllFields();
         }
 
         // ⭐ دالة تعطيل جميع الحقول
